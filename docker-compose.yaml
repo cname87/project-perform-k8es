@@ -1,12 +1,21 @@
+# In the main cloudbuild.yaml file, a Docker Compose cloudbuilder calls this file to start the server in the background to allow e2e tests be done.
+
+# Compose file version
+# See https://docs.docker.com/compose/compose-file/compose-versioning/
+# Set to 3.7 26th April 2020 - supports Docker 18.06.0
 version: '3.7'
+
+
 services:
   backend:
-    image: gcr.io/project-perform/application
-    # this name is used in build environment e2e baseUrl and proxy.conf settings
+    # The service to be started is the backend server.
+    # Note that this image includes puppeteer to allow for unit and e2e tests.
+    image: gcr.io/project-perform/application-with-puppeteer
+    # This name is used in e2e build environment files to set 'BASE_URL' and also in the frontend 'proxy.conf' file.
     container_name: backend
     environment:
       - NODE_ENV=Staging
-    # no need for command: as default is 'npm run start'
+    # No need for command: as the default is 'npm run start'
     ports:
       - "8080"
 networks:

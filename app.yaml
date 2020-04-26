@@ -1,4 +1,4 @@
-# [START project_perform_yaml]
+# [START app.yaml]
 runtime: nodejs12
 
 env_variables:
@@ -40,15 +40,15 @@ handlers:
 
 ## set up static file handler
 
-# static files directory
+# static files directory to serve assets
 - url: /(.*)
   secure: always
-  redirect_http_response_code: '301'
+  redirect_http_response_code: 301
   static_files: frontend/dist/\1
   # passthrough if file not found
   require_matching_file: true
   upload: frontend/dist/.*
-# serve index.html for all remaining i.e. not found
+# serve index.html for all remaining i.e. requested asset not found
 - url: (.*)
   secure: always
   redirect_http_response_code: 301
@@ -61,4 +61,4 @@ error_handlers:
     file: ./gcpError.html
   - error_code: timeout
     file: ./gcpError.html
-# [END project_perform_yaml]
+# [END app.yaml]

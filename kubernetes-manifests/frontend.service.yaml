@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: project-perform-frontend
+  labels:
+    app: project-perform
+    tier: frontend
+spec:
+  type: LoadBalancer
+  selector:
+    app: project-perform-frontend
+    tier: frontend
+  ports:
+  - port: 80
+    targetPort: http-server

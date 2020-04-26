@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: project-perform-frontend
+  labels:
+    app: project-perform
+    tier: frontend
+spec:
+  selector:
+    matchLabels:
+      app: project-perform-frontend
+      tier: frontend
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: project-perform-frontend
+        tier: frontend
+    spec:
+      containers:
+      - name: frontend
+        image: gcr.io/project-perform/application:latest
+

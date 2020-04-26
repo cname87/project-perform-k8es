@@ -1,8 +1,8 @@
 steps:
 
- # NOTE: When a build is executed from GCP via a github trigger the secret files, and any empty directories, are not there => download from GCP Storage.  The structure of the storage bucket MUST match the expected destination of the files including directory structure as a recursive copy is carried out to copy the directory structure and files.
+ # NOTE: When a build is executed from GCP via a github trigger the secret files, and any empty directories, are not there => download from GCP Storage.  The structure of the GCP storage bucket MUST be set up to match the directory structure you are copying, as a recursive copy is carried out to copy the directory structure and files.
 - id: 'download environment and certs files'
-# copy backend .env, frontend e2e .env, database certs, & GCP Storage key files from GCP Storage to persisted workspace
+# Copy the backend .env, frontend e2e .env, database certs, & GCP Storage key files from GCP Storage to the persisted workspace.
   name: 'gcr.io/cloud-builders/gsutil'
   dir: '.'
   args: [
@@ -12,82 +12,82 @@ steps:
   ]
 
 - id: 'install backend node_modules'
-# install the backend node_modules directory in the persisted workspace
+# Install the backend node_modules directory in the persisted workspace.
   name: node:12.13.0
   entrypoint: npm
   args: ['install']
 
 - id: 'install frontend node_modules'
-# install the backend node_modules directory in the persisted workspace
+# Install the backend node_modules directory in the persisted workspace.
   name: node:12.13.0
   entrypoint: npm
   dir: './frontend'
   args: ['install']
 
 - id: 'build backend'
-# build the backend in the persisted workspace (replacing the copied in dist files - the built files are deployed)
+# Build the backend in the persisted workspace (replacing the copied in dist files - the built files are deployed).
   name: node:12.13.0
   entrypoint: npm
   args: ['run', 'build']
-  # signal that download from GCP Storage not required
+  # Signal that download from GCP Storage not required
   env:
     - 'IS_GCP_BUILD=true'
 
 - id: 'build frontend'
-# build the frontend in the persisted workspace (replacing the copied in dist files - the built files are deployed)
+# Build the frontend in the persisted workspace (replacing the copied in dist files - the built files are deployed).
   name: node:12.13.0
   entrypoint: npm
   dir: './frontend'
   args: ['run', 'build:prod']
-  # signal that download from GCP Storage not required
+  # Signal that download from GCP Storage not required.
   env:
     - 'IS_GCP_BUILD=true'
 
 - id: 'build backend and frontend'
-# build an image with node and puppeteer that can be used for unit test and also in docker-compose to start the server in the background
-# see Dockerfile for detail - simply copies in context and exposes a port
+# Build an image with node and puppeteer that can be used for unit test and also by Docker Compose below to start the server in the background.
+# See Dockerfile for detail - it simply copies in all files in the source context (which is copied in and built in earlier steps) and exposes a port.
   name: 'gcr.io/cloud-builders/docker'
   args: [
     'build',
-    '--tag=gcr.io/$PROJECT_ID/application',
-    '--cache-from=gcr.io/$PROJECT_ID/application',
+    '--tag=gcr.io/$PROJECT_ID/application-with-puppeteer',
+    '--cache-from=gcr.io/$PROJECT_ID/application-with-puppeteer',
     '.',
   ]
 
 - id: 'unit test backend'
-# run all backend unit tests
-# must use an image with node & puppeteer
-  name: 'gcr.io/$PROJECT_ID/application'
+# Run all backend unit tests.
+# Must use the image built above that includes Node & Puppeteer.
+# See the backend utils directory for details on how the image is built.
+  name: 'gcr.io/$PROJECT_ID/application-with-puppeteer'
   env: ['NODE_ENV=staging']
   args: ['npm', 'run', 'test']
 
 - id: 'unit test frontend'
-# run all frontend unit tests
-# must use an image with node & puppeteer
-  name: 'gcr.io/$PROJECT_ID/application'
+# Run all frontend unit tests.
+# Must use the image built above that includes Node & Puppeteer.
+  name: 'gcr.io/$PROJECT_ID/application-with-puppeteer'
   dir: './frontend'
   args: ['npm', 'run', 'test:staging']
 
 - id: 'run backend server'
-# run the backend server in the background using docker-compose
-# server is run with NODE_ENV=staging => TEST_PATHS available
-# NOTE: could add a step to ping server and check it's up
+# Run the backend server in the background using Docker Compose - uses the docker-compose.yaml file in the root directory.
+# Server is run with NODE_ENV=staging => TEST_PATHS available.
   name: 'docker/compose'
   args: ['up', '-d']
 
 - id: 'e2e test in build environment'
-# run the frontend e2e using e2e:staging => runs a fresh compile with the environment.e2e file => e2e environment parameters available
-# backend is running already with TEST_PATHs available
-  name: 'gcr.io/$PROJECT_ID/application'
+# Run the frontend e2e using e2e:staging => runs a fresh compile with the environment.e2e file => e2e environment parameters available.
+# Backend is running already with TEST_PATHs available.
+  name: 'gcr.io/$PROJECT_ID/application-with-puppeteer'
   dir: './frontend'
   args: ['npm', 'run', 'e2e:staging']
 
 - id: 'deploy build for e2e test'
-# deploys using the frontend and backend that are built
-# frontend production build (=> e2e environment parameters not set)
-# (backend build has only one type)
-# (app engine runs using NODE_ENV=production so production database in use)
-# note: this will overwrite any previously build deployed using this step
+# Deploys using the frontend and backend that are built.
+# Frontend production build (=> e2e environment parameters not set).
+# (Backend build has only one type).
+# (App engine runs using NODE_ENV=production so production database in use).
+# Note: This will overwrite any previously build deployed using this step.
   name: 'gcr.io/cloud-builders/gcloud'
   args: [
     'app',
@@ -98,19 +98,19 @@ steps:
   timeout: '600s'
 
 - id: 'e2e test the test build'
-# runs e2e test against the newly deployed build
-# does not use ng e2e => frontend production build from image => e2e environment parameters not available => no cache or errors test
-# backend runs with NODE_ENV=production => no TEST_PATHS and production database in use
-  name: 'gcr.io/$PROJECT_ID/application'
+# Runs e2e test against the newly deployed build.
+# Does not use ng e2e => frontend production build from image => e2e environment parameters not available => no cache or errors test.
+# Backend runs with NODE_ENV=production => no TEST_PATHS and production database in use.
+  name: 'gcr.io/$PROJECT_ID/application-with-puppeteer'
   dir: './frontend'
   env: ['BASE_URL=https://ci-test-dot-$PROJECT_ID.appspot.com']
   args: ['npm', 'run', 'e2e:production']
 
 - id: 'deploy build for go-live but no-promote'
-# deploys using the frontend and backend that are built
-# frontend production build (=> e2e environment parameters not set)
-# (backend build has only one type)
-# (app engine runs using NODE_ENV=production so production database in use)
+# Deploys from the app.yaml file using the frontend and backend that are built above.  This creates a new application image that is pushed to the production 'versions' but is not promoted.
+# Frontend production build (=> e2e environment parameters not set).
+# (Backend build has only one type).
+# (App engine runs using NODE_ENV=production so production database in use).
   name: 'gcr.io/cloud-builders/gcloud'
   args: [
     'app',
@@ -121,7 +121,7 @@ steps:
   timeout: '600s'
 
 - id: 'promote go-live build'
-# promotes the newly deployed build so it takes all traffic
+# Promotes the newly deployed build so it takes all traffic.
   name: 'gcr.io/cloud-builders/gcloud'
   args: [
     'app',
@@ -132,10 +132,10 @@ steps:
   timeout: '600s'
 
 - id: 'e2e test the promoted go-live build'
-# runs e2e test against the newly promoted build
-# does not use ng e2e => frontend production build from image => e2e environment parameters not available => no cache or errors test
-# backend runs with NODE_ENV=production => no TEST_PATHS and production database in use
-  name: 'gcr.io/$PROJECT_ID/application'
+# Runs e2e test against the newly promoted build.
+# Does not use ng e2e => frontend production build from image => e2e environment parameters not available => no cache or errors test.
+# Backend runs with NODE_ENV=production => no TEST_PATHS and production database in use.
+  name: 'gcr.io/$PROJECT_ID/application-with-puppeteer'
   dir: './frontend'
   args: ['npm', 'run', 'e2e:production']
 
@@ -144,4 +144,5 @@ options:
 
 timeout: 1800s
 
-images: ['gcr.io/$PROJECT_ID/application']
+# Push the Node with Puppeteer image in the GCP Registry.
+images: ['gcr.io/$PROJECT_ID/application-with-puppeteer']
