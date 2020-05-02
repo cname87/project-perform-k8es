@@ -1,15 +1,19 @@
-apiVersion: v1
 kind: Service
+apiVersion: v1
 metadata:
-  name: project-perform-frontend
+  name: testd
+  namespace: default
   labels:
-    app: project-perform
-    tier: frontend
+    run: testd
 spec:
-  type: LoadBalancer
-  selector:
-    app: project-perform-frontend
-    tier: frontend
   ports:
-  - port: 80
-    targetPort: http-server
+    - protocol: TCP
+    # The port this service will be available is on.
+      port: 80
+      # The container port the service will forward to.
+      targetPort: 80
+  selector:
+    run: testd
+  type: LoadBalancer
+  sessionAffinity: None
+  externalTrafficPolicy: Cluster

@@ -1,8 +1,7 @@
 /**
  * This module starts a http server.
- * It relies on a server object with methods in a separate module.
- * It returns the server started in an array property of the input
- * parameter, (so the server can be closed later).
+ * It has a dependency on an imported server object.
+ * It loads the started server in an input array parameter, (so the server can be closed later).
  */
 
 /* external dependencies */
@@ -16,8 +15,12 @@ const { modulename, debug } = setupDebug(__filename);
 
 /**
  * Starts the http server.
- * @param app
- * The express app object. app.appLocals holds other set up objects including the array used to store the server.
+ * @param
+ * - app: The express app object.
+ * - servers: Used to return the started server object.
+ * - config: Configuration object.
+ * - logger: Logging service.
+ * - dumpError: Error logging service.
  * @returns
  * Void
  * @throws

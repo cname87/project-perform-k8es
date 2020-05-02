@@ -45,7 +45,7 @@ steps:
 
 - id: 'build backend and frontend'
 # Build an image with node and puppeteer that can be used for unit test and also by Docker Compose below to start the server in the background.
-# See Dockerfile for detail - it simply copies in all files in the source context (which is copied in and built in earlier steps) and exposes a port.
+# See Dockerfile in the utils-build directory for detail - it simply copies in all files in the source context (which is copied in and built above) and exposes a port.
   name: 'gcr.io/cloud-builders/docker'
   args: [
     'build',
