@@ -1,10 +1,11 @@
 kind: Service
 apiVersion: v1
 metadata:
-  name: testd
+  name: pp-frontend-service
   namespace: default
   labels:
-    run: testd
+    app: pp
+    tier: frontend
 spec:
   ports:
     - protocol: TCP
@@ -13,7 +14,8 @@ spec:
       # The container port the service will forward to.
       targetPort: 80
   selector:
-    run: testd
+    app: pp
+    tier: frontend
   type: LoadBalancer
   sessionAffinity: None
   externalTrafficPolicy: Cluster

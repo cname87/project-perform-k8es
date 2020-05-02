@@ -1,51 +1,26 @@
-#apiVersion: apps/v1
-#kind: Deployment
-#metadata:
-#  name: pp-frontend-deployment
-#  labels:
-#    app: pp
-#    tier: frontend
-#spec:
-#  selector:
-#    # Label selector for pods
-#    matchLabels:
-#      app: pp
-#      tier: frontend
-#  replicas: 1
-#  # Describes the pods that will be created.
-#  template:
-#    metadata:
-#      labels:
-#        app: pp
-#        tier: frontend
-#    spec:
-#      containers:
-#      - name: frontend
-#        image: gcr.io/project-perform/kubia
-#        ports:
-#        - name: nginx-port
-#          containerPort: 8080
-
 kind: Deployment
 apiVersion: apps/v1
 metadata:
-  name: testd
+  name: pp-frontend-deploy
   namespace: default
   labels:
-    run: testd
+    app: pp
+    tier: frontend
 spec:
   replicas: 3
   selector:
     matchLabels:
-      run: testd
+      app: pp
+      tier: frontend
   # Describes the pods that will be created.
   template:
     metadata:
       labels:
-        run: testd
+        app: pp
+        tier: frontend
     spec:
       containers:
-        - name: testd
+        - name: pp-frontend-deploy-1
           image: gcr.io/project-perform/nginx-server
           resources: {}
           terminationMessagePath: /dev/termination-log
