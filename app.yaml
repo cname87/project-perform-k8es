@@ -18,7 +18,7 @@ automatic_scaling:
 inbound_services:
 - warmup
 
-# set up static file handler
+# set up request handlers
 handlers:
 
 ## set up app request handlers
