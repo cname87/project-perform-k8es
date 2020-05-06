@@ -1,0 +1,7 @@
+/* dummy tsconfig.json to include all files that are to be linted */
+/* required by eslint typescript parser */
+{
+  "include": [
+    "./**/*",
+  ],
+}

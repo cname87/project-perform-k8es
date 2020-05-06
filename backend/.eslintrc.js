@@ -1,3 +1,4 @@
+/* Note: eslint must be run from ./backend directory */
 module.exports = {
   root: true,
   env: {
@@ -17,6 +18,9 @@ module.exports = {
     'plugin:@typescript-eslint/recommended',
     'prettier',
   ],
+  /*
+   Note: If you run eslint using the @typescript-eslint-parser (as set up in .below) you must include all files that you lint (that use this file) in the referenced parserOptions.project (i.e. ./tsconfig.json).  Therefore lint commands that use this file should only target files that are included in the project file.  If the lint commands include other directories you can exclude them by adding directories/files to be excluded to .eslintignore.
+   */
   parser: '@typescript-eslint/parser',
   parserOptions: {
     ecmaVersion: 2020,

@@ -258,7 +258,8 @@
     "debug.allowBreakpointsEverywhere": true,
     "debug.inlineValues": true,
     "debug.internalConsoleOptions": "neverOpen",
-    "debug.javascript.usePreview": true,
+    // removed to fix debug start problem
+    // "debug.javascript.usePreview": true,
     "debug.showSubSessionsInToolBar": true,
 
     "diffEditor.renderSideBySide": true,
@@ -306,6 +307,7 @@
         "editor.fontLigatures": "'ss02', 'ss19'",
     },
 
+    "json.maxItemsComputed": 5000,
     "[json]": {
     },
     "[jsonc]": {

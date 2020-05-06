@@ -1,0 +1,6 @@
+# Don't lint the following directories
+api
+certs
+dist
+node_modules
+

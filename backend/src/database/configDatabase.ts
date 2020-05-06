@@ -5,6 +5,8 @@
  * It includes two functions:
  * - getMongoUrl() - returns database connection uri.
  * - getConnectionOptions() - returns database connection options object.
+ *
+ * The paths to some files (e.g. certs) rely on process.cwd being equal to the backend root directory.
  */
 
 /* output a header */
@@ -79,15 +81,10 @@ export const configDatabase = {
    */
   getConnectionOptions: (): ConnectionOptions => {
     /* read the certificate authority */
-    const ROOT_CA = resolve('backend', 'certs', 'database', 'rootCA.crt');
+    const ROOT_CA = resolve('certs', 'database', 'rootCA.crt');
     const ca = [fs.readFileSync(ROOT_CA)];
     /* read the private key and public cert (both stored in the same file) */
-    const HTTPS_KEY = resolve(
-      'backend',
-      'certs',
-      'database',
-      'mongoKeyAndCert.pem',
-    );
+    const HTTPS_KEY = resolve('certs', 'database', 'mongoKeyAndCert.pem');
     const key = fs.readFileSync(HTTPS_KEY);
     const cert = key;
     const sslValidate = process.env.DB_IS_LOCAL === 'true';
@@ -115,12 +112,5 @@ export const configDatabase = {
   },
 
   /* path to database index.js file for unit test */
-  startDatabasePath: resolve(
-    'backend',
-    'dist',
-    'src',
-    'database',
-    'src',
-    'startDatabase',
-  ),
+  startDatabasePath: resolve('dist', 'src', 'database', 'src', 'startDatabase'),
 };
