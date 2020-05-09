@@ -32,7 +32,7 @@
     "debug": "node --inspect-brk=9229 ./dist/src/index.js",
     "isServerUp": "ts-node --project ./tsconfig.json ./utils-build/isServerUp.ts",
     "checkServer": "ts-node --project ./tsconfig.json ./utils-build/checkServer.ts",
-    "delDist": "ts-node ./utils-build/delDistDir.ts ./dist/",
+    "delDist": "ts-node ./utils-build/delDistDir.ts",
     "tscBackend": "tsc --project ./tsconfig.json",
     "tscBackendWatch": "tsc --watch --project ./tsconfig.json",
     "compile": "npm-run-all delDist tscBackend",

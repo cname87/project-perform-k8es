@@ -1,5 +1,8 @@
-# Create an image wth nginx to act as a reverse proxy and serve staic files.
-FROM nginx:latest
+# Create an image wth nginx to act as a reverse proxy and serve static files.
+
+# Use base nginx 1.18 image from Docker hub
+FROM nginx:1.18
+
 
 WORKDIR /
 

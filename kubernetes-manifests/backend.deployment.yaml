@@ -21,7 +21,7 @@ spec:
     spec:
       containers:
         - name: pp-backend-deploy-1
-          image: gcr.io/project-perform/application-with-puppeteer
+          image: gcr.io/project-perform/pp-backend
           # Informational but name is used in the service
           ports:
           # Pass port to app

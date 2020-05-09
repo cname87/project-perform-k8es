@@ -365,6 +365,12 @@
     "workbench.sideBar.location": "right",
 
     "window.zoomLevel": -1,
+    "cloudcode.last-used-context": {
+      "Run on Kubernetes": {
+        "kubeConfigPath": "/home/cname87/.kube/config",
+        "contextName": "minikube"
+      }
+    },
 
 	}
 }

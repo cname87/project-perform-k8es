@@ -4,7 +4,7 @@
     "cache": true,
     "check-coverage": true,
     "include": [
-      "backend/dist/src/**/*.js"
+      "dist/src/**/*.js"
     ],
     "exclude": [
       "**/test/**/*.*"
@@ -14,14 +14,14 @@
     "lines": 0,
     "per-file": true,
     "produce-source-map": true,
-    "report-dir": "./backend/coverage",
+    "report-dir": "./coverage",
     "reporter": [
         "html",
         "text"
     ],
     "require": "@istanbuljs/nyc-config-typescript",
     "statements": 0,
-    "temp-dir": "./backend/coverage/.nyc_output",
+    "temp-dir": "./coverage/.nyc_output",
     "watermarks": {
         "branches": [
             60,

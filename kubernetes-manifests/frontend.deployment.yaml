@@ -21,7 +21,7 @@ spec:
     spec:
       containers:
         - name: pp-frontend-deploy-1
-          image: gcr.io/project-perform/nginx-server
+          image: gcr.io/project-perform/pp-frontend
           # Purely informational - name can be used in a service
           ports:
           - name: nginx-port

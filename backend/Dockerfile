@@ -1,7 +1,9 @@
 # Build the backend application
 
-FROM node:latest
+# Use base node 13 image from Docker hub
+FROM node:14
 
+# Set the image working directory
 WORKDIR /backend
 
 # Copy package.json files and install dependencies
@@ -12,7 +14,7 @@ RUN npm install
 COPY . .
 
 # Run app.js with debugging port when container launches
-ENTRYPOINT ["node", "--inspect=9229", "app.js"]
+ENTRYPOINT ["node", "--inspect=9229", "dist/src/index.js"]
 
 # Run app.js without debugger port when container launches
-# ENTRYPOINT ["node", "app.js"]
+# ENTRYPOINT ["node", "dist/src/index.js"]

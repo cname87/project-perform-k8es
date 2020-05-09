@@ -47,8 +47,10 @@ steps:
 # Build an image with node and puppeteer that can be used for unit test and also by Docker Compose below to start the server in the background.
 # See Dockerfile in the utils-build directory for detail - it simply copies in all files in the source context (which is copied in and built above) and exposes a port.
   name: 'gcr.io/cloud-builders/docker'
+  dir: backend
   args: [
     'build',
+    '--file=Dockerfile.puppeteer',
     '--tag=gcr.io/$PROJECT_ID/application-with-puppeteer',
     '--cache-from=gcr.io/$PROJECT_ID/application-with-puppeteer',
     '.',
@@ -73,6 +75,7 @@ steps:
 # Run the backend server in the background using Docker Compose - uses the docker-compose.yaml file in the root directory.
 # Server is run with NODE_ENV=staging => TEST_PATHS available.
   name: 'docker/compose'
+  dir: '/backend'
   args: ['up', '-d']
 
 - id: 'e2e test in build environment'
