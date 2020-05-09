@@ -21,14 +21,15 @@ spec:
     spec:
       containers:
         - name: pp-frontend-deploy-1
-          image: gcr.io/project-perform/pp-frontend
+          image: pp-frontend
           # Purely informational - name can be used in a service
           ports:
           - name: nginx-port
             containerPort: 80
           terminationMessagePath: /dev/termination-log
           terminationMessagePolicy: File
-          imagePullPolicy: Always
+          # Note: If set to 'Always' will fail on Minikube
+          imagePullPolicy: IfNotPresent
       restartPolicy: Always
       terminationGracePeriodSeconds: 30
       dnsPolicy: ClusterFirst

@@ -4,16 +4,17 @@
   // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
   "version": "0.2.0",
   "configurations": [
-      // Runs a skaffold command
+      // Runs a skaffold command - see https://cloud.google.com/code/docs/vscode/running-an-application for settings
       {
         "name": "Run on Kubernetes",
         "type": "cloudcode.kubernetes",
         "request": "launch",
         "skaffoldConfig": "${workspaceFolder}/skaffold.yaml",
-        "profile": "default",
         "watch": true,
         "cleanUp": true,
         "portForward": true,
+        // Where images are pushed (if so configured)
+        // Can also be set in Skaffold's global config
         "imageRegistry": "gcr.io/project-perform",
     },
     // Runs a skaffold command - TBC

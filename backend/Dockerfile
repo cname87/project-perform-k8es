@@ -8,13 +8,14 @@ WORKDIR /backend
 
 # Copy package.json files and install dependencies
 COPY package*.json ./
-RUN npm install
+
+# Install with or without dev-dependencies
+# RUN npm install
+RUN npm install --production
 
 # Copy rest of the application source code
 COPY . .
 
-# Run app.js with debugging port when container launches
+# Run app.js with or without debugging port when container launches
 ENTRYPOINT ["node", "--inspect=9229", "dist/src/index.js"]
-
-# Run app.js without debugger port when container launches
 # ENTRYPOINT ["node", "dist/src/index.js"]
