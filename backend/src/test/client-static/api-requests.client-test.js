@@ -23,7 +23,6 @@ async function sendRequest(url, method, data) {
     headers,
     body,
   };
-  // @ts-ignore
   const fetched = await fetch(myRequest, myInit);
   return fetched;
 }
@@ -568,12 +567,12 @@ describe('invalid api requests', () => {
   });
 });
 
-describe('fall back to the angular index.html', () => {
+describe('test root page "/" request', () => {
   let testWindow;
 
   before('Signal tests starting', async () => {
-    console.log('Starting angular index.html fall back test');
-    await sendMessage(1, 'Angular fall back test start');
+    console.log('Starting root page test');
+    await sendMessage(1, 'Root page test start');
   });
 
   after('Close window and signal tests ending', async () => {
@@ -584,14 +583,14 @@ describe('fall back to the angular index.html', () => {
         resolve();
       }, 500);
     });
-    console.log('Ending API requests tests');
-    await sendMessage(2, 'Angular fall back test end');
+    console.log('Ending root page test');
+    await sendMessage(2, 'Root page test end');
   });
 
-  /* tests a path not recognised by angular frontend */
-  it('should fall back to angular index.html', async () => {
+  /* tests that the root page "/" returns 200 */
+  it('should return a message', async () => {
     const dt = new Date().toString();
-    testWindow = window.open(`${HOST}notfound.html?timestamp==${dt}`, '_blank');
+    testWindow = window.open(`${HOST}?timestamp==${dt}`, '_blank');
 
     if (!testWindow) {
       throw new Error('Window did not open');
@@ -603,9 +602,11 @@ describe('fall back to the angular index.html', () => {
       };
     });
 
-    const readTitle = testWindow.document.title;
-    console.log('Page title: ', readTitle);
-    chai.expect(readTitle, 'Page title').to.eql('Project Perform');
+    const readBody = testWindow.document.body.innerText;
+    console.log('Page body: ', readBody);
+    chai
+      .expect(readBody, 'Page body')
+      .to.eql('You have reached the project-perform backend server');
   });
 });
 
@@ -677,7 +678,6 @@ describe('page and file retrieval', () => {
     /* download the favicon */
     const myRequest = new Request(`${HOST}testServer/filetest.ico`);
 
-    // @ts-ignore
     response = await fetch(myRequest, myInit);
 
     /* display favicon image */

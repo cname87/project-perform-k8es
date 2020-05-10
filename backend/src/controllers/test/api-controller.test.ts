@@ -178,7 +178,7 @@ describe('server API', () => {
             case 'API tests start':
             case 'Failed API tests start':
             case 'Invalid API requests tests start':
-            case 'Angular fall back test start':
+            case 'Root page test start':
             case 'File retrieval test start':
               break;
             case 'Bad database tests start':
@@ -313,7 +313,7 @@ describe('server API', () => {
                 .callsFake(fakeDeleteMany);
               break;
             case 'API tests end':
-            case 'Angular fall back test end':
+            case 'Root page test end':
             case 'File retrieval test end':
               expect(spyConsoleError.notCalled).to.be.true;
               expect(spyLoggerError.notCalled).to.be.true;

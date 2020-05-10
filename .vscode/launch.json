@@ -314,8 +314,8 @@
         /* include testSetup.js to load .env */
         "${workspaceFolder}/backend/dist/src/test/testSetup.js",
         /* Comment out to select the tests to run */
-        // "${workspaceFolder}/backend/dist/src/controllers/test/api-controller.test.js",
-        "${workspaceFolder}/backend/dist/src/controllers/test/errors-controller.test.js",
+        "${workspaceFolder}/backend/dist/src/controllers/test/api-controller.test.js",
+        // "${workspaceFolder}/backend/dist/src/controllers/test/errors-controller.test.js",
       ],
       "env": {
         /* set to 'false' to automatically run chrome and set to 'true' to launch chrome manually */
@@ -355,8 +355,8 @@
       "breakOnLoad": true, // set a breakpoint in the client-static test file before launch
       "userDataDir": true,
       /* NOTE: comment out to run a specific xxx-loadMocha*/
-      // "url": "http://localhost:8080/testServer/api-loadMocha.html",
-      "url": "http://localhost:8080/testServer/errors-loadMocha.html",
+      "url": "http://localhost:8080/testServer/api-loadMocha.html",
+      // "url": "http://localhost:8080/testServer/errors-loadMocha.html",
       // tell vscode where to find scripts on the server
       "pathMapping": {
         "/testServer": "${workspaceFolder}/backend/src/test/client-static",

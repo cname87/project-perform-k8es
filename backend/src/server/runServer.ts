@@ -12,9 +12,9 @@
  */
 
 /* external dependencies */
-import path from 'path';
 import compression from 'compression';
 import express, { Application } from 'express';
+import favicon from 'serve-favicon';
 import urlParser from 'url';
 import util from 'util';
 import { setupDebug } from '../utils/src/debugOutput';
@@ -111,6 +111,9 @@ async function runServer(app: Application) {
     });
   }
 
+  /* serve favicon */
+  app.use(favicon(app.appLocals.configServer.FAVICON));
+
   /* test functionality only */
   if (process.env.TEST_PATHS === 'true') {
     /* serve server test files (e.g. api-loadMocha.html) from a static server mounted on /testServer */
@@ -167,31 +170,9 @@ async function runServer(app: Application) {
     },
   );
 
-  /* serve the angular files */
-  const staticAppOptions = {
-    maxAge: '1d',
-    redirect: false,
-  };
-  app.use(
-    express.static(
-      app.appLocals.configServer.CLIENT_APP_PATH,
-      staticAppOptions,
-    ),
-  );
-
-  /* present the angular index.html page for anything not routed by angular */
-  app.use((req, res, next) => {
-    /* skip /dummyUrl for server test purposes */
-    if (process.env.TEST_PATHS && req.path.slice(0, 9) === '/dummyUrl') {
-      next();
-    } else {
-      const filepath = path.join(
-        app.appLocals.configServer.CLIENT_APP_PATH,
-        'index.html',
-      );
-      debug(`${modulename} : serving index.html for an unknown path`);
-      res.sendFile(filepath);
-    }
+  /* respond to '/' */
+  app.get('/', (_req, res, _next) => {
+    res.status(200).send('You have reached the project-perform backend server');
   });
 
   /* handle all errors passed down */

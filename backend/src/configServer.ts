@@ -9,12 +9,12 @@ import { resolve } from 'path';
 
 export const configServer = {
   /**
-   * This section sets misc configuration parameters used by the
+   * This section sets miscellaneous configuration parameters used by the
    * application programme.
    */
 
-  /* the path to the directory containing Angular files to be set up a static directory */
-  CLIENT_APP_PATH: resolve('../', 'frontend', 'dist'),
+  /* path to favicon file */
+  FAVICON: resolve('src', 'server', 'public', 'favicon.ico'),
 
   /**
    * The server can be hosted remotely or locally:

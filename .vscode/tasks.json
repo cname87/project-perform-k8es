@@ -95,6 +95,9 @@
       "label": "npm start backend index.js",
       "type": "npm",
       "script": "start",
+      "options": {
+        "cwd": "${workspaceFolder}/backend"
+      },
       "group": "build",
       "problemMatcher": []
     },
@@ -102,6 +105,9 @@
       "label": "npm backend server-side watch",
       "type": "npm",
       "script": "tscBackendWatch",
+      "options": {
+        "cwd": "${workspaceFolder}/backend"
+      },
       "group": "build",
       "problemMatcher": []
     },
@@ -109,6 +115,9 @@
       "label": "npm build backend",
       "type": "npm",
       "script": "build",
+      "options": {
+        "cwd": "${workspaceFolder}/backend"
+      },
       "group": "build",
       "problemMatcher": []
     },
@@ -250,7 +259,7 @@
       "args": [
         "run",
         "--prefix",
-        "${workspaceFolder}",
+        "${workspaceFolder}/backend",
         "checkServer"
       ],
       "isBackground": true,
