@@ -1,19 +1,19 @@
 /**
- * This module exports a function that connects to an MongoDB database server..
+ * This module exports a function that connects to a MongoDB database server.
  */
 
-/* external dependencies */
 import winston from 'winston';
 import { ConnectionOptions } from 'mongoose';
-import { setupDebug } from '../../utils/src/debugOutput';
 
+import { setupDebug } from '../../utils/src/debugOutput';
 import { configDatabase } from '../configDatabase';
 import { Database } from './database';
 
+/* output a header */
 const { modulename, debug } = setupDebug(__filename);
 
 /**
- * This function connects to a MongoDB server database.
+ * This function connects to a MongoDB database server.
  *
  * The database server started will be either local or hosted connection and the database used will be either a test or a production database depending on process.env parameters.
  *

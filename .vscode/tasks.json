@@ -253,6 +253,7 @@
       }
     },
     {
+      /* Starts the server and leaves it running in the background */
       "label": "Check Server",
       "type": "shell",
       "command": "npm",
@@ -332,7 +333,9 @@
       "group": "test",
       "problemMatcher": []
     },
+    // Taskkill
     {
+      /* Kills all running node instances.  E.g. use to kill the node server launched by Checkserver */
       "label": "Taskkill node.exe",
       "type": "shell",
       "windows": {
@@ -364,6 +367,7 @@
       "label": "skaffold-clean",
       "type": "shell",
       "linux": {
+        /* Set certain env variables.  Used as preLaunchTask before 'Run On Kubernetes' launch configuration, but it does not seem to work, i.e. the env variables do not appear to affect the skaffold call */
         "command": "source ~/bin/skaffold-clean.sh"
       },
       "presentation": {
