@@ -8,14 +8,12 @@
  * - options Logger and dumpError parameters.
  *
  * The database object provides the following properties:
- * - dbConnection: null - used to store dbConnection when externally resolved from connectToDB()
+ * - dbConnection: Used to store dbConnection when externally resolved from connectToDB()
  *
  * The database object provides the following methods:
  * - closeConnection: Closes a supplied connection to the MongoDB server.
  * - createModel: Returns a Mongoose model based on supplied parameters.
  */
-
-/* output a header */
 
 /* external type dependencies */
 import mongoose, {
@@ -29,6 +27,7 @@ import mongoose, {
 import winston from 'winston';
 import { setupDebug } from '../../utils/src/debugOutput';
 
+/* output a header */
 const { modulename, debug } = setupDebug(__filename);
 
 /**

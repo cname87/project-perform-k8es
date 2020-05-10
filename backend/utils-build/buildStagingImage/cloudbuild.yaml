@@ -1,11 +1,14 @@
+# Builds an  image based on the referenced Dockerfile and tags and pushes it.
+
 steps:
 
 - name: 'gcr.io/cloud-builders/docker'
   args: [
     'build',
     '-f', 'Dockerfile',
-    '-t', 'gcr.io/$PROJECT_ID/node12.13.0-with-puppeteer',
+    '-t', 'gcr.io/$PROJECT_ID/node-with-puppeteer:v12.13.0',
+        '-t', 'gcr.io/$PROJECT_ID/node-with-puppeteer:latest',
     '.',
   ]
 
-images: ['gcr.io/$PROJECT_ID/node12.13.0-with-puppeteer']
+images: ['gcr.io/$PROJECT_ID/node-with-puppeteer']

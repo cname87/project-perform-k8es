@@ -35,7 +35,7 @@
     "build:dev": "npm-run-all prettier:all eslint:dev delDist ngBuild:dev",
     "build:e2e": "npm-run-all prettier:all eslint:dev delDist ngBuild:e2e",
     "build:prod": "npm-run-all prettier:all eslint:app delDist ngBuild:prod",
-    "startBackend": "cd .. && npm run checkServer",
+    "startBackend": "cd ../backend && npm run checkServer",
     "serve": "ng run project-perform:serve",
     "serveWithBackend": "npm-run-all startBackend serve",
     "test:dev": "ng run project-perform:test:dev",

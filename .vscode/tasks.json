@@ -95,6 +95,9 @@
       "label": "npm start backend index.js",
       "type": "npm",
       "script": "start",
+      "options": {
+        "cwd": "${workspaceFolder}/backend"
+      },
       "group": "build",
       "problemMatcher": []
     },
@@ -102,6 +105,9 @@
       "label": "npm backend server-side watch",
       "type": "npm",
       "script": "tscBackendWatch",
+      "options": {
+        "cwd": "${workspaceFolder}/backend"
+      },
       "group": "build",
       "problemMatcher": []
     },
@@ -109,6 +115,9 @@
       "label": "npm build backend",
       "type": "npm",
       "script": "build",
+      "options": {
+        "cwd": "${workspaceFolder}/backend"
+      },
       "group": "build",
       "problemMatcher": []
     },
@@ -244,13 +253,14 @@
       }
     },
     {
+      /* Starts the server and leaves it running in the background */
       "label": "Check Server",
       "type": "shell",
       "command": "npm",
       "args": [
         "run",
         "--prefix",
-        "${workspaceFolder}",
+        "${workspaceFolder}/backend",
         "checkServer"
       ],
       "isBackground": true,
@@ -323,7 +333,9 @@
       "group": "test",
       "problemMatcher": []
     },
+    // Taskkill
     {
+      /* Kills all running node instances.  E.g. use to kill the node server launched by Checkserver */
       "label": "Taskkill node.exe",
       "type": "shell",
       "windows": {
@@ -349,6 +361,23 @@
         "clear": true
       },
       "group": "test",
+      "problemMatcher": []
+    },
+    {
+      "label": "skaffold-clean",
+      "type": "shell",
+      "linux": {
+        /* Set certain env variables.  Used as preLaunchTask before 'Run On Kubernetes' launch configuration, but it does not seem to work, i.e. the env variables do not appear to affect the skaffold call */
+        "command": "source ~/bin/skaffold-clean.sh"
+      },
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": true,
+        "panel": "dedicated",
+        "showReuseMessage": true,
+        "clear": true
+      },
       "problemMatcher": []
     },
     {

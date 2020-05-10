@@ -1,0 +1,43 @@
+
+apiVersion: skaffold/v2beta3
+kind: Config
+metadata:
+  name: project-perform
+build:
+  #Defines where to find the Dockerfile build configurations at build time and the resulting image names
+  artifacts:
+  - image: pp-backend
+    context: backend
+  - image: pp-frontend
+    context: frontend
+  tagPolicy:
+    dateTime: {}
+  # use locally-installed build tool (Docker) to build
+  local: {
+    # Default is push true only for remote clusters
+    push: false
+  }
+
+# TO DO: instruct Skaffold to run container structure tests
+# test:
+#   - image: gcr.io/project-perform/xxx
+#     structureTests:
+#      - './structure-test/*'
+
+deploy:
+  kubectl:
+  # defines the Kubernetes manifests to deploy on each run
+    manifests:
+    - ./kubernetes-manifests/backend.service.yaml
+    - ./kubernetes-manifests/frontend.service.yaml
+    - ./kubernetes-manifests/backend.deployment.yaml
+    - ./kubernetes-manifests/frontend.deployment.yaml
+portForward:
+  # Forward frontend port 80 to localhost:8080
+  # (localhost is seen as secure and avoids exception from Auth0)
+- resourceType: service
+  resourceName: pp-frontend-service
+  namespace: default
+  port: 80
+  address: 127.0.0.1
+  localPort: 8080

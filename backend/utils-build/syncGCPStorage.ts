@@ -38,7 +38,6 @@ export const rootPath = path.dirname(
 /* set the path to the GCP Storage credentials here (as well as in the .env files as this may be called when no .env file is loaded) */
 process.env.GOOGLE_APPLICATION_CREDENTIALS = path.resolve(
   rootPath,
-  'backend',
   'certs',
   'gcpStorage',
   'gcpStorageKey.json',
@@ -59,19 +58,19 @@ const envFrontendE2e = {
   /* files to be uploaded */
   filesToUpload: ['.env-e2e-dev', '.env-e2e-production', '.env-e2e-staging'],
   /* path relative to rootpath */
-  deltaPath: 'frontend/e2e/',
+  deltaPath: '../frontend/e2e/',
 };
 const dbCerts = {
   /* files to be uploaded */
   filesToUpload: ['mongoKeyAndCert.pem', 'rootCA.crt'],
   /* path relative to rootpath */
-  deltaPath: 'backend/certs/database/',
+  deltaPath: './certs/database/',
 };
 const storageKey = {
   /* files to be uploaded */
   filesToUpload: ['gcpStorageKey.json'],
   /* path relative to rootpath */
-  deltaPath: 'backend/certs/gcpStorage/',
+  deltaPath: './certs/gcpStorage/',
 };
 export const uploadJobs = [envBackend, envFrontendE2e, dbCerts, storageKey];
 

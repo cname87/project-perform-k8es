@@ -1,7 +1,10 @@
+
+# Builds an image containing Node and the libraries necessary to run Puppeteer.
+# The version of Node should match that used in the production environment.
 FROM node:12.13.0
 RUN \
-  apt-get -q update \
-  && apt-get install -qqy \
+  apt -y update \
+  && apt -y install \
     curl \
     gconf-service \
     libasound2 \

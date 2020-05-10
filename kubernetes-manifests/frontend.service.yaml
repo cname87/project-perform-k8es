@@ -1,0 +1,23 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: pp-frontend-service
+  namespace: default
+  labels:
+    app: pp
+    tier: frontend
+spec:
+  ports:
+    - protocol: TCP
+      # The port this service will be available is on.
+      # External url comes in on this port.
+      port: 80
+      # The container port the service will forward to.
+      # Named in pod spec in deployment yaml.
+      targetPort: nginx-port
+  selector:
+    app: pp
+    tier: frontend
+  type: LoadBalancer
+  sessionAffinity: None
+  externalTrafficPolicy: Cluster

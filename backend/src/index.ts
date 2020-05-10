@@ -66,6 +66,9 @@ if (process.env.GCP_DEBUG === 'true') {
   require('@google-cloud/debug-agent').start({
     allowExpressions: true,
   });
+  /*
+   * TO DO Can't install profiler any more => delete?
+   */
   require('@google-cloud/profiler').start({
     serviceContext: {
       service: 'default',

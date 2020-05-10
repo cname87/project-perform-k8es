@@ -12,8 +12,9 @@
 import { spawn } from 'child_process';
 import { pingServer } from './pingServer';
 
-/* need the path to the .js server index file */
-const indexJsPath = 'backend/dist/src/index';
+/* need the path to the .js server index file relative to /backend */
+/* assumes node is called from /backend */
+const indexJsPath = 'dist/src/index';
 
 /**
  * Ping the server and, if the ping fails, then start the server.

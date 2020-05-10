@@ -1,5 +1,7 @@
 /**
  * This module sets all configuration parameters for the http server.
+ *
+ * The paths to some files (e.g. certs) rely on process.cwd being equal to the backend root directory.
  */
 
 /* external dependencies */
@@ -7,12 +9,12 @@ import { resolve } from 'path';
 
 export const configServer = {
   /**
-   * This section sets misc configuration parameters used by the
+   * This section sets miscellaneous configuration parameters used by the
    * application programme.
    */
 
-  /* the path to the directory containing Angular files to be set up a static directory */
-  CLIENT_APP_PATH: resolve('frontend', 'dist'),
+  /* path to favicon file */
+  FAVICON: resolve('src', 'server', 'public', 'favicon.ico'),
 
   /**
    * The server can be hosted remotely or locally:
@@ -31,7 +33,7 @@ export const configServer = {
   /* time in ms between database connection retries */
   DATABASE_ERROR_DELAY: 5000,
   /* path to static server for server tests */
-  STATIC_TEST_PATH: resolve('backend', 'src', 'test', 'client-static'),
+  STATIC_TEST_PATH: resolve('src', 'test', 'client-static'),
   NODE_MODULES_PATH: resolve('node_modules'),
 
   /**
@@ -39,7 +41,7 @@ export const configServer = {
    */
   /* base path for all calls to the api */
   API_BASE_PATH: '/api-v1',
-  OPENAPI_FILE: resolve('backend', 'api', 'openapi.json'),
+  OPENAPI_FILE: resolve('api', 'openapi.json'),
   /* time for which a database ping (in a GCP cron response) is awaited */
   DB_PING_TIME: 1500,
 };

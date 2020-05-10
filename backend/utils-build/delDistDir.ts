@@ -1,33 +1,18 @@
 /**
- * Utility to delete a dist directory
+ * Utility to delete the dist directory
  *
- * Usage:
- *
- * Used in package.json.
- *
- * The dist directory to be deleted is passed in as a parameter.
- * package.com script: "npm run delDistDir.ts <pathToDistDir>".
- *
- * <pathToDistDir> is relative to the application base directory.
- *
- * <pathToDistDir> must end in /dist/.
+ * Used in package.json: "npm run <path>delDistDir.ts
  *
  */
 
 import fs from 'fs';
 import rimraf from 'rimraf';
-import { resolve } from 'path';
+import { join } from 'path';
 
 console.log('Deleting dist directory');
 
-/* confirm that the passed in path ends in /dist/ */
-if (process.argv[2].slice(-6) !== '/dist/') {
-  console.error('ERROR: dist directory not provided');
-  process.exit(1);
-}
-
-/* create path to dist directory from passed in parameter */
-const distPath = resolve(process.argv[2]);
+/* the path to the dist directory is relative to this directory */
+const distPath = join(__dirname, '../dist/');
 console.log(`Deleting: ${distPath}`);
 
 if (!fs.existsSync(distPath)) {

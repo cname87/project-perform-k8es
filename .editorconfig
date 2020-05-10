@@ -2,7 +2,7 @@
 root = true
 
 [*]
-# end_of_line = crlf # Let VSCode handle this in case I need some files LF
+end_of_line = lf
 charset = utf-8
 indent_style = space
 indent_size = 2
@@ -10,5 +10,4 @@ insert_final_newline = true
 trim_trailing_whitespace = true
 
 [*.md]
-max_line_length = off
 trim_trailing_whitespace = false
