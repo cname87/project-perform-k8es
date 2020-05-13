@@ -82,7 +82,7 @@ declare namespace Perform {
   export type TSigint = (signal?: string) => Promise<void>;
   export type TUncaught = (err: any) => Promise<void>;
 
-  /* create type for the index.ts export (for mocha) */
+  /* create type for the app.ts export (for mocha) */
   export interface IServerIndex {
     debug?: any; // see notes
     appLocals: IAppLocals;

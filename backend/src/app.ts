@@ -66,11 +66,11 @@ if (process.env.GCP_DEBUG === 'true') {
   /*
    * TO DO Can't install profiler any more => delete?
    */
-  require('@google-cloud/profiler').start({
-    serviceContext: {
-      service: 'default',
-    },
-  });
+  // require('@google-cloud/profiler').start({
+  //   serviceContext: {
+  //     service: 'default',
+  //   },
+  // });
 }
 /* output a header */
 const { modulename, debug } = setupDebug(__filename);
@@ -86,7 +86,6 @@ const dumpError = new DumpError(logger) as Perform.DumpErrorFunction;
 const createStore: () => Perform.IAppLocals = () => {
   return {
     configServer,
-    // configDatabase,
     /* route controllers */
     controllers: {
       api: apiController,
@@ -114,7 +113,7 @@ const createStore: () => Perform.IAppLocals = () => {
     /* getUser utility */
     getUser,
     /* event emitter to signal server up etc */
-    /* create before db setup call as async nature of db setup means index exports before db up and index.event definition needed by mocha so it can await server up event */
+    /* create before db setup call as async nature of db setup means app exports before db up and app.event definition needed by mocha so it can await server up event */
     event: new EventEmitter(),
     /* holds created http(s) servers  - filled during start server call */
     servers: [],
@@ -315,7 +314,7 @@ const storeServer = async (store: {
   const arg = {
     message: 'Server running 0',
   };
-  store.event.emit('indexRunApp', arg);
+  store.event.emit('appRunApp', arg);
 };
 
 /**
@@ -392,7 +391,7 @@ const sigint: Perform.TSigint = async (signal = 'Internal Shutdown') => {
     number: 0,
   };
 
-  appLocals.event.emit('indexSigint', arg);
+  appLocals.event.emit('appSigint', arg);
 };
 
 /**
@@ -452,7 +451,7 @@ process.once('SIGINT', sigint);
 runApp(appLocals);
 
 /* exports for unit test */
-export const index: Perform.IServerIndex = {
+export const appVars: Perform.IServerIndex = {
   appLocals,
   sigint,
   uncaughtException,

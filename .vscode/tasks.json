@@ -92,7 +92,7 @@
       }
     },
     {
-      "label": "npm start backend index.js",
+      "label": "npm start backend app.js",
       "type": "npm",
       "script": "start",
       "options": {

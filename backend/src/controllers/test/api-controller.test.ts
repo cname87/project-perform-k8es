@@ -24,7 +24,7 @@ import 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 
-/* use proxyquire for index.js module loading */
+/* use proxyquire for app.js module loading */
 import proxyquire from 'proxyquire';
 import { EventEmitter } from 'events';
 import puppeteer from 'puppeteer';
@@ -42,7 +42,7 @@ sinon.assert.expose(chai.assert, {
 });
 
 /* variables */
-const indexPath = '../../index';
+const appPath = '../../app';
 const dbTestName = 'test';
 /* url that initiates the client-fired tests */
 const fireTestUrl = `${configServer.HOST}testServer/api-loadMocha.html`;
@@ -51,29 +51,29 @@ const browserDelay = process.env.BROWSER_DELAY
   ? parseInt(process.env.BROWSER_DELAY, 10)
   : 0;
 /* event names */
-const indexRunApp = 'indexRunApp';
-const indexSigint = 'indexSigint';
+const appRunApp = 'appRunApp';
+const appSigint = 'appSigint';
 const handlersRaiseEvent = 'handlersRaiseEvent';
 
 describe('server API', () => {
   debug(`Running ${modulename} describe - server API`);
 
   /* shared variables */
-  let index: Perform.IServerIndex;
+  let app: Perform.IServerIndex;
   let eventEmitter: EventEmitter;
   let spyConsoleError: sinon.SinonSpy<[any?, ...any[]], void>;
   let spyLoggerError: sinon.SinonSpy<[object], winston.Logger>;
   let spyDumpError: sinon.SinonSpy<any>;
 
-  /* awaits that server index.ts has run and fired the completion event */
+  /* awaits that server app.ts has run and fired the completion event */
   const serverIndexStart = (): Promise<Perform.IServerIndex> => {
     debug(`${modulename}: awaiting server up`);
     return new Promise(async (resolve, reject) => {
-      /* use proxyquire in case index.js already required */
-      const { index: serverIndex } = proxyquire(indexPath, {});
-      /* Note: You need index.ts to define 'event' before the db setup call as the async db set up (which cannot easily be awaited) means the next line is executed before the db is up and 'index.event' needs to be defined by then */
+      /* use proxyquire in case app.js already required */
+      const { appVars: serverIndex } = proxyquire(appPath, {});
+      /* Note: You need app.ts to define 'event' before the db setup call as the async db set up (which cannot easily be awaited) means the next line is executed before the db is up and 'app.event' needs to be defined by then */
       serverIndex.appLocals.event.once(
-        indexRunApp,
+        appRunApp,
         (arg: { message: string }) => {
           if (arg.message === 'Server running 0') {
             debug(
@@ -91,23 +91,23 @@ describe('server API', () => {
     });
   };
 
-  /* run index.js and set up all spies */
+  /* run app.js and set up all spies */
   const runServerAndSetupSpies = async () => {
     /* spy on console.error */
     spyConsoleError = sinon.spy(console, 'error');
-    /* run server index.js */
-    index = await serverIndexStart();
+    /* run server app.js */
+    app = await serverIndexStart();
     /* test that the database is the test database */
-    if (index.appLocals.dbConnection.db.databaseName !== dbTestName) {
+    if (app.appLocals.dbConnection.db.databaseName !== dbTestName) {
       throw new Error('Test database not loaded + aborting tests');
     }
-    /* Now define all objects that are dependent on index being started */
-    spyLoggerError = sinon.spy(index.appLocals.logger, 'error');
-    spyDumpError = sinon.spy(index.appLocals, 'dumpError');
-    eventEmitter = index.appLocals.event;
+    /* Now define all objects that are dependent on app being started */
+    spyLoggerError = sinon.spy(app.appLocals.logger, 'error');
+    spyDumpError = sinon.spy(app.appLocals, 'dumpError');
+    eventEmitter = app.appLocals.event;
     /* stub the authenticate handler and set req.auth,sub to the name of the test database collection */
     sinon
-      .stub(index.appLocals.handlers, 'authenticateHandler')
+      .stub(app.appLocals.handlers, 'authenticateHandler')
       .callsFake((_req, _res, next) => {
         const req = _req as Request;
         req.auth = {
@@ -118,11 +118,11 @@ describe('server API', () => {
       });
   };
 
-  /* awaits that index.ts has shut and fired the completion event */
+  /* awaits that app.ts has shut and fired the completion event */
   const serverIndexShutdown = (serverIndex: Perform.IServerIndex) => {
     debug(`${modulename}: awaiting server shutdown`);
     return new Promise((resolve, reject) => {
-      serverIndex.appLocals.event.once(indexSigint, (arg) => {
+      serverIndex.appLocals.event.once(appSigint, (arg) => {
         if (arg.message === 'Server exit 0') {
           debug(`${modulename}: server close message caught: ${arg.message}`);
           resolve();
@@ -152,8 +152,8 @@ describe('server API', () => {
   after('close and reset', async () => {
     debug(`Running ${modulename} after - close and reset`);
 
-    debug('Shutting index.js');
-    await serverIndexShutdown(index);
+    debug('Shutting app.js');
+    await serverIndexShutdown(app);
     expect(spyConsoleError.notCalled).to.be.true;
     expect(spyLoggerError.notCalled).to.be.true;
     expect(spyDumpError.notCalled).to.be.true;
@@ -199,7 +199,7 @@ describe('server API', () => {
                 };
               }
               sinon
-                .stub(index.appLocals.models, 'members')
+                .stub(app.appLocals.models, 'members')
                 .callsFake(FakeMembers);
               /* mock getMember */
               const fakeFindOne: any = () => {
@@ -217,7 +217,7 @@ describe('server API', () => {
                 };
               };
               sinon
-                .stub(index.appLocals.models.members, 'findOne')
+                .stub(app.appLocals.models.members, 'findOne')
                 .callsFake(fakeFindOne);
               /* mock getMembers */
               const fakeFind: any = () => {
@@ -255,7 +255,7 @@ describe('server API', () => {
                 };
               };
               sinon
-                .stub(index.appLocals.models.members, 'find')
+                .stub(app.appLocals.models.members, 'find')
                 .callsFake(fakeFind);
               /* mock updateMember */
               const fakeFindOneAndUpdate: any = () => {
@@ -273,7 +273,7 @@ describe('server API', () => {
                 };
               };
               sinon
-                .stub(index.appLocals.models.members, 'findOneAndUpdate')
+                .stub(app.appLocals.models.members, 'findOneAndUpdate')
                 .callsFake(fakeFindOneAndUpdate);
               /* mock deleteMember */
               const fakeDeleteOne: any = () => {
@@ -291,7 +291,7 @@ describe('server API', () => {
                 };
               };
               sinon
-                .stub(index.appLocals.models.members, 'deleteOne')
+                .stub(app.appLocals.models.members, 'deleteOne')
                 .callsFake(fakeDeleteOne);
               /* mock deleteMembers */
               const fakeDeleteMany: any = () => {
@@ -309,7 +309,7 @@ describe('server API', () => {
                 };
               };
               sinon
-                .stub(index.appLocals.models.members, 'deleteMany')
+                .stub(app.appLocals.models.members, 'deleteMany')
                 .callsFake(fakeDeleteMany);
               break;
             case 'API tests end':

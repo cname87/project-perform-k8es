@@ -9,7 +9,7 @@
   },
   "license": "MIT",
   "author": "Seán A. Young <cname87@yahoo.com>",
-  "main": "../dist/src/index.js",
+  "main": "../dist/src/app.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/cname87/project-perform-k8es"
@@ -28,7 +28,7 @@
   },
   "scripts": {
     "test": "mocha --config ./.mocharc.json ./dist/src/test/testSetup.js ./dist/src/test/*.test.js ./dist/src/**/test/*.test.js",
-    "start": "node ./dist/src/index.js",
+    "start": "node ./dist/src/app.js",
     "isServerUp": "ts-node --project ./tsconfig.json ./utils-build/isServerUp.ts",
     "checkServer": "ts-node --project ./tsconfig.json ./utils-build/checkServer.ts",
     "delDist": "ts-node ./utils-build/delDistDir.ts",

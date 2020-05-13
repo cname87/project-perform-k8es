@@ -157,12 +157,12 @@
         "${workspaceFolder}/frontend/node_modules/**/*.js",
       ],
     },
-    // Run the backend server (index.ts).
+    // Run the backend server (app.ts).
     {
-      "name": "Run backend index.ts",
+      "name": "Run backend app.ts",
       "type": "node",
       "request": "launch",
-      "program": "${workspaceFolder}/backend/src/index.ts",
+      "program": "${workspaceFolder}/backend/src/app.ts",
       "cwd": "${workspaceFolder}/backend",
       "env": {
       },
@@ -239,7 +239,7 @@
         "${workspaceFolder}/backend/dist/src/controllers/test/errors-controller.test.js",
         "${workspaceFolder}/backend/dist/src/server/test/startserver.test.js",
         "${workspaceFolder}/backend/dist/src/server/test/server.test.js",
-        "${workspaceFolder}/backend/dist/src/test/index.test.js",
+        "${workspaceFolder}/backend/dist/src/test/app.test.js",
       ],
       "env": {
         /* set to 'false' (or omit) to automatically run chrome and set to 'true' when using a compound configuration to launch chrome manually */
@@ -278,7 +278,7 @@
         "${workspaceFolder}/backend/dist/src/controllers/test/errors-controller.test.js",
         "${workspaceFolder}/backend/dist/src/server/test/server.test.js",
         "${workspaceFolder}/backend/dist/src/server/test/startserver.test.js",
-        "${workspaceFolder}/backend/dist/src/test/index.test.js",
+        "${workspaceFolder}/backend/dist/src/test/app.test.js",
 
       ],
       "env": {
@@ -411,7 +411,7 @@
       /* To debug angular you may need to go into Chrome and set the first breakpoint. If you have difficulty setting breakpoints in vscode then use Chrome DevTools. */
       "name": "Backend/Frontend",
       "configurations": [
-        "Run backend index.ts",
+        "Run backend app.ts",
         "Open http://localhost:8080/",
       ]
     },

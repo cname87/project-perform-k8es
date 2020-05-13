@@ -17,5 +17,5 @@ RUN npm install --production
 COPY . .
 
 # Run app.js with or without debugging port when container launches
-ENTRYPOINT ["node", "--inspect=9229", "dist/src/index.js"]
-# ENTRYPOINT ["node", "dist/src/index.js"]
+ENTRYPOINT ["node", "--inspect=9229", "dist/src/app.js"]
+# ENTRYPOINT ["node", "dist/src/app.js"]

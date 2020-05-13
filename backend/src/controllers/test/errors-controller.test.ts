@@ -23,7 +23,7 @@ import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 
 import path from 'path';
-/* use proxyquire for index.js module loading */
+/* use proxyquire for app.js module loading */
 import proxyquire from 'proxyquire';
 import { EventEmitter } from 'events';
 import puppeteer from 'puppeteer';
@@ -41,22 +41,22 @@ sinon.assert.expose(chai.assert, {
 });
 
 /* variables */
-const indexPath = '../../index';
+const appPath = '../../app';
 /* url that initiates the client-fired tests */
 const fireTestUrl = `${configServer.HOST}testServer/errors-loadMocha.html`;
 const browserDelay = process.env.BROWSER_DELAY
   ? parseInt(process.env.BROWSER_DELAY, 10)
   : 0;
 /* event names */
-const indexRunApp = 'indexRunApp';
-const indexSigint = 'indexSigint';
+const appRunApp = 'appRunApp';
+const appSigint = 'appSigint';
 const handlersRaiseEvent = 'handlersRaiseEvent';
 
 describe('Server Errors', () => {
   debug(`Running ${modulename} describe - server Errors`);
 
   /* shared variables */
-  let index: Perform.IServerIndex;
+  let app: Perform.IServerIndex;
   let eventEmitter: EventEmitter;
   let spyConsoleError: sinon.SinonSpy<[any?, ...any[]], void>;
   let spyLoggerError: sinon.SinonSpy<[object], winston.Logger>;
@@ -68,15 +68,15 @@ describe('Server Errors', () => {
   >;
   let stubProcessExit: sinon.SinonStub<[number?], never>;
 
-  /* awaits that server index.ts has run and fired the completion event */
+  /* awaits that server app.ts has run and fired the completion event */
   const serverIndexStart = (): Promise<Perform.IServerIndex> => {
     debug(`${modulename}: awaiting server up`);
     return new Promise(async (resolve, reject) => {
-      /* use proxyquire in case index.js already required */
-      const { index: serverIndex } = proxyquire(indexPath, {});
-      /* Note: You need index.ts to define 'event' before the db setup call as the async db set up (which cannot easily be awaited) means the next line is executed before the db is up ND 'index.event' needs to be defined by then */
+      /* use proxyquire in case app.js already required */
+      const { appVars: serverIndex } = proxyquire(appPath, {});
+      /* Note: You need app.ts to define 'event' before the db setup call as the async db set up (which cannot easily be awaited) means the next line is executed before the db is up ND 'app.event' needs to be defined by then */
       serverIndex.appLocals.event.once(
-        indexRunApp,
+        appRunApp,
         (arg: { message: string }) => {
           if (arg.message === 'Server running 0') {
             debug(
@@ -94,16 +94,16 @@ describe('Server Errors', () => {
     });
   };
 
-  /* run index.js and set up all spies */
+  /* run app.js and set up all spies */
   const runServerAndSetupSpies = async () => {
     /* spy on console.error */
     spyConsoleError = sinon.spy(console, 'error');
-    /* run server index.js */
-    index = await serverIndexStart();
-    /* Now define all objects that are dependent on index being started */
-    spyLoggerError = sinon.spy(index.appLocals.logger, 'error');
-    spyDumpError = sinon.spy(index.appLocals, 'dumpError');
-    eventEmitter = index.appLocals.event;
+    /* run server app.js */
+    app = await serverIndexStart();
+    /* Now define all objects that are dependent on app being started */
+    spyLoggerError = sinon.spy(app.appLocals.logger, 'error');
+    spyDumpError = sinon.spy(app.appLocals, 'dumpError');
+    eventEmitter = app.appLocals.event;
     /* stub process.emit - will stub emit uncaught exception handler */
     stubProcessEmit = sinon.stub(process, 'emit');
     /* stub process.exit */
@@ -111,11 +111,11 @@ describe('Server Errors', () => {
     spyErrorHandlerDebug = sinon.spy(errorHandlerModule, 'debug');
   };
 
-  /* awaits that index.ts has shut and fired the completion event */
+  /* awaits that app.ts has shut and fired the completion event */
   const serverIndexShutdown = (serverIndex: Perform.IServerIndex) => {
     debug(`${modulename}: awaiting server shutdown`);
     return new Promise((resolve, reject) => {
-      serverIndex.appLocals.event.once(indexSigint, (arg) => {
+      serverIndex.appLocals.event.once(appSigint, (arg) => {
         if (arg.message === 'Server exit 0') {
           debug(`${modulename}: server close message caught: ${arg.message}`);
           resolve();
@@ -145,8 +145,8 @@ describe('Server Errors', () => {
   after('after', async () => {
     debug(`Running ${modulename} after - close and reset`);
 
-    debug('Shutting index.js');
-    await serverIndexShutdown(index);
+    debug('Shutting app.js');
+    await serverIndexShutdown(app);
     expect(spyConsoleError.notCalled).to.be.true;
     expect(spyLoggerError.notCalled).to.be.true;
     expect(spyDumpError.notCalled).to.be.true;

@@ -12,7 +12,7 @@ process.env.DB_MODE = 'test';
 setupDebug(__filename);
 // import { afterEach, beforeEach } from 'mocha';
 
-/* Note: All test modules that need a server use index.js to start the server (parhaps on each 'it' function) and then close it before they exit. */
+/* Note: All test modules that need a server use app.js to start the server (parhaps on each 'it' function) and then close it before they exit. */
 
 let originalTestPaths: string | undefined;
 before('Before all tests', async () => {

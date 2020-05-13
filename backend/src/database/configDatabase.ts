@@ -112,6 +112,6 @@ export const configDatabase = {
     };
   },
 
-  /* Path to database index.js file for unit test */
+  /* Path to database app.js file for unit test */
   startDatabasePath: resolve('dist', 'src', 'database', 'src', 'startDatabase'),
 };

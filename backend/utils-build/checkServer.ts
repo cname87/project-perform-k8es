@@ -12,9 +12,9 @@
 import { spawn } from 'child_process';
 import { pingServer } from './pingServer';
 
-/* need the path to the .js server index file relative to /backend */
+/* need the path to the .js server app file relative to /backend */
 /* assumes node is called from /backend */
-const indexJsPath = 'dist/src/index';
+const appJsPath = 'dist/src/app';
 
 /**
  * Ping the server and, if the ping fails, then start the server.
@@ -32,7 +32,7 @@ async function test() {
     /* await pingServer() will throw an error if the connection fails */
     console.log('Trying to start the server');
     /* start the server in a detached subprocess */
-    const child = spawn('node', ['--', indexJsPath], {
+    const child = spawn('node', ['--', appJsPath], {
       detached: true,
       stdio: 'inherit',
     });

@@ -29,13 +29,13 @@ const sleep = util.promisify(setTimeout);
 describe('the application', () => {
   debug(`Running ${modulename} describe - the application`);
 
-  const indexPath = '../index';
+  const appPath = '../app';
 
   /* internal dumpError and logger utilities */
   const logger = new Logger() as winston.Logger;
   const dumpError = new DumpError(logger) as Perform.DumpErrorFunction;
 
-  let index: any = {};
+  let app: any = {};
   let runIndex: (extraOptions?: object) => void;
   let spyDebug: any;
   let spyLoggerError: any;
@@ -47,7 +47,7 @@ describe('the application', () => {
     url: configServer.HOST,
   };
 
-  const serverUpMessage = `${path.sep}index.js: server up and running`;
+  const serverUpMessage = `${path.sep}app.js: server up and running`;
 
   const serverIsUp = () => {
     let response;
@@ -76,12 +76,11 @@ describe('the application', () => {
     });
   };
 
-  const indexIsExited = (spy: any, spyString: any) => {
+  const appIsExited = (spy: any, spyString: any) => {
     return new Promise(async (resolve) => {
       for (let checkDebugCount = 1; checkDebugCount <= 10; checkDebugCount++) {
         debug(
-          `${modulename}: index still running` +
-            ` - attempt ${checkDebugCount}`,
+          `${modulename}: app still running` + ` - attempt ${checkDebugCount}`,
         );
         if (spy.calledWith(spyString) === true) {
           debug(
@@ -151,10 +150,10 @@ describe('the application', () => {
         },
       };
       const proxyOptions = { ...proxyOptionsDefault, ...extraOptions };
-      /* index.js is loaded & run here and only here */
-      const { index: indexLocal } = proxyquire(indexPath, proxyOptions);
-      /* assign destructured index to module variable */
-      index = indexLocal;
+      /* app.js is loaded & run here and only here */
+      const { appVars: appLocal } = proxyquire(appPath, proxyOptions);
+      /* assign destructured app to module variable */
+      app = appLocal;
     };
   });
 
@@ -177,17 +176,17 @@ describe('the application', () => {
   it('runs a server', async () => {
     debug(`Running ${modulename} it - runs a server`);
 
-    /* call index.js which runs the application */
+    /* call app.js which runs the application */
     runIndex();
     let response = await serverIsUp();
     expect(response).not.to.be.instanceof(Error);
     expect(spyDebug).to.have.been.calledWith(serverUpMessage);
 
     /* shut her down */
-    await index.sigint();
-    response = await indexIsExited(
+    await app.sigint();
+    response = await appIsExited(
       spyDebug,
-      `${path.sep}index.js: Internal Shutdown signal - will exit normally with code 0`,
+      `${path.sep}app.js: Internal Shutdown signal - will exit normally with code 0`,
     );
     expect(response).not.to.be.instanceof(Error);
 
@@ -205,28 +204,28 @@ describe('the application', () => {
   it('handles a server error', async () => {
     debug(`Running ${modulename} it - handles a server error`);
 
-    /* call index.js which runs the application */
+    /* call app.js which runs the application */
     runIndex();
     let response = await serverIsUp();
     expect(response).not.to.be.instanceof(Error);
     expect(spyDebug).to.have.been.calledWith(serverUpMessage);
 
     /* trigger the server error event */
-    index.appLocals.servers[0].expressServer.emit(
+    app.appLocals.servers[0].expressServer.emit(
       'error',
       new Error('Test Error'),
     );
 
-    response = await indexIsExited(
+    response = await appIsExited(
       spyDebug,
-      `${path.sep}index.js: will exit with code -3`,
+      `${path.sep}app.js: will exit with code -3`,
     );
     expect(response).not.to.be.instanceof(Error);
 
     expect(spyConsoleError).to.have.not.been.called;
 
     expect(spyLoggerError.lastCall.lastArg).to.eql(
-      `${path.sep}index.js: Unexpected server error - exiting`,
+      `${path.sep}app.js: Unexpected server error - exiting`,
     );
 
     expect(spyDumpError).to.have.been.called;
@@ -235,7 +234,7 @@ describe('the application', () => {
   it('handles a closeAll error', async () => {
     debug(`Running ${modulename} it - handles a closeAll error`);
 
-    /* call index.js which runs the application */
+    /* call app.js which runs the application */
     runIndex();
     let response = await serverIsUp();
     expect(response).not.to.be.instanceof(Error);
@@ -246,14 +245,14 @@ describe('the application', () => {
     processStub.throws(new Error('Test error'));
 
     /* trigger the server error event */
-    index.appLocals.servers[0].expressServer.emit(
+    app.appLocals.servers[0].expressServer.emit(
       'error',
       new Error('Test Error'),
     );
 
-    response = await indexIsExited(
+    response = await appIsExited(
       spyDebug,
-      `${path.sep}index.js: will exit with code -4`,
+      `${path.sep}app.js: will exit with code -4`,
     );
     expect(response).not.to.be.instanceof(Error);
 
@@ -262,7 +261,7 @@ describe('the application', () => {
     expect(spyConsoleError).to.have.not.been.called;
 
     expect(spyLoggerError.lastCall.lastArg).to.eql(
-      `${path.sep}index.js: closeAll error - exiting`,
+      `${path.sep}app.js: closeAll error - exiting`,
     );
 
     expect(spyDumpError).to.have.been.called;
@@ -288,17 +287,17 @@ describe('the application', () => {
 
     /* note that server will start after error is thrown */
     runIndex(startDatabaseStub);
-    /* In the main index.ts there is a sleep after a database fail.  This will cause a delay in the mocha test. If the sleep is >~ 5s then the serverIsUp may time out before the server is up.  The servr will eventually start and will be left up and mocha will not exit => add a sleep here equa to the sleep in index.ts */
+    /* In the main app.ts there is a sleep after a database fail.  This will cause a delay in the mocha test. If the sleep is >~ 5s then the serverIsUp may time out before the server is up.  The server will eventually start and will be left up and mocha will not exit => add a sleep here equal to the sleep in app.ts */
     await sleep(configServer.DATABASE_ERROR_DELAY);
     await serverIsUp();
 
     /* shut her down */
-    await index.sigint();
+    await app.sigint();
 
     /* will exit normally */
-    const response = await indexIsExited(
+    const response = await appIsExited(
       spyDebug,
-      `${path.sep}index.js: Internal Shutdown signal - will exit normally with code 0`,
+      `${path.sep}app.js: Internal Shutdown signal - will exit normally with code 0`,
     );
     expect(response).not.to.be.instanceof(Error);
 
@@ -308,7 +307,7 @@ describe('the application', () => {
 
     /* confirm that the start database routine did exit abnormally */
     expect(spyLoggerError.lastCall.lastArg).to.eql(
-      `${path.sep}index.js: database startup error - continuing`,
+      `${path.sep}app.js: database startup error - continuing`,
     );
   });
 
@@ -324,12 +323,12 @@ describe('the application', () => {
       },
     };
 
-    /* require index.js */
+    /* require app.js */
     runIndex(startServerStub);
 
-    const response = await indexIsExited(
+    const response = await appIsExited(
       spyDebug,
-      `${path.sep}index.js: will exit with code -1`,
+      `${path.sep}app.js: will exit with code -1`,
     );
     expect(response).not.to.be.instanceof(Error);
 
@@ -339,7 +338,7 @@ describe('the application', () => {
 
     /* confirm that the start database routine did exit abnormally */
     expect(spyLoggerError.lastCall.lastArg).to.eql(
-      `${path.sep}index.js: server startup error - exiting`,
+      `${path.sep}app.js: server startup error - exiting`,
     );
   });
 
@@ -349,16 +348,16 @@ describe('the application', () => {
     /* set up so process.exit stubbed */
     const stubProcess = sinon.stub(process, 'exit');
 
-    /* require index.js */
+    /* require app.js */
     runIndex();
     let response = await serverIsUp();
     expect(response).not.to.be.instanceof(Error);
 
-    await index.uncaughtException(new Error('Test Error'));
+    await app.uncaughtException(new Error('Test Error'));
 
-    response = await indexIsExited(
+    response = await appIsExited(
       spyDebug,
-      `${path.sep}index.js: all connections & listeners closed`,
+      `${path.sep}app.js: all connections & listeners closed`,
     );
     expect(response).not.to.be.instanceof(Error);
 
@@ -381,16 +380,16 @@ describe('the application', () => {
     /* set up so process.exit stubbed */
     const stubProcess = sinon.stub(process, 'exit');
 
-    /* require index.js */
+    /* require app.js */
     runIndex();
     let response = await serverIsUp();
     expect(response).not.to.be.instanceof(Error);
 
-    await index.unhandledRejection('Test Rejection', 'promise rejected');
+    await app.unhandledRejection('Test Rejection', 'promise rejected');
 
-    response = await indexIsExited(
+    response = await appIsExited(
       spyDebug,
-      `${path.sep}index.js: all connections & listeners closed`,
+      `${path.sep}app.js: all connections & listeners closed`,
     );
     expect(response).not.to.be.instanceof(Error);
 

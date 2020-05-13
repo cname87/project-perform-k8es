@@ -59,12 +59,12 @@ describe('startDatabase', () => {
       console.warn(message);
 
       debug('running startDatabase.js');
-      const index = proxyquire(startDatabasePath, {});
+      const app = proxyquire(startDatabasePath, {});
 
       let database;
       try {
         debug('creating database connection');
-        database = await index.startDatabase(
+        database = await app.startDatabase(
           process.env.DB_IS_LOCAL,
           process.env.DB_LOCAL_USER,
           process.env.DB_USER,
@@ -99,12 +99,12 @@ describe('startDatabase', () => {
       debug(`Running ${modulename} it - fails to connect to a database`);
 
       debug('running startDatabase.js with stub');
-      const index = proxyquire(startDatabasePath, {});
+      const app = proxyquire(startDatabasePath, {});
 
       let errorThrown = false;
       try {
         debug('starting database but error expected');
-        await index.startDatabase({ dummy: 'dummy' });
+        await app.startDatabase({ dummy: 'dummy' });
       } catch (err) {
         errorThrown = true;
         expect(err instanceof Error).to.be.true;
