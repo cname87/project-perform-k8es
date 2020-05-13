@@ -30,7 +30,19 @@ describe('Database connection', () => {
   const spyDebug = sinon.spy();
 
   /* derive db name from the connection uri */
-  const uri = getMongoUri();
+  const uri = getMongoUri(
+    process.env.DB_IS_LOCAL,
+    process.env.DB_LOCAL_USER,
+    process.env.DB_USER,
+    process.env.DB_LOCAL_PASSWORD,
+    process.env.DB_PASSWORD,
+    process.env.DB_LOCAL_HOST,
+    process.env.DB_HOST,
+    process.env.NODE_ENV,
+    process.env.DB_MODE,
+    process.env.DB_DATABASE,
+    process.env.DB_DATABASE_TEST,
+  );
   const charStart = uri.indexOf('://');
   const char1 = uri.indexOf('/', charStart + 3); // skip initial :// in uri
   const char2 = uri.indexOf('?ssl=');
@@ -70,7 +82,19 @@ describe('Database connection', () => {
         },
       },
     });
-    database = await getDatabase.startDatabase();
+    database = await getDatabase.startDatabase(
+      process.env.DB_IS_LOCAL,
+      process.env.DB_LOCAL_USER,
+      process.env.DB_USER,
+      process.env.DB_LOCAL_PASSWORD,
+      process.env.DB_PASSWORD,
+      process.env.DB_LOCAL_HOST,
+      process.env.DB_HOST,
+      process.env.NODE_ENV,
+      process.env.DB_MODE,
+      process.env.DB_DATABASE,
+      process.env.DB_DATABASE_TEST,
+    );
 
     debug('run tests');
     /* slice off modulename as it might be .ts or .js */
@@ -84,7 +108,19 @@ describe('Database connection', () => {
 
     debug('connect to database');
     const getDatabase = proxyquire(startDatabasePath, {});
-    database = await getDatabase.startDatabase();
+    database = await getDatabase.startDatabase(
+      process.env.DB_IS_LOCAL,
+      process.env.DB_LOCAL_USER,
+      process.env.DB_USER,
+      process.env.DB_LOCAL_PASSWORD,
+      process.env.DB_PASSWORD,
+      process.env.DB_LOCAL_HOST,
+      process.env.DB_HOST,
+      process.env.NODE_ENV,
+      process.env.DB_MODE,
+      process.env.DB_DATABASE,
+      process.env.DB_DATABASE_TEST,
+    );
 
     debug('run tests');
     if (database && database.dbConnection && database.dbConnection.db) {
@@ -106,7 +142,19 @@ describe('Database connection', () => {
 
     debug('connect to database');
     const getDatabase = proxyquire(startDatabasePath, {});
-    database = await getDatabase.startDatabase();
+    database = await getDatabase.startDatabase(
+      process.env.DB_IS_LOCAL,
+      process.env.DB_LOCAL_USER,
+      process.env.DB_USER,
+      process.env.DB_LOCAL_PASSWORD,
+      process.env.DB_PASSWORD,
+      process.env.DB_LOCAL_HOST,
+      process.env.DB_HOST,
+      process.env.NODE_ENV,
+      process.env.DB_MODE,
+      process.env.DB_DATABASE,
+      process.env.DB_DATABASE_TEST,
+    );
 
     debug('run tests');
     if (database && database.dbConnection && database.dbConnection.db) {
@@ -123,7 +171,19 @@ describe('Database connection', () => {
     }
 
     debug('make a 2nd connection to the database');
-    const database2 = await getDatabase.startDatabase();
+    const database2 = await getDatabase.startDatabase(
+      process.env.DB_IS_LOCAL,
+      process.env.DB_LOCAL_USER,
+      process.env.DB_USER,
+      process.env.DB_LOCAL_PASSWORD,
+      process.env.DB_PASSWORD,
+      process.env.DB_LOCAL_HOST,
+      process.env.DB_HOST,
+      process.env.NODE_ENV,
+      process.env.DB_MODE,
+      process.env.DB_DATABASE,
+      process.env.DB_DATABASE_TEST,
+    );
 
     debug('run tests');
     if (database2 && database2.dbConnection && database2.dbConnection.db) {
@@ -161,7 +221,7 @@ describe('Database connection', () => {
       const connectOptions = getConnectionOptions();
       /* note no logger => error to console.log */
       database = new Database(connectionUrl, connectOptions);
-      database.dbConnection = await database.connectToDB();
+      database.dbConnection = await database.dbConnectionPromise;
       /* will throw an error */
       expect.fail('Should not have reached this point');
     } catch (err) {
@@ -174,7 +234,19 @@ describe('Database connection', () => {
 
     debug('connect to database');
     const getDatabase = proxyquire(startDatabasePath, {});
-    database = await getDatabase.startDatabase();
+    database = await getDatabase.startDatabase(
+      process.env.DB_IS_LOCAL,
+      process.env.DB_LOCAL_USER,
+      process.env.DB_USER,
+      process.env.DB_LOCAL_PASSWORD,
+      process.env.DB_PASSWORD,
+      process.env.DB_LOCAL_HOST,
+      process.env.DB_HOST,
+      process.env.NODE_ENV,
+      process.env.DB_MODE,
+      process.env.DB_DATABASE,
+      process.env.DB_DATABASE_TEST,
+    );
 
     if (database && database.dbConnection && database.dbConnection.db) {
       debug('run tests');
@@ -239,7 +311,19 @@ describe('Database connection', () => {
 
     debug('connect to database');
     const getDatabase = proxyquire(startDatabasePath, {});
-    database = await getDatabase.startDatabase();
+    database = await getDatabase.startDatabase(
+      process.env.DB_IS_LOCAL,
+      process.env.DB_LOCAL_USER,
+      process.env.DB_USER,
+      process.env.DB_LOCAL_PASSWORD,
+      process.env.DB_PASSWORD,
+      process.env.DB_LOCAL_HOST,
+      process.env.DB_HOST,
+      process.env.NODE_ENV,
+      process.env.DB_MODE,
+      process.env.DB_DATABASE,
+      process.env.DB_DATABASE_TEST,
+    );
 
     debug('create mongoose model');
     const model = database.createModel(testModel, testSchema, testCollection);
@@ -255,7 +339,19 @@ describe('Database connection', () => {
 
     debug('connect to database');
     const getDatabase = proxyquire(startDatabasePath, {});
-    database = await getDatabase.startDatabase();
+    database = await getDatabase.startDatabase(
+      process.env.DB_IS_LOCAL,
+      process.env.DB_LOCAL_USER,
+      process.env.DB_USER,
+      process.env.DB_LOCAL_PASSWORD,
+      process.env.DB_PASSWORD,
+      process.env.DB_LOCAL_HOST,
+      process.env.DB_HOST,
+      process.env.NODE_ENV,
+      process.env.DB_MODE,
+      process.env.DB_DATABASE,
+      process.env.DB_DATABASE_TEST,
+    );
 
     const dummyCollection: any = {};
 
@@ -275,10 +371,22 @@ describe('Database connection', () => {
     debug(`Running ${modulename} it - tests sending no logger or dumpError`);
 
     debug('connect to database without configuring logger or dumpError');
-    const connectionUrl = getMongoUri();
+    const connectionUrl = getMongoUri(
+      process.env.DB_IS_LOCAL,
+      process.env.DB_LOCAL_USER,
+      process.env.DB_USER,
+      process.env.DB_LOCAL_PASSWORD,
+      process.env.DB_PASSWORD,
+      process.env.DB_LOCAL_HOST,
+      process.env.DB_HOST,
+      process.env.NODE_ENV,
+      process.env.DB_MODE,
+      process.env.DB_DATABASE,
+      process.env.DB_DATABASE_TEST,
+    );
     const connectOptions = getConnectionOptions();
     database = new Database(connectionUrl, connectOptions);
-    database.dbConnection = await database.connectToDB();
+    database.dbConnection = await database.dbConnectionPromise;
 
     debug('run tests');
     if (database && database.dbConnection && database.dbConnection.db) {

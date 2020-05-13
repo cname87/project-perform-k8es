@@ -30,7 +30,19 @@ describe('Database models operations', () => {
   before('Create database connection', async () => {
     debug(`Running ${modulename} before - Create database connection`);
 
-    database = await startDatabase();
+    database = await startDatabase(
+      process.env.DB_IS_LOCAL,
+      process.env.DB_LOCAL_USER,
+      process.env.DB_USER,
+      process.env.DB_LOCAL_PASSWORD,
+      process.env.DB_PASSWORD,
+      process.env.DB_LOCAL_HOST,
+      process.env.DB_HOST,
+      process.env.NODE_ENV,
+      process.env.DB_MODE,
+      process.env.DB_DATABASE,
+      process.env.DB_DATABASE_TEST,
+    );
 
     docContent1 = {
       id: 11,

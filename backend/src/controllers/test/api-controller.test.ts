@@ -98,7 +98,7 @@ describe('server API', () => {
     /* run server index.js */
     index = await serverIndexStart();
     /* test that the database is the test database */
-    if (index.appLocals.database.dbConnection.db.databaseName !== dbTestName) {
+    if (index.appLocals.dbConnection.db.databaseName !== dbTestName) {
       throw new Error('Test database not loaded + aborting tests');
     }
     /* Now define all objects that are dependent on index being started */

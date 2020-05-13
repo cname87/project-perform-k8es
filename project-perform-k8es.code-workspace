@@ -277,7 +277,7 @@
     "editor.wordWrap": "wordWrapColumn",
 
     "eslint.enable": true,
-    "eslint.workingDirectories": [ "./", "./frontend" ],
+    "eslint.workingDirectories": [ "./", "./frontend", "./backend"],
     "eslint.alwaysShowStatus": true,
 
     "extensions.showRecommendationsOnlyOnDemand": true,

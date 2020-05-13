@@ -6,16 +6,18 @@ import { setupDebug } from '../../utils/src/debugOutput';
 
 import { configDatabase } from '../configDatabase';
 
-/* set up mocha, sinon & chai */
+/* Set up mocha, sinon & chai */
 import chai from 'chai';
 import 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 
-/* use proxyquire for startDatabase.js module loading */
+/* Use proxyquire for startDatabase.js module loading */
 import proxyquire from 'proxyquire';
 
+/* Output header and set up debug function */
 const { modulename, debug } = setupDebug(__filename);
+
 chai.use(sinonChai);
 const { expect } = chai;
 sinon.assert.expose(chai.assert, {
@@ -62,7 +64,19 @@ describe('startDatabase', () => {
       let database;
       try {
         debug('creating database connection');
-        database = await index.startDatabase();
+        database = await index.startDatabase(
+          process.env.DB_IS_LOCAL,
+          process.env.DB_LOCAL_USER,
+          process.env.DB_USER,
+          process.env.DB_LOCAL_PASSWORD,
+          process.env.DB_PASSWORD,
+          process.env.DB_LOCAL_HOST,
+          process.env.DB_HOST,
+          process.env.NODE_ENV,
+          process.env.DB_MODE,
+          process.env.DB_DATABASE,
+          process.env.DB_DATABASE_TEST,
+        );
       } catch (err) {
         debug('error thrown - database server may not be reachable?');
         expect.fail(
@@ -90,7 +104,7 @@ describe('startDatabase', () => {
       let errorThrown = false;
       try {
         debug('starting database but error expected');
-        await index.startDatabase({});
+        await index.startDatabase({ dummy: 'dummy' });
       } catch (err) {
         errorThrown = true;
         expect(err instanceof Error).to.be.true;

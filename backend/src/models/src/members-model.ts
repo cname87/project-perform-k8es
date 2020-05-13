@@ -1,20 +1,21 @@
 /**
- * This module creates a database model to manage team members'
- * details.
+ * This module creates or returns an existing Mongoose database model (which is an object that allows access to a named mongoDB collection) which manages team members details.  It defines the model schema for the team members and then returns a pre-existing model, or creates a new model, based on supplied parameters.
  */
 
-/* external dependencies */
 import { Document, DocumentToObjectOptions, Schema } from 'mongoose';
 import { autoIncrement } from 'mongoose-plugin-autoinc';
 import { setupDebug } from '../../utils/src/debugOutput';
 
+/* Output a header and set up the debug function */
 const { modulename, debug } = setupDebug(__filename);
 
 /**
+ * @summary
  * Creates a Members schema and returns a Mongoose model.
- * @param database - a connection to a mongoDB database.
- * @param ModelName - the name for the created model.
- * @param collection - the name of the mongoDB collection.
+ * @params
+ * - database - a connection to a mongoDB database.
+ * - ModelName - the name for the created model.
+ * - collection - the name of the mongoDB collection.
  * @returns A Mongoose model.
  */
 function createModelMembers(
@@ -24,28 +25,28 @@ function createModelMembers(
 ): Perform.IModelExtended {
   debug(`${modulename}: running createModelMembers`);
 
-  /* set up schema, collection, and model name */
+  /* Set up the schema for the team members */
   const memberSchema = new Schema({
     id: { type: Number, unique: true },
     name: String,
   });
 
-  /* auto-increment the id field on document creation */
-  /* note: resetCount() is called when delete all members is called */
+  /* Auto-increment the id field on document creation */
+  /* Note: resetCount() is called when delete all members is called */
   memberSchema.plugin(autoIncrement, {
     model: ModelName,
     field: 'id',
     startAt: 1,
   });
 
-  /* create the model - extended above by autoinc plugin */
+  /* Create the model - extended above by autoinc plugin */
   const ModelMembers = (database.createModel(
     ModelName,
     memberSchema,
     collection,
   ) as any) as Perform.IModelExtended;
 
-  /* set toObject option so _id, and __v deleted */
+  /* Set toObject option so _id, and __v deleted */
   ModelMembers.schema.set('toObject', {
     transform: (
       _doc: Document,
@@ -61,5 +62,4 @@ function createModelMembers(
   return ModelMembers;
 }
 
-/* export the model creation function */
 export { createModelMembers };

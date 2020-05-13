@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
+
 /**
  * This application runs a http server with a database backend.
  * It is designed to be hosted on a GCP app engine platform.
@@ -52,10 +53,6 @@ import { DumpError } from './utils/src/dumpError';
 import { User } from './users/user';
 /* getUser function */
 import { getUser } from './users/users';
-/* database configuration */
-import { configDatabase } from './database/configDatabase';
-/* the Database class */
-import { Database } from './database/src/database';
 /* database creation function */
 import { startDatabase } from './database/src/startDatabase';
 
@@ -84,12 +81,12 @@ const logger = new Logger() as winston.Logger;
 const dumpError = new DumpError(logger) as Perform.DumpErrorFunction;
 
 /**
- * An object is created to added to the express app object containing objects and variables needed across requests.
+ * An object is created to be added to the express app object containing objects and variables needed across requests.
  */
 const createStore: () => Perform.IAppLocals = () => {
   return {
     configServer,
-    configDatabase,
+    // configDatabase,
     /* route controllers */
     controllers: {
       api: apiController,
@@ -170,14 +167,16 @@ const unhandledRejection: Perform.TUncaught = async (reason: Perform.IErr) => {
 process.once('unhandledRejection', unhandledRejection);
 
 /**
- * Calls the database to start and stores the database object and the database connection object in a supplied object.
+ * @summary
+ * Starts the database and stores the database object, and the database connection object, in a supplied object.
  * If the supplied object already includes a connected database it does nothing.
- * On connection it sets up listeners that throw untrapped errors in case of an unexpected error or disconnect (after the connection has been established).
- * It catches any error during database startup, logs the error but does not throw on the error - allows retries.
- * @returns void. The supplied object is mutated to include a database instance and a database connection object.
+ * On connection it sets up listeners that throw untrapped errors in case of an unexpected error or disconnect after the connection has been established.
+ * It catches any error during database startup, logs the error but does not throw on the error i.e. it allows retries.
+ * @returns void
+ * - If the connection is successful the supplied object is mutated to include a database instance and a database connection object.
+
  */
 const storeDatabase = async (store: {
-  configDatabase: typeof configDatabase;
   database: Perform.Database;
   dbConnection: Connection;
   models: Perform.IModels;
@@ -186,7 +185,7 @@ const storeDatabase = async (store: {
 }) => {
   debug(`${modulename}: calling storeDatabase`);
 
-  /* check if a valid connection exists and, if so, exit */
+  /* Check if a valid connection exists and, if so, exit */
   if (
     store.dbConnection &&
     store.dbConnection.readyState === Perform.DbReadyState.Connected
@@ -195,7 +194,7 @@ const storeDatabase = async (store: {
   }
 
   try {
-    /* clear the connection and store object in case this is a reconnect */
+    /* Clear the stored database and connection objects in case this is a reconnect */
     if (
       store.database &&
       store.database.dbConnection &&
@@ -212,55 +211,62 @@ const storeDatabase = async (store: {
       store.dbConnection = ({} as any) as Connection;
     }
 
-    /* clear the members model in case this is a reconnect, so that a fresh members model is created based on the new connection */
+    /* Clear the members model in case this is a reconnect, so that a fresh members model is created based on the new connection */
     if (store.models && store.models.members) {
       store.models.members = ({} as any) as Perform.IModelExtended;
     }
 
-    /* create and store a database object */
-    /* the database server started will be either local or hosted connection and the database used will be either a test or a production database depending on process.env parameters */
+    /* Create and store a database object */
+    /* The database server started will be either local or hosted connection, and the database used will be either a test or a production database, depending on process.env parameters */
     store.database = await startDatabase(
-      store.configDatabase,
-      Database,
+      process.env.DB_IS_LOCAL,
+      process.env.DB_LOCAL_USER,
+      process.env.DB_USER,
+      process.env.DB_LOCAL_PASSWORD,
+      process.env.DB_PASSWORD,
+      process.env.DB_LOCAL_HOST,
+      process.env.DB_HOST,
+      process.env.NODE_ENV,
+      process.env.DB_MODE,
+      process.env.DB_DATABASE,
+      process.env.DB_DATABASE_TEST,
       store.logger,
       store.dumpError,
     );
 
-    /* obtain and store the database connection object */
+    /* Obtain and store the database connection object separately for ease of access */
     store.dbConnection = store.database.dbConnection;
 
-    /* handle any errors issued after the connection is established */
-    store.database.dbConnection.on('error', (err) => {
+    /* Handle any errors issued after the connection is established */
+    store.dbConnection.on('error', (err) => {
       logger.error(
-        `${modulename}: unexpected database \'${
-          store.database!.dbConnection.db.databaseName
-        }\' error event received`,
+        `${modulename}: unexpected database \'${store.dbConnection.db.databaseName}\' error event received`,
       );
       dumpError(err);
-      /* shut server and catch error in GCP error handler */
+      /* Throw error - caught in GCP error handler and will restart */
       throw err;
     });
 
-    /* handle any unexpected connection drop after the connection is established  */
-    store.database.dbConnection.on('disconnected', async () => {
-      const errMessage = `${modulename}: unexpected database \'${
-        store.database!.dbConnection.db.databaseName
-      }\' disconnected event received`;
+    /* Handle any unexpected connection drop after the connection is established  */
+    store.dbConnection.on('disconnected', async () => {
+      const errMessage =
+        `${modulename}: ` +
+        `unexpected database \'${store.dbConnection.db.databaseName}\'` +
+        `disconnected event received`;
       logger.error(errMessage);
       const err = {
         name: 'Database disconnection ',
         message: errMessage,
       };
-      /* shut server and catch error in GCP error handler */
+      /* Throw error - caught in GCP error handler and will restart */
       throw err;
     });
 
     return;
   } catch (err) {
-    /* log error but proceed */
+    /* Log error but proceed i.e. allow connection retries */
     logger.error(`${modulename}: database startup error - continuing`);
     dumpError(err);
-    return true;
   }
 };
 
@@ -323,8 +329,8 @@ async function runApp(store: Perform.IAppLocals) {
   let isDbReady = Perform.DbReadyState.Disconnected;
   while (isDbReady !== Perform.DbReadyState.Connected) {
     /* starts database and stores database and connection in store */
-    const isFail = await storeDatabase(store);
-    if (isFail) {
+    await storeDatabase(store);
+    if (!store.dbConnection.readyState) {
       await sleep(configServer.DATABASE_ERROR_DELAY);
     }
     isDbReady = store.dbConnection.readyState;

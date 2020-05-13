@@ -37,8 +37,8 @@ export const initOpenApi = (appLocals: Perform.IAppLocals) => {
       ) => {
         const result = {
           isTestDatabase:
-            appLocals.database.dbConnection.db.databaseName ===
-            appLocals.configDatabase.DB_DATABASE_TEST,
+            appLocals.dbConnection.db.databaseName ===
+            process.env.DB_DATABASE_TEST,
         };
         appLocals.handlers.miscHandlers.writeJson(
           context,

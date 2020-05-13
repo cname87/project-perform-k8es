@@ -141,8 +141,8 @@ async function runServer(app: Application) {
       debug(`${modulename}: calling isTestDatabase`);
       const result = {
         isTestDatabase:
-          app.appLocals.database.dbConnection.db.databaseName ===
-          app.appLocals.configDatabase.DB_DATABASE_TEST,
+          app.appLocals.dbConnection.db.databaseName ===
+          process.env.DB_DATABASE_TEST,
       };
       res.status(200).json(result);
     });
