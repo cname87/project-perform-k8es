@@ -2,6 +2,9 @@
 
 ### Other ignores ###
 
+# coverage reports
+coverage
+
 # Dependency directories
 node_modules/
 

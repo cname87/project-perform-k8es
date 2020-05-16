@@ -333,7 +333,7 @@
       "group": "test",
       "problemMatcher": []
     },
-    // Taskkill
+    // Kill all node processes
     {
       /* Kills all running node instances.  E.g. use to kill the node server launched by Checkserver */
       "label": "Taskkill node.exe",
@@ -347,8 +347,9 @@
         ]
       },
       "linux": {
-        "command": "killall",
+        "command": "sudo",
         "args": [
+          "killall",
           "node"
         ]
       },
@@ -363,6 +364,7 @@
       "group": "test",
       "problemMatcher": []
     },
+    // Se some skaffold env variables - does not work
     {
       "label": "skaffold-clean",
       "type": "shell",
@@ -380,6 +382,7 @@
       },
       "problemMatcher": []
     },
+    // Terminate all tasks
     {
       "label": "Terminate All Tasks",
       "command": "echo ${input:terminate}",

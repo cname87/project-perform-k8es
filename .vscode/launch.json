@@ -119,8 +119,8 @@
     {
       /**
       Starts the server and runs e2e tests against it allowing VSCode debug of the e2e .spec files. (Use Chrome DevTools if browser-side debug is needed)
-      NOTE: Protractor uses a configured baseUrl to point all url requests to a host.  My frontend SPA routes any backend calls to the same host with an added path (e.g. /api-v1). This does NOT use a proxy to redirect the backend calls, as ng e2e does, so the server that protractor poinys to must both serve the SPA and handle backend calls.
-      NOTE: The frontend/backend server needs to be started first => a preLaunchTask starts the server.
+      NOTE: Protractor uses a configured baseUrl to point all url requests to a host.  My frontend SPA routes any backend calls to the same host with an added path (e.g. /api-v1). This does NOT use a proxy to redirect the backend calls, as ng e2e does, so the server that protractor points to must both serve the SPA and handle backend calls.  Therefore I need to have both backend and frontend containers up before running this e2e test.
+      NOTE: The frontend/backend server needs to be started first => launch the 'Run On Kubernetes' configuration first.
       *** NOTE: This does NOT pre-compile the backend like ng e2e - the already-compiled front-end is used.  Thus the front end must be compiled using the e2e enviroment file if you want to run the cache or error test files (which rely on e2e environment settings) - run the npm script or the VSCode task that compiles with the e2e environment file.
       Choose .dev or .production configuration by editing args below - edit the .env files to select which spec files to run.
       VALID OPTIONS:
@@ -132,7 +132,6 @@
       "name": "E2e frontend with backend",
       "type": "node",
       "request": "launch",
-      "preLaunchTask": "Check Server",
       "postDebugTask": "Taskkill node.exe",
       "program": "${workspaceFolder}/frontend//node_modules/protractor/bin/protractor",
       "protocol": "inspector",
