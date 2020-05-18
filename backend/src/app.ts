@@ -2,7 +2,7 @@
 
 /**
  * This application runs a http server with a database backend.
- * It is designed to be hosted on a GCP app engine platform.
+ * It is designed to be hosted on the GKE Kubernetes platform.
  *
  * This module creates an object with key items which it attaches to the express app application so it is accessible by all middleware.
  *
@@ -56,22 +56,6 @@ import { getUser } from './users/users';
 /* database creation function */
 import { startDatabase } from './database/src/startDatabase';
 
-/* external dependencies */
-
-/* start gcp trace and profile if in production debug mode */
-if (process.env.GCP_DEBUG === 'true') {
-  require('@google-cloud/debug-agent').start({
-    allowExpressions: true,
-  });
-  /*
-   * TO DO Can't install profiler any more => delete?
-   */
-  // require('@google-cloud/profiler').start({
-  //   serviceContext: {
-  //     service: 'default',
-  //   },
-  // });
-}
 /* output a header */
 const { modulename, debug } = setupDebug(__filename);
 const sleep = util.promisify(setTimeout);
@@ -351,7 +335,10 @@ async function runApp(store: Perform.IAppLocals) {
       }`,
     );
     debug(
-      `${modulename}: Test or Production database in use (DB_MODE): ${process.env.DB_MODE}`,
+      `${modulename}: Production database in use (DB_MODE): ${
+        process.env.NODE_ENV === 'production' &&
+        process.env.DB_MODE === 'production'
+      }`,
     );
     debug(
       `${modulename}: Test paths open (TEST_PATHS): ${

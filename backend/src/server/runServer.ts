@@ -8,7 +8,6 @@
  * - It calls an api handler for urls matching the api base path.
  * - It loads the Angular static files from a configured directory.
  * - It loads error handlers to handle errors.
- * Note: The GCP host is expected to supply a request logger so none is provided.
  */
 
 /* external dependencies */
@@ -32,44 +31,31 @@ async function runServer(app: Application) {
 
   const instanceStarted = new Date().toUTCString();
 
-  /* GCP warmup request */
-  app.get('/_ah/warmup', (_req, res, _next) => {
-    debug(
-      `${modulename}: _ah/warmup: Instance started (UTC): ${instanceStarted}`,
-    );
-    res.status(200).end();
-  });
+  /* Readiness & liveness probe */
+  app.get(/\/ready|\/health/, (_req, res, _next) => {
+    /* If the database ping returns an error or exceeds the timeout configured in the deployment.yaml file the check fails */
 
-  /* GCP app engine cron job */
-  app.get('/gcpCron', (_req, res, _next) => {
-    debug(`${modulename}: gcpCron: Instance started (UTC): ${instanceStarted}`);
+    debug(`Liveness: Instance started (UTC): ${instanceStarted}`);
 
-    const { configServer, database, logger, dumpError } = app.appLocals;
+    const { database, logger } = app.appLocals;
 
     debug(`${modulename}: calling database ping`);
-    /* if ping returns within a configured time then no error is logged */
-    let isRestartRequired = true;
+
     const ping = database.dbConnection.db.command({ ping: 1 });
     ping
       .then((result) => {
         const pingReturn = result.ok === 1 ? 'ok' : 'an unexpected value';
         debug(`${modulename}: database ping returned \'${pingReturn}\'`);
-        isRestartRequired = false;
         res.status(200).json({
           started: instanceStarted,
         });
       })
       .catch((err) => {
-        /* rely on 'disconnect' event handling to restart the server - just log an error here for diagnostic purposes */
         logger.error(`${modulename}: database ping returned an error`);
-        return dumpError(err);
+        res.status(500).json({
+          error: err,
+        });
       });
-    setTimeout(async () => {
-      if (isRestartRequired) {
-        /* rely on 'disconnect' event handling to restart the server - just log an error here for diagnostic purposes */
-        logger.error(`${modulename}: database ping failed to return`);
-      }
-    }, configServer.DB_PING_TIME);
   });
 
   /* use strong etag validation */
@@ -83,11 +69,6 @@ async function runServer(app: Application) {
 
   /* parse incoming request body object as a JSON object */
   app.use(express.json());
-
-  /* GCP app engine operates behind a proxy */
-  if (process.env.NODE_ENV === 'production') {
-    app.set('trust proxy', true);
-  }
 
   /* log basic information from the request */
   if (debug.enabled) {
@@ -170,9 +151,20 @@ async function runServer(app: Application) {
     },
   );
 
-  /* respond to '/' */
+  /* respond to '/' with some diagnostic information */
   app.get('/', (_req, res, _next) => {
-    res.status(200).send('You have reached the project-perform backend server');
+    const nodeEnvironment = process.env.NODE_ENV;
+    const isDbLocal = process.env.DB_IS_LOCAL === 'true';
+    const isDbProduction =
+      process.env.NODE_ENV === 'production' &&
+      process.env.DB_MODE === 'production';
+    const isTestPaths = process.env.TEST_PATHS === 'true';
+    const resText = `You have reached the project-perform backend server<br/>
+    Environment: ${nodeEnvironment}<br/>
+    Local database in use: ${isDbLocal}<br/>
+    Production database in use: ${isDbProduction}<br/>
+    Test paths enabled: ${isTestPaths}`;
+    res.status(200).send(resText);
   });
 
   /* handle all errors passed down */

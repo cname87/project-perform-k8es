@@ -2,7 +2,7 @@
 ### Security-relevant ignores ###
 
 # ignore all credential keys and certs
-# (but keep directory stuncture for copying from GCP storage)
+# (but keep directory structure for copying from GCP storage)
 backend/certs/database/mongoKeyAndCert.pem
 backend/certs/database/rootCA.crt
 backend/certs/gcpStorage/gcpStorageKey.json

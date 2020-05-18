@@ -136,7 +136,7 @@ describe('memberInputComponent', () => {
       expect(page.label!.innerText).toBe(expected.addLabel, 'label value');
       expect(page.actionBtn!).toBeNull('no button displayed');
       expect(page.icon).toBeNull('no button icon displayed');
-      expect(page.hint!!.innerText).toBe(expected.addHint, 'hint value');
+      expect(page.hint!.innerText).toBe(expected.addHint, 'hint value');
     });
 
     it('should match mode "edit" ', async () => {
@@ -151,7 +151,7 @@ describe('memberInputComponent', () => {
       fixture.detectChanges();
       await fixture.whenStable();
       /* test all elements, including button not displaying */
-      expect(page.input!!.value).toBe('testName', 'initial input value');
+      expect(page.input!.value).toBe('testName', 'initial input value');
       expect(page.input!.getAttribute('placeholder')).toBe(
         expected.editPlaceholder,
         'placeholder value',

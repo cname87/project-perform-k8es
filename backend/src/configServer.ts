@@ -18,8 +18,6 @@ export const configServer = {
 
   /**
    * The server can be hosted remotely or locally:
-   * The GCP host requires a http server listening on process.env.PORT which is set by the GCP host.
-   * The PORT parameter below is only used if process.env.PORT is not set by the GCP host, i.e. for a local environment.  Although not strictLy necessary, it is set to the known value used by the GCP host.
    */
   PORT: 8080,
   /* host is needed for test files */
@@ -42,6 +40,4 @@ export const configServer = {
   /* base path for all calls to the api */
   API_BASE_PATH: '/api-v1',
   OPENAPI_FILE: resolve('api', 'openapi.json'),
-  /* time for which a database ping (in a GCP cron response) is awaited */
-  DB_PING_TIME: 1500,
 };

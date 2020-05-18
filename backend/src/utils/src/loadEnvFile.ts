@@ -3,8 +3,7 @@
  * This should be called as the first line to set configuration parameters before they might be needed.
  * The .env files must be called .envDevelopment, .envProduction & .envStaging, and must be in a directory above this directory.
  * Which .env file imported is dependent on the value of process.env.NODE_ENV
- * Note that the GCP production server sets NODE_ENV to 'production', and the GCP Build configuration file sets NODE_ENV to 'staging', but otherwise it is undefined (unless otherwise set as a command line parameter, or otherwise set before this file is called).
- * If NODE_ENV === 'staging' then it is set to 'production' after the staging .env file is loaded;
+ * Note that the server Dockerfile sets NODE_ENV to 'production', and an e2e test stage in GCP Cloud Build overrides this with NODE_ENV=staging, but otherwise it is undefined (unless otherwise set as a command line parameter, or otherwise set before this file is called).
  * If NODE_ENV === 'production' (or 'staging') then key parameters are checked and warnings are printed if they are not set to match a final production set up.
  */
 import dotenv from 'dotenv';
@@ -18,7 +17,6 @@ switch (process.env.NODE_ENV) {
   }
   case 'staging': {
     envPath = findup.sync('.envStaging', { cwd: __dirname })!;
-    process.env.NODE_ENV = 'production';
     break;
   }
   default: {
@@ -44,15 +42,12 @@ if (!process.env.DB_HOST) {
 /* warn when in production on key parameters */
 if (process.env.NODE_ENV === 'production') {
   if (process.env.DEBUG) {
-    console.warn('*** NOTE: DEBUG parameter is set');
-  }
-  if (process.env.GAE_DEBUG) {
-    console.warn('*** NOTE: GAE_DEBUG parameter is set');
+    console.info('*** NOTE: DEBUG parameter is set');
   }
   if (process.env.TEST_PATHS) {
-    console.warn('*** NOTE: TEST_PATHS parameter is set');
+    console.info('*** NOTE: TEST_PATHS parameter is set');
   }
   if (process.env.DB_MODE === 'production') {
-    console.warn('*** NOTE: Production database in use');
+    console.info('*** NOTE: Production database in use');
   }
 }

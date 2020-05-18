@@ -211,7 +211,6 @@ export class AuthService {
     this.auth0Client$.subscribe(
       (client: Auth0Client) => {
         client.loginWithRedirect({
-          /* eslint-disable-next-line @typescript-eslint/camelcase, camelcase */
           redirect_uri: `${window.location.origin}${routes.callback.path}`,
           appState: { target: redirectPath },
         });
@@ -233,7 +232,6 @@ export class AuthService {
     this.auth0Client$.subscribe(
       (client: Auth0Client) => {
         client.logout({
-          /* eslint-disable-next-line @typescript-eslint/camelcase, camelcase */
           client_id: auth0Config.client_id,
           returnTo: `${window.location.origin}`,
         });

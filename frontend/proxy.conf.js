@@ -1,9 +1,9 @@
-/* set proxy target dependent on whether calling environment is GCP Production, GCP staging or local development - the GCP production and staging environments set NODE_ENV */
+/* When running ng e2e this file sets a proxy target dependent on whether the desired target is the production, staging (build) or local development server */
 
 let target;
 switch (process.env.E2E) {
   case 'production': {
-    target = 'https://project-perform.appspot.com';
+    target = 'https://projectperform.com';
     break;
   }
   case 'staging': {

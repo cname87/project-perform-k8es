@@ -12,4 +12,5 @@ COPY ./nginx-server.conf /etc/nginx/conf.d/default.conf
 # Copy the files to be served by the nginx reverse proxy
 COPY ./dist /usr/share/www/
 
-# nginx starts when the image is run
+# Note: The nginx default command is CMD ["nginx", "-g", "daemon off;"]
+# This runs nginx in the foreground - suitable for a Docker container

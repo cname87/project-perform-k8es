@@ -1,0 +1,5 @@
+### Security-relevant ignores ###
+
+# ignore all credential keys and certs
+# (but keep directory structure for copying from GCP storage)
+secrets/*

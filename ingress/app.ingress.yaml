@@ -1,0 +1,16 @@
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: pp-app-ingress
+  annotations:
+    kubernetes.io/ingress.global-static-ip-name: pp-ip
+    networking.gke.io/managed-certificates: pp-ssl-certificate
+    kubernetes.io/ingress.allow-http: "false"
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /*
+        backend:
+          serviceName: pp-frontend-service
+          servicePort: 80

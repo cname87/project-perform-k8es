@@ -1,4 +1,8 @@
+### Security-relevant ignores ###
 
+# ignore all .env files
+.env
+.env*
 
 ### Other ignores ###
 

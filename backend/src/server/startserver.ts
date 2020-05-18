@@ -70,7 +70,7 @@ async function startServer(
   const serverType = http;
   const serverName = 'http';
   const serverOptions = {};
-  /* process.env.PORT as set by the GCP host - fall back to the required GCP port configured locally */
+  /* process.env.PORT as set by the K8es configuration - fall back to the same port configured locally */
   const serverPort = +process.env.PORT! || config.PORT;
 
   /* start the server */

@@ -1,3 +1,7 @@
+/**
+ * TODO fix eslint error
+ * I have excluded this file from ./tsconfig.json which means I get a non-fixable eslint parsing error.  I can ignore for the moment as I exclude this file in .eslintignore => you will never see the error in an eslint run.
+ */
 module.exports = {
   root: true,
   env: {
@@ -34,6 +38,7 @@ module.exports = {
     ],
     '@typescript-eslint/no-explicit-any': 'off',
     '@typescript-eslint/no-unused-vars': 'off',
+    '@typescript-eslint/explicit-module-boundary-types': 'off',
 
     /* set personal preferences below */
     'max-len': [

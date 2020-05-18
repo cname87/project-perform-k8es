@@ -2,7 +2,7 @@
 
 The functionality in this POC is limited but the application is fully production-ready and very extensible.
 
-The application is hosted on Google Cloud Platform at <https://project-perform.appspot.com/>.  It runs a Single Page Application on the user’s web browser and accesses a database hosted by MongoDB Atlas via a REST API described using OpenAPI specification at <https://app.swaggerhub.com/apis/cname87/Teams/1.0.0>.  The source code is hosted on GitHub at <https://github.com/cname87/project-perform>. Full CI/CD is in place with every check-in to the master branch triggering a build on GCP that runs full backend and front-end unit tests and application e2e tests before deploying to the GCP App Engine Standard server.
+The application is hosted on Google Cloud Platform at <https://projectperform.com/>.  It runs a Single Page Application on the user’s web browser and accesses a database hosted by MongoDB Atlas via a REST API described using OpenAPI specification at <https://app.swaggerhub.com/apis/cname87/Teams/1.0.0>.  The source code is hosted on GitHub at <https://github.com/cname87/project-perform>. Full CI/CD is in place with every check-in to the master branch triggering a cloud build on GCP that runs full backend and front-end unit tests and application e2e tests before deploying to a Google Kubernetes Engine cluster.
 
 The web application is built on a MEAN stack – ‘MongoDB, Express.js, Angular, Node.js’ with full-featured logging, error handling reporting & monitoring via <https://rollbar.com/>, high unit test coverage using Mocha and Karma/Jasmine, & full e2e test coverage using Protractor.  It includes Auth0 authentication using <https://auth0.com/>. It is hosted on Google Cloud Platform App Engine which offers performance, reliability & monitoring.
 
@@ -49,4 +49,4 @@ The web application is built on a MEAN stack – ‘MongoDB, Express.js, Angular
 * **Google Cloud Build**: Cloud Build is a service that executes builds on GCP’s infrastructure producing a Docker image for deployment.
 * **Docker**: Docker is the underlying container technology used by Cloud Build.
 * **Google Cloud Storage**: Cloud Storage is used to host environment variables, certs, keys and other sensitive data not hosted on GitHub.
-* **Google Cloud Platform**: The application is hosted on GCP App Engine – Standard.
+* **Google Cloud Platform**: The application is hosted on the Google GKE environment.

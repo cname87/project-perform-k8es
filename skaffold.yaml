@@ -8,30 +8,36 @@ build:
   artifacts:
   - image: pp-backend
     context: backend
+    sync:
+      manual:
+        - src: 'dist/**/*'
+          dest: /
   - image: pp-frontend
     context: frontend
+    sync:
+      manual:
+        - src: 'dist/**/*'
+          dest: /usr/share/www/
+          strip: 'dist'
   tagPolicy:
     dateTime: {}
   # Use locally-installed build tool (Docker) to build
   local: {
-    # Default is push true only for remote clusters
-    push: false
+    # If not specified, push true only for remote clusters
+    push: true
   }
-
-# TO DO: instruct Skaffold to run container structure tests
-# test:
-#   - image: gcr.io/project-perform/xxx
-#     structureTests:
-#      - './structure-test/*'
-
 deploy:
+  statusCheckDeadlineSeconds: 300
   kubectl:
-  # defines the Kubernetes manifests to deploy on each run
+  # Defines the Kubernetes manifests to deploy on each run
     manifests:
-    - ./kubernetes-manifests/backend.service.yaml
-    - ./kubernetes-manifests/frontend.service.yaml
-    - ./kubernetes-manifests/backend.deployment.yaml
-    - ./kubernetes-manifests/frontend.deployment.yaml
+      - ./kubernetes-manifests/backend.service.yaml
+      - ./kubernetes-manifests/frontend.service.yaml
+      - ./kubernetes-manifests/backend.deployment.yaml
+      - ./kubernetes-manifests/frontend.deployment.yaml
+      - ./secrets/app.secret.yaml
+      - ./kubernetes-manifests/gke.ingress.yaml
+      # - ./kubernetes-manifests/nginx.ingress.yaml // Used with Minikube
 portForward:
   # Forward frontend port 80 to localhost:8080
   # (localhost is seen as secure and avoids exception from Auth0)

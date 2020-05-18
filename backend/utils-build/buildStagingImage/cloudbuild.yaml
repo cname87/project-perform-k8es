@@ -6,8 +6,8 @@ steps:
   args: [
     'build',
     '-f', 'Dockerfile',
-    '-t', 'gcr.io/$PROJECT_ID/node-with-puppeteer:v12.13.0',
-        '-t', 'gcr.io/$PROJECT_ID/node-with-puppeteer:latest',
+    '-t', 'gcr.io/$PROJECT_ID/node-with-puppeteer:v13.12.0',
+    '-t', 'gcr.io/$PROJECT_ID/node-with-puppeteer:latest',
     '.',
   ]
 

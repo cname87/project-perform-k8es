@@ -333,6 +333,7 @@
     "terminal.integrated.cursorBlinking": true,
     "terminal.integrated.cwd": "./", // could set to ./backend or ./frontend
     "terminal.integrated.rendererType": "dom",
+
     "terminal.integrated.commandsToSkipShell": [
       /* all runTask key bindings skip the shell */
       "workbench.action.tasks.runTask",
@@ -358,7 +359,7 @@
     "vsicons.dontShowNewVersionMessage": true,
 
     "workbench.colorCustomizations": {},
-    "workbench.colorTheme": "Visual Studio Dark",
+    "workbench.colorTheme": "Default Dark+",
     "workbench.editor.highlightModifiedTabs": true,
     "workbench.iconTheme": "vscode-icons",
     "workbench.settings.openDefaultSettings": true,

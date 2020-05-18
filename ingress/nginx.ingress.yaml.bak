@@ -11,9 +11,9 @@
       - secretName: pptest-com-tls
         hosts:
           - pptest.com
-    #backend:
-    #  serviceName: pp-frontend-service
-    #  servicePort: 80
+    backend:
+      serviceName: pp-frontend-service
+      servicePort: 80
     rules:
       # Host must match the host in tls
       - host: pptest.com

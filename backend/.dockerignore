@@ -1,0 +1,5 @@
+# Exclude files from the container image.
+coverage
+# Dockerfile
+node_modules
+debug.log

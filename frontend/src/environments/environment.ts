@@ -14,7 +14,7 @@ export const environment = {
   /* enables production mode if true */
   production: false,
 
-  /* allows e2e error anc cache tests be run */
+  /* allows e2e error and cache tests be run */
   e2eTesting: false,
 
   /* console logging level */
@@ -24,4 +24,4 @@ export const environment = {
   get apiUrl(): string {
     return 'https://localhost:8080/api-v1/';
   },
-}; // Included with Angular CLI.
+};

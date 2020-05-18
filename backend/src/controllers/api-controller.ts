@@ -14,7 +14,7 @@ const { modulename, debug } = setupDebug(__filename);
 const router = Router();
 
 /* initialize openapi-backend middleware */
-/* this takes a long time to run => run once only for performance - called during server startup, (e.g. from GCP _ah/warmup request) so does not have to run when client makes its first call */
+/* this takes a long time to run => run once only for performance - called during first-time server startup => a warm-up request is a good idea. */
 let api: OpenAPIBackend;
 export const initOpenApi = (appLocals: Perform.IAppLocals) => {
   debug(`${modulename}: running initOpenApi`);

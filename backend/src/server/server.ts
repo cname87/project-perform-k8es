@@ -148,7 +148,6 @@ async function listenServer(
     /* ask the server to listen and trigger event */
     this.expressServer.listen({
       port: serverPort,
-      // GCP requires to listen on 0.0.0.0 - If host is omitted, the server will accept connections on the unspecified IPv6 address (::) when IPv6 is available, or the unspecified IPv4 address (0.0.0.0) otherwise.
     });
   }
 

@@ -3,8 +3,6 @@
  *
  * When GCP triggers a build from github it needs to copy the .env and database certs files from a GCP Local Storage bucket which means that the file on the GCP Local Storage environment must be in sync with those on the local development environment.
  *
- * This utility is ONLY executed during development environment backend or frontend builds, i.e. not from GCP - an environment variable set before a GCP Build ensures that the utility execution is skipped during GCP Builds.
- *
  * Usage:
  *
  * The utility is run from an npm script:

@@ -38,13 +38,12 @@ export default function main(config) {
     logLevel: config.LOG_INFO,
     autoWatch: false,
 
-    /* choose browser in angular.json configuration */
-    //  browsers: ['Chrome', 'ChromeHeadless_NoSandbox'],
+    /* Note: Choose browser in angular.json configuration */
 
     customLaunchers: {
       ChromeHeadlessNoSandbox: {
         base: 'ChromeHeadless',
-        flags: ['--no-sandbox'], // needed for GCP Docker build
+        flags: ['--no-sandbox'], // needed for GCP
         displayName: 'ChromeHeadlessNoSandbox',
       },
     },

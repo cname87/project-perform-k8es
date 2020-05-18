@@ -364,13 +364,18 @@
       "group": "test",
       "problemMatcher": []
     },
-    // Se some skaffold env variables - does not work
+    // Runs skaffold as per the skaffold-run.sh script
     {
-      "label": "skaffold-clean",
+      "label": "skaffold-run",
       "type": "shell",
       "linux": {
-        /* Set certain env variables.  Used as preLaunchTask before 'Run On Kubernetes' launch configuration, but it does not seem to work, i.e. the env variables do not appear to affect the skaffold call */
-        "command": "source ~/bin/skaffold-clean.sh"
+        "command": "./skaffold-run.sh"
+      },
+      "options": {
+        "cwd": "${workspaceFolder}",
+        "env": {
+          "PATH": "/home/cname87/.nvm/versions/node/v13.12.0/bin:/home/cname87/google-cloud-sdk/bin:/home/cname87/bin:/usr/sbin:/sbin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin"
+        }
       },
       "presentation": {
         "echo": true,

@@ -16,17 +16,14 @@ describe('AuthService', () => {
   /* set any expected values */
   function createExpected() {
     const loginRedirectDefault = {
-      /* eslint-disable-next-line @typescript-eslint/camelcase, camelcase */
       redirect_uri: `${window.location.origin}${routes.callback.path}`,
       appState: { target: '/' },
     };
     const loginRedirectPath = {
-      /* eslint-disable-next-line @typescript-eslint/camelcase, camelcase */
       redirect_uri: `${window.location.origin}${routes.callback.path}`,
       appState: { target: '/testPath' },
     };
     const logoutParameter = {
-      /* eslint-disable-next-line @typescript-eslint/camelcase, camelcase */
       client_id: auth0Config.client_id,
       returnTo: `${window.location.origin}`,
     };

@@ -4,48 +4,53 @@
   // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
   "version": "0.2.0",
   "configurations": [
-      // Runs a skaffold command - see https://cloud.google.com/code/docs/vscode/running-an-application for settings
+      /* Runs skaffold dev to build and watch */
+      /* See https://cloud.google.com/code/docs/vscode/running-an-application for settings */
+      /* Can run with (f5) or without debug  (Ctrl+F5) */
       {
         "name": "Run on Kubernetes",
         "type": "cloudcode.kubernetes",
         "request": "launch",
         "skaffoldConfig": "${workspaceFolder}/skaffold.yaml",
         "watch": true,
-        "cleanUp": true,
+        "cleanUp": false,
         "portForward": true,
         // Where images are pushed (if so configured)
         // Can also be set in Skaffold's global config
         "imageRegistry": "gcr.io/project-perform",
     },
-    // Runs a skaffold command - TBC
+    /* Attach to backend pods for debug */
+    /* Launch 'Run on Kubernetes' with no debug (Ctrl+F5) and then launch this and it attaches. */
+    {
+      "name": "Debug Backend on Kubernetes",
+      "type": "cloudcode.kubernetes",
+      "request": "attach",
+      "podSelector": {
+          "app": "pp",
+          "tier": "backend"
+      },
+      "language": "Node",
+      "debugPort": 9229,
+      "localRoot": "${workspaceFolder}/backend",
+      "remoteRoot": "/backend"
+  },
+    /* Attach to frontend pods for debug */
+    /* Launch 'Run on Kubernetes' with no debug (Ctrl+F5) and then launch this and it attaches. */
+    /* This has no value when frontend pod is an nginx server ? /*
+    /* Use Chrome Dev Tools to debug client-side code */
     {
         "name": "Debug Frontend on Kubernetes",
         "type": "cloudcode.kubernetes",
         "request": "attach",
         "podSelector": {
-            "app": "nodejs-guestbook",
+            "app": "pp",
             "tier": "frontend"
         },
         "language": "Node",
         "debugPort": 9229,
-        "localRoot": "${workspaceFolder}/src/frontend",
+        "localRoot": "${workspaceFolder}/frontend",
         "remoteRoot": "/frontend"
     },
-    // Runs a skaffold command - TBC
-    {
-        "name": "Debug Backend on Kubernetes",
-        "type": "cloudcode.kubernetes",
-        "request": "attach",
-        "podSelector": {
-            "app": "nodejs-guestbook",
-            "tier": "backend"
-        },
-        "language": "Node",
-        "debugPort": 9229,
-        "localRoot": "${workspaceFolder}/src/backend",
-        "remoteRoot": "/backend"
-    },
-
     // Serve frontend with backend - use for frontend debug with watch
     {
       /*
@@ -68,7 +73,7 @@
         "webpack:///./*":   "${workspaceFolder}/frontend/*",
       },
     },
-    // Test frontend- use for frontend unit test debug with watch
+    // Test frontend - use for frontend unit test debug with watch
     {
       /*
       Runs 'Test Frontend' task first, i.e. 'ng test:dev', which compiles and serves the front end and opens Chrome and connects to the Karma runner and runs the unit tests.  Once this task exits without error, following the test run, it THEN starts Chrome again and connects to the Karma runner for a second test run.  Debug should work on the second session.
@@ -118,16 +123,23 @@
     // e2e frontend with backend - use for frontend e2e test debug
     {
       /**
-      Starts the server and runs e2e tests against it allowing VSCode debug of the e2e .spec files. (Use Chrome DevTools if browser-side debug is needed)
-      NOTE: Protractor uses a configured baseUrl to point all url requests to a host.  My frontend SPA routes any backend calls to the same host with an added path (e.g. /api-v1). This does NOT use a proxy to redirect the backend calls, as ng e2e does, so the server that protractor points to must both serve the SPA and handle backend calls.  Therefore I need to have both backend and frontend containers up before running this e2e test.
-      NOTE: The frontend/backend server needs to be started first => launch the 'Run On Kubernetes' configuration first.
-      *** NOTE: This does NOT pre-compile the backend like ng e2e - the already-compiled front-end is used.  Thus the front end must be compiled using the e2e enviroment file if you want to run the cache or error test files (which rely on e2e environment settings) - run the npm script or the VSCode task that compiles with the e2e environment file.
-      Choose .dev or .production configuration by editing args below - edit the .env files to select which spec files to run.
+      1. This does NOT pre-compile the backend like ng e2e.  Therefore you must compile the front-end in advance.  There are 3 compile options (which each load a different environment file.) - a parameter sets the interceptors that allow error or cache testing:
+      (i) ngBuild:dev - should be set to disallow error and cache tests.
+      (ii) ngBuild:prod - should be set to disallow error and cache tests.
+      (iii) ngBuild:e2e - should be set to allow cache and error tests.
+      2. You need to start the application (frontend & backend server) in advance of running this.
+      NOTE: My frontend SPA routes any backend calls to the same host with an added path (e.g. /api-v1). This launch configuration does NOT use a proxy to redirect the backend calls, as ng e2e does, so the server that Protractor points to must both serve the SPA and handle backend calls.
+      NOTE: Protractor uses a configured baseUrl to point all url requests to a host.  The frontend must be available on the configured Protractor baseUrl.  baseUrl is set in the Protractor conf file:
+      - -dev.conf: localhost:8080.
+      - -staging.conf: backend:8080 - used only in cloudbuild.
+      - -production.conf: project-perform.com - the production GKE cluster.
+      4. Choose the .dev, .staging or .production configuration by editing args below.  These point at a corresponding e2e .env file. The .env file lists the .spec files which are run.
+      5. This then runs e2e tests against the application allowing VSCode debug of the e2e .spec files. Use Chrome DevTools if browser-side debug is needed.
       VALID OPTIONS:
-      - Compile ngBuild:e2e (which allows error and cache testing) and choose -dev conf file (which is configured to test against a local server and test cache and error testing).
-      - Compile ngBuild:prod and choose -production conf file (which is configured to test against the GCP server and skip cache and error testing).  (You can use the other two compile types with this conf file without error).
-      - Compile ngBuild:staging and choose -staging conf file (which is configured to test against a local server and skip cache and error testing). (You can use the other two compile types with this conf file without error).
-      NOTE: You can run this against a deployed build by setting the BASE_URL below.
+      - Compile ngBuild:e2e (which allows error and cache testing) and then choose the -dev conf file (which is configured to target a local server).
+      - Compile ngBuild:prod (whihc disallows error and cache testing) and choose the -production conf file (which is configured to test against the GKE production server and skip cache and error testing).
+      - Note: The -staging conf file is configured to test against a server only available on cloudbuild and skip cache and error testing).
+      NOTE: You can target a build directly by setting the BASE_URL below.
       */
       "name": "E2e frontend with backend",
       "type": "node",
@@ -138,13 +150,12 @@
       "args": [
         /* Edit here to choose one of either -dev or -production configuration file . */
         "${workspaceFolder}/frontend/e2e/src/config/protractor-dev.conf.js",
-        // "${workspaceFolder}/frontend/e2e/src/config/protractor-staging.conf.js",
         // "${workspaceFolder}/frontend/e2e/src/config/protractor-production.conf.js",
       ],
       "env": {
         /* can set the base-url to a specific deployed build */
-        "BASE_URL": "http://localhost:8080"
-        // "BASE_URL": "https://ci-test-dot-project-perform.appspot.com"
+        // "BASE_URL": "http://localhost:8080"
+        // "BASE_URL": "https://project-perform.com"
       },
       "cwd": "${workspaceFolder}/frontend",
       "outputCapture": "std",
@@ -164,6 +175,9 @@
       "program": "${workspaceFolder}/backend/src/app.ts",
       "cwd": "${workspaceFolder}/backend",
       "env": {
+        "NODE_ENV": "development",
+        // "NODE_ENV": "production",
+        // "NODE_ENV": "staging"
       },
       "outputCapture": "std",
       "console": "integratedTerminal",
