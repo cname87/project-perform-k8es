@@ -44,7 +44,7 @@ describe('the application', () => {
   let spyDumpError: any;
 
   const options = {
-    url: configServer.HOST,
+    url: `${process.env.HOST}:${process.env.PORT}`,
   };
 
   const serverUpMessage = `${path.sep}app.js: server up and running`;

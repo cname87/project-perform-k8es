@@ -31,9 +31,6 @@ import puppeteer from 'puppeteer';
 import winston from 'winston';
 import { Request } from 'express';
 
-/* internal dependencies */
-import { configServer } from '../../configServer';
-
 const { modulename, debug } = setupDebug(__filename);
 chai.use(sinonChai);
 const { expect } = chai;
@@ -45,7 +42,7 @@ sinon.assert.expose(chai.assert, {
 const appPath = '../../app';
 const dbTestName = 'test';
 /* url that initiates the client-fired tests */
-const fireTestUrl = `${configServer.HOST}testServer/api-loadMocha.html`;
+const fireTestUrl = `${process.env.HOST}:${process.env.PORT}/testServer/api-loadMocha.html`;
 /* hold browser open for this time (ms) to allow for visual inspection */
 const browserDelay = process.env.BROWSER_DELAY
   ? parseInt(process.env.BROWSER_DELAY, 10)

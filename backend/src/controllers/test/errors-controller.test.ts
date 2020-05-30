@@ -30,7 +30,6 @@ import puppeteer from 'puppeteer';
 import winston from 'winston';
 
 /* internal dependencies */
-import { configServer } from '../../configServer';
 import * as errorHandlerModule from '../../handlers/error-handlers';
 
 const { modulename, debug } = setupDebug(__filename);
@@ -43,7 +42,7 @@ sinon.assert.expose(chai.assert, {
 /* variables */
 const appPath = '../../app';
 /* url that initiates the client-fired tests */
-const fireTestUrl = `${configServer.HOST}testServer/errors-loadMocha.html`;
+const fireTestUrl = `${process.env.HOST}:${process.env.PORT}/testServer/errors-loadMocha.html`;
 const browserDelay = process.env.BROWSER_DELAY
   ? parseInt(process.env.BROWSER_DELAY, 10)
   : 0;

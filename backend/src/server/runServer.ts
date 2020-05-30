@@ -16,8 +16,9 @@ import express, { Application } from 'express';
 import favicon from 'serve-favicon';
 import urlParser from 'url';
 import util from 'util';
-import { setupDebug } from '../utils/src/debugOutput';
+import path from 'path';
 
+import { setupDebug } from '../utils/src/debugOutput';
 const { modulename, debug } = setupDebug(__filename);
 
 /**
@@ -93,7 +94,7 @@ async function runServer(app: Application) {
   }
 
   /* serve favicon */
-  app.use(favicon(app.appLocals.configServer.FAVICON));
+  app.use(favicon(path.resolve(process.env.FAVICON!)));
 
   /* test functionality only */
   if (process.env.TEST_PATHS === 'true') {
