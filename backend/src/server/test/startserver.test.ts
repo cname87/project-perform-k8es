@@ -1,19 +1,16 @@
 import chai from 'chai';
 import express from 'express';
-import { setupDebug } from '../../utils/src/debugOutput';
-
-import { configServer as configOriginal } from '../../configServer';
-import { Logger } from '../../utils/src/logger';
-import { DumpError } from '../../utils/src/dumpError';
-
-/* set up mocha, sinon & chai */
 import 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-
 import winston from 'winston';
 
+import { Logger } from '../../utils/src/logger';
+import { DumpError } from '../../utils/src/dumpError';
+import { startServer } from '../startserver';
+import { setupDebug } from '../../utils/src/debugOutput';
 setupDebug(__filename);
+
 chai.use(sinonChai);
 const { expect } = chai;
 sinon.assert.expose(chai.assert, {
@@ -21,30 +18,20 @@ sinon.assert.expose(chai.assert, {
 });
 
 describe('Start server tests', () => {
-  /* create a copy of config that you can edit */
-  const config: any = {};
-  let key = '';
-  for (key in configOriginal) {
-    if (configOriginal.hasOwnProperty(key)) {
-      config[key] = configOriginal[key];
-    }
-  }
-
   /* internal dumpError and logger utilities */
   const logger = new Logger() as winston.Logger;
   const dumpError = new DumpError(logger);
 
   let app: any;
   let objects: any = {};
-  let startServer: any;
+  // let startServer: TStartServer;
 
   before('Set up objects', () => {
-    startServer = require('../startserver').startServer;
+    // startServer = require('../startserver').startServer;
     /* set up the objects object */
     app = express();
     objects = app.locals = {
       servers: [], // holds created http servers
-      config,
       logger,
       dumpError,
     };
@@ -65,7 +52,6 @@ describe('Start server tests', () => {
       await startServer(
         app,
         objects.servers,
-        objects.config,
         objects.logger,
         objects.dumpError,
       );
@@ -87,14 +73,12 @@ describe('Start server tests', () => {
       await startServer(
         app,
         objects.servers,
-        objects.config,
         objects.logger,
         objects.dumpError,
       );
       await startServer(
         app,
         objects.servers,
-        objects.config,
         objects.logger,
         objects.dumpError,
       );

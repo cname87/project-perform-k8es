@@ -102,7 +102,6 @@ declare namespace Perform {
   }
 
   export interface IAppLocals {
-    configServer: typeof import('../configServer').configServer;
     /* created http(s) servers */
     servers: Server[];
     controllers: IControllers;

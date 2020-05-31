@@ -105,7 +105,7 @@ async function runServer(app: Application) {
     app.use(
       '/testServer',
       express.static(
-        app.appLocals.configServer.STATIC_TEST_PATH,
+        path.resolve(process.env.STATIC_TEST_PATH!),
         staticTestOptions,
       ),
     );
@@ -113,7 +113,7 @@ async function runServer(app: Application) {
     app.use(
       '/node_modules',
       express.static(
-        app.appLocals.configServer.NODE_MODULES_PATH,
+        path.resolve(process.env.NODE_MODULES_PATH!),
         staticTestOptions,
       ),
     );
@@ -145,7 +145,7 @@ async function runServer(app: Application) {
   /* calls a api handler */
   app.use(
     /* use for api paths only */
-    app.appLocals.configServer.API_BASE_PATH,
+    process.env.API_BASE_PATH!,
     (req, res, next) => {
       debug(`${modulename}: calling the api controller`);
       app.appLocals.controllers.api(req, res, next);

@@ -13,12 +13,18 @@ import { setupDebug } from '../utils/src/debugOutput';
 
 const { modulename, debug } = setupDebug(__filename);
 
+type TStartServer = (
+  app: express.Application,
+  servers: Server[],
+  logger: winston.Logger,
+  dumpError: Perform.DumpErrorFunction,
+) => Promise<void>;
+
 /**
  * Starts the http server.
  * @param
  * - app: The express app object.
  * - servers: Used to return the started server object.
- * - config: Configuration object.
  * - logger: Logging service.
  * - dumpError: Error logging service.
  * @returns
@@ -27,17 +33,12 @@ const { modulename, debug } = setupDebug(__filename);
  * Throws an error if an error occurs during the server listen request.
  */
 
-async function startServer(
+const startServer: TStartServer = async (
   app: express.Application,
   servers: Server[],
-  config: {
-    PORT: number;
-    SVR_LISTEN_TRIES: number;
-    SVR_LISTEN_TIMEOUT: number;
-  },
   logger: winston.Logger,
   dumpError: Perform.DumpErrorFunction,
-) {
+) => {
   debug(`${modulename}: running startServer`);
 
   /**
@@ -70,8 +71,7 @@ async function startServer(
   const serverType = http;
   const serverName = 'http';
   const serverOptions = {};
-  /* process.env.PORT as set by the K8es configuration - fall back to the same port configured locally */
-  const serverPort = +process.env.PORT! || config.PORT;
+  const serverPort = +process.env.PORT!;
 
   /* start the server */
   await connectServer(
@@ -80,12 +80,12 @@ async function startServer(
     serverOptions,
     app,
     serverPort,
-    config.SVR_LISTEN_TRIES,
-    config.SVR_LISTEN_TIMEOUT,
+    +process.env.SVR_LISTEN_TRIES!,
+    +process.env.SVR_LISTEN_TIMEOUT!,
   );
 
   debug(`${modulename}: http server up and listening`);
-}
+};
 
-/* export the start server function */
+/* Export the start server function */
 export { startServer };

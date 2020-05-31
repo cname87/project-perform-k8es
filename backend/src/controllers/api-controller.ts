@@ -3,24 +3,24 @@
  * It is to serve all api requests.
  */
 
-/* external dependencies */
 import { Router, Request, NextFunction, Response } from 'express';
 import OpenAPIBackend from 'openapi-backend';
 import util from 'util';
+import path from 'path';
 import { setupDebug } from '../utils/src/debugOutput';
 
 const { modulename, debug } = setupDebug(__filename);
 
 const router = Router();
 
-/* initialize openapi-backend middleware */
-/* this takes a long time to run => run once only for performance - called during first-time server startup => a warm-up request is a good idea. */
+/* Initialize openapi-backend middleware */
+/* This takes a long time to run => run once only for performance - called during first-time server startup => a warm-up request is a good idea. */
 let api: OpenAPIBackend;
 export const initOpenApi = (appLocals: Perform.IAppLocals) => {
   debug(`${modulename}: running initOpenApi`);
   /* route paths as per the api file */
   api = new OpenAPIBackend({
-    definition: appLocals.configServer.OPENAPI_FILE,
+    definition: path.resolve(process.env.OPENAPI_FILE!),
     apiRoot: '/api-v1',
     strict: true,
     validate: true,
