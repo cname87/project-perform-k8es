@@ -19,7 +19,7 @@ export const authenticateHandler = (
   req: Request,
   res: Response,
   next: NextFunction,
-) => {
+): void => {
   debug(`${modulename}: running authenticateHandler`);
 
   /* retrieves the rsa signing key */

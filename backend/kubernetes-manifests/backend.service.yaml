@@ -10,7 +10,7 @@ spec:
   ports:
     - protocol: TCP
       # The port this service will be available is on.
-      # Must match nginx conf file setting.
+      # Must match frontend nginx conf file setting.
       port: 80
       # The container port the service will forward to.
       # Named in pod spec in deployment yaml.

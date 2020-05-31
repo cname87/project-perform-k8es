@@ -20,10 +20,11 @@ spec:
         tier: frontend
     spec:
       containers:
-      - name: pp-frontend-deploy-1
+      - name: pp-frontend-deploy
         image: gcr.io/project-perform/pp-frontend:v1.0.0
         ports:
         - name: nginx-port
+          # Frontend server must be open on this port
           containerPort: 80
         terminationMessagePath: /dev/termination-log
         terminationMessagePolicy: File

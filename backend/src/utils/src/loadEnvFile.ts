@@ -9,6 +9,7 @@
 import dotenv from 'dotenv';
 import findup from 'find-up';
 
+/* Set path to env file dependent on process.env.NODE_ENV */
 let envPath: string;
 switch (process.env.NODE_ENV) {
   case 'production': {
@@ -25,7 +26,12 @@ switch (process.env.NODE_ENV) {
   }
 }
 
+/* Set path to common env file containing secrets */
+const envPathSecrets = findup.sync('env', { cwd: __dirname })!;
+
+/* Load both .env files */
 dotenv.config({ path: envPath });
+dotenv.config({ path: envPathSecrets });
 
 /* set up debug function after DEBUG variable is set */
 import { setupDebug } from './debugOutput';

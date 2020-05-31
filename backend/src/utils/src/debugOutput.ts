@@ -7,7 +7,12 @@
 import { sep } from 'path';
 import debugFunction from 'debug';
 
-export const setupDebug = (filename: string) => {
+interface ISetup {
+  modulename: string;
+  debug: debugFunction.Debugger;
+}
+
+export const setupDebug = (filename: string): ISetup => {
   const modulename = filename.slice(filename.lastIndexOf(sep));
   const debug = debugFunction(`PP_${modulename}`);
   debug.log = console.log.bind(console);

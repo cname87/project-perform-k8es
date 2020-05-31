@@ -19,34 +19,52 @@ STATIC_IP_NAME=pp-ip
 # The name of the gs bucket to store config files
 BUCKET=project-perform-k8es-config-files
 
+echo -e "\nResetting Kubectl configuration file\n"
+cat <<EOF > ~/.kube/config
+apiVersion: v1
+clusters: []
+contexts: []
+current-context: ""
+kind: Config
+preferences: {}
+users: []
+EOF
+
 echo -e "\nCreating cluster\n"
 # Using smallest CPU, pre-emptible VMs, with 32GB boot disk (as opposed to default 100GB)
 gcloud container clusters create ${CLUSTER} \
 --project="${PROJECT}" \
 --zone="${ZONE}" \
+--cluster-version=1.16.8-gke.15 \
 --machine-type=g1-small \
 --preemptible \
 --disk-size=32 \
---scopes=cloud-platform, storage-full \
+--scopes=cloud-platform,storage-rw,gke-default \
 --enable-ip-alias \
 --num-nodes=3 \
 --quiet
 
-echo -e "\nConfirm cluster is running\n"
+echo -e "\nGetting credentials\n"
+gcloud container clusters get-credentials ${CLUSTER}
+
+echo -e "\nConfirming cluster is running\n"
 gcloud container clusters list
 
-echo -e "\nGet credentials\n"
-gcloud container clusters get-credentials ${CLUSTER} \
---zone "${ZONE}"
-
-echo -e "\nConfirm connection to cluster\n"
+echo -e "\nConfirming connection to cluster\n"
 kubectl cluster-info
 
-# Note: It is assumed all required GCP APIs are enabled and have appropriate permissions on the cluster
+# Note: It is assumed all required GCP APIs are enabled and have appropriate permissions on the cluster, i.e. ...
+# - Cloud Build API is enabled
+# - Cloud Build service account has access to your project's clusters - grant it the Kubernetes Engine Developer Role
 
-# Create a bucket that will be used to store the Kubernetes configurations, suggested and expanded, by gke-deploy
+# If already created, a non-fatal error will be returned
+echo -e "\nCreating a bucket to store gke-deploy Kubernetes configurations\n"
 gsutil mb -p "$PROJECT" gs://$BUCKET
 
-echo -e "\nReserve and list a global static ip address\n"
+# If already created, an error will be returned but the ip address will be listed
+echo -e "\nReserving and listing a global static ip address\n"
 gcloud compute addresses create ${STATIC_IP_NAME} --global
 gcloud compute addresses describe ${STATIC_IP_NAME} --global
+
+# Can choose to run Skaffold to load the application on to the cluster
+# ./skaffold-run.sh

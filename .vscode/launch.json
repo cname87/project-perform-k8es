@@ -15,8 +15,6 @@
         "watch": true,
         "cleanUp": false,
         "portForward": true,
-        // Where images are pushed (if so configured)
-        // Can also be set in Skaffold's global config
         "imageRegistry": "gcr.io/project-perform",
     },
     /* Attach to backend pods for debug */
@@ -175,9 +173,9 @@
       "program": "${workspaceFolder}/backend/src/app.ts",
       "cwd": "${workspaceFolder}/backend",
       "env": {
-        "NODE_ENV": "development",
+        // "NODE_ENV": "development",
         // "NODE_ENV": "production",
-        // "NODE_ENV": "staging"
+        "NODE_ENV": "staging"
       },
       "outputCapture": "std",
       "console": "integratedTerminal",

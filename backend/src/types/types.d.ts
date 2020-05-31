@@ -40,7 +40,7 @@ declare namespace Perform {
   /* mongoose model */
   export type TModel = import('mongoose').Model<
     import('mongoose').Document,
-    {}
+    Record<string, unknown>
   >;
   /* used in dumpError utility */
   export type DumpErrorFunction = (

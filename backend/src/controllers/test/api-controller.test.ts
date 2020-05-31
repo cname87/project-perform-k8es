@@ -59,7 +59,7 @@ describe('server API', () => {
   let app: Perform.IServerIndex;
   let eventEmitter: EventEmitter;
   let spyConsoleError: sinon.SinonSpy<[any?, ...any[]], void>;
-  let spyLoggerError: sinon.SinonSpy<[object], winston.Logger>;
+  let spyLoggerError: sinon.SinonSpy<any, winston.Logger>;
   let spyDumpError: sinon.SinonSpy<any>;
 
   /* awaits that server app.ts has run and fired the completion event */

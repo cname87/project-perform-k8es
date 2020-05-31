@@ -35,7 +35,7 @@ describe('the application', () => {
   const dumpError = new DumpError(logger) as Perform.DumpErrorFunction;
 
   let app: any = {};
-  let runIndex: (extraOptions?: object) => void;
+  let runIndex: (extraOptions?: Record<string, unknown>) => void;
   let spyDebug: any;
   let spyLoggerError: any;
   let spyLoggerInfo: any;

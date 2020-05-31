@@ -31,13 +31,14 @@ deploy:
   kubectl:
   # Defines the Kubernetes manifests to deploy on each run
     manifests:
-      - ./kubernetes-manifests/backend.service.yaml
-      - ./kubernetes-manifests/frontend.service.yaml
-      - ./kubernetes-manifests/backend.deployment.yaml
-      - ./kubernetes-manifests/frontend.deployment.yaml
-      - ./secrets/app.secret.yaml
-      - ./kubernetes-manifests/gke.ingress.yaml
-      # - ./kubernetes-manifests/nginx.ingress.yaml // Used with Minikube
+      - ./backend/certs/backend.secret.yaml
+      - ./backend/certs/backend.configmap.yaml
+      - ./ingress/app.certificate.yaml
+      - ./ingress/app.ingress.yaml
+      - ./backend/kubernetes-manifests/backend.service.yaml
+      - ./backend/kubernetes-manifests/backend.deployment.yaml
+      - ./frontend/kubernetes-manifests/frontend.service.yaml
+      - ./frontend/kubernetes-manifests/frontend.deployment.yaml
 portForward:
   # Forward frontend port 80 to localhost:8080
   # (localhost is seen as secure and avoids exception from Auth0)

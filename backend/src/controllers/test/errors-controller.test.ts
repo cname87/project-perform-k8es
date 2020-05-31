@@ -58,8 +58,8 @@ describe('Server Errors', () => {
   let app: Perform.IServerIndex;
   let eventEmitter: EventEmitter;
   let spyConsoleError: sinon.SinonSpy<[any?, ...any[]], void>;
-  let spyLoggerError: sinon.SinonSpy<[object], winston.Logger>;
-  let spyDumpError: sinon.SinonSpy<any>; // TODO improve type
+  let spyLoggerError: sinon.SinonSpy<any, winston.Logger>;
+  let spyDumpError: sinon.SinonSpy<any>;
   let spyErrorHandlerDebug: sinon.SinonSpy<any>;
   let stubProcessEmit: sinon.SinonStub<
     ['multipleResolves', NodeJS.MultipleResolveListener],

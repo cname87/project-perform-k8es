@@ -24,15 +24,18 @@ spec:
         image: gcr.io/project-perform/pp-backend:v1.0.0
         ports:
         - name: app-port
+          # Backend server must be open on this port
           containerPort: 8080
         env:
-        #- name: NODE_ENV
-        #  value: 'production'
+        # Env variables here will override configmap below
+        # Set PORT to match containerPort
         - name: PORT
           value: '8080'
         envFrom:
         - configMapRef:
             name: pp-backend-configmap
+        - secretRef:
+            name: pp-backend-secret
         # Stops sending requests if this fails
         readinessProbe:
           httpGet:

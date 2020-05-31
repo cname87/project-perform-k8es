@@ -287,7 +287,6 @@
     "files.associations": {
       "*.json": "jsonc"
     },
-    "files.exclude": {},
 
     "git.enableSmartCommit": true,
     "gitlens.views.repositories.files.layout": "tree",

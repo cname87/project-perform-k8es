@@ -15,6 +15,7 @@ BUCKET=gs://project-perform-k8es-config-files
 # Run build, replacing substitution variables.
 # Run locally or on the cloud by commenting/uncommenting.
 
+
 # gcloud builds submit \
 cloud-build-local \
 --dryrun=false \

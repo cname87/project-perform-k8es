@@ -1,5 +1,5 @@
 /**
- * Utility to upload .env and other files to GCP Local Storage.
+ * Utility to upload .env-e2e to GCP Local Storage.
  *
  * When GCP triggers a build from github it needs to copy the .env files from a GCP Local Storage bucket (as these are not committed to git) which means that the files on the GCP Local Storage environment must be in sync with those on the local development environment.
  *
@@ -25,11 +25,16 @@ import findup from 'find-up';
 import { Storage } from '@google-cloud/storage';
 
 console.log('Uploading secret files with GCP Local Storage');
+const storage = new Storage();
 
 /* Find directory (upwards) containing package.json */
 export const rootPath = path.dirname(
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   findup.sync('package.json', { cwd: __dirname })!,
 );
+
+/* The root directory to store the files on the gsutil bucket */
+const rootDir = 'frontend/';
 
 /* Set the path to the GCP Storage credentials here (as well as in the .env files as this may be called when no .env file is loaded) */
 process.env.GOOGLE_APPLICATION_CREDENTIALS = path.resolve(
@@ -40,30 +45,18 @@ process.env.GOOGLE_APPLICATION_CREDENTIALS = path.resolve(
   'gcpStorageKey.json',
 );
 
-/* The client library will look for credentials in the environment variable GOOGLE_APPLICATION_CREDENTIALS */
-const storage = new Storage();
-
-/* The root directory to store the files on the gsutil bucket */
-const rootDir = 'backend/';
-
 /* Name of the bucket on GCP Local Storage */
 export const bucketName = 'project-perform-gcp-environment-files';
 
 /* Define a set of upload jobs */
 
-const envBackend = {
-  /* Files to be uploaded */
-  filesToUpload: ['.envDevelopment', '.envProduction', '.envStaging'],
-  /* Path relative to rootpath - directory containing package.json */
-  deltaPath: '',
-};
-const dbCerts = {
+const envFrontendE2e = {
   /* Names of files to be uploaded */
-  filesToUpload: ['mongoKeyAndCert.pem', 'rootCA.crt'],
+  filesToUpload: ['.env-e2e-dev', '.env-e2e-production', '.env-e2e-staging'],
   /* Path relative to rootpath - directory containing package.json */
-  deltaPath: 'certs/database/',
+  deltaPath: 'e2e/',
 };
-export const uploadJobs = [envBackend, dbCerts];
+export const uploadJobs = [envFrontendE2e];
 
 /* Upload a file to gcp */
 const uploadFile = async (srcFilename: string, destFilename: string) => {
@@ -115,7 +108,7 @@ const getUploadedTime = async (
 export const setFilePathsAndCallUpload = async (
   filesToUpload: string[],
   deltaPath: string,
-): Promise<void> => {
+) => {
   for (const file of filesToUpload) {
     /* Construct the storage path from the deltaPath */
     const gsFilePath = rootDir + deltaPath + file;

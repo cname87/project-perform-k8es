@@ -17,7 +17,7 @@ export const authorizeHandler = (
   req: Request,
   res: Response,
   next: NextFunction,
-) => {
+): void => {
   debug(`${modulename}: running authorizeHandler`);
 
   /* the user will need 'all:performDB' permission if the production database is in use, otherwise 'all:testDB' is required */

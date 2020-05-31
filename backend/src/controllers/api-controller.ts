@@ -16,7 +16,7 @@ const router = Router();
 /* Initialize openapi-backend middleware */
 /* This takes a long time to run => run once only for performance - called during first-time server startup => a warm-up request is a good idea. */
 let api: OpenAPIBackend;
-export const initOpenApi = (appLocals: Perform.IAppLocals) => {
+export const initOpenApi = (appLocals: Perform.IAppLocals): void => {
   debug(`${modulename}: running initOpenApi`);
   /* route paths as per the api file */
   api = new OpenAPIBackend({
@@ -285,11 +285,11 @@ const callApiHandler = (req: Request, res: Response, next: NextFunction) => {
 };
 
 export const checkError = (
-  error: any,
-  req: any,
+  error: Record<string, unknown>,
+  req: Request,
   _res: Response,
   next: NextFunction,
-) => {
+): void => {
   req.app.appLocals.logger.error(`${modulename}: Authorization fail`);
   /* apply code 401 meaning there was a problem with credentials */
   error.statusCode = 401;
