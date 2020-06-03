@@ -173,9 +173,8 @@
       "program": "${workspaceFolder}/backend/src/app.ts",
       "cwd": "${workspaceFolder}/backend",
       "env": {
-        // "NODE_ENV": "development",
-        // "NODE_ENV": "production",
-        "NODE_ENV": "staging"
+        "NODE_ENV": "development",
+        // "NODE_ENV": "staging"
       },
       "outputCapture": "std",
       "console": "integratedTerminal",
@@ -253,6 +252,7 @@
         "${workspaceFolder}/backend/dist/src/test/app.test.js",
       ],
       "env": {
+        "NODE_ENV": "development",
         /* set to 'false' (or omit) to automatically run chrome and set to 'true' when using a compound configuration to launch chrome manually */
         "DISABLE_CHROME": "false",
       },

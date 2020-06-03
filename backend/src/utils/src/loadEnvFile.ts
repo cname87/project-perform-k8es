@@ -1,37 +1,39 @@
 /**
- * Utility to import the .env file into process.env.
+ * Utility to import the .env file into process.env variables.
+ *
  * This should be called as the first line to set configuration parameters before they might be needed.
- * The .env files must be called .envDevelopment, .envProduction & .envStaging, and must be in a directory above this directory.
- * Which .env file imported is dependent on the value of process.env.NODE_ENV
- * Note that the server Dockerfile sets NODE_ENV to 'production', and an e2e test stage in GCP Cloud Build overrides this with NODE_ENV=staging, but otherwise it is undefined (unless otherwise set as a command line parameter, or otherwise set before this file is called).
- * If NODE_ENV === 'production' (or 'staging') then key parameters are checked and warnings are printed if they are not set to match a final production set up.
+ * The .env files must be called .envDevelopment & .envStaging, and must be in a directory above this directory.
+ *
+ * Which .env file imported is dependent on the value of process.env.NODE_ENV.
+ * 1. NODE_ENV=staging sets a staging configuration - an e2e test stage in GCP Cloud Build sets NODE_ENV=staging,
+ * 2. NODE_ENV=development sets a development configuration - NODE_ENV must be set via a VSCode launch configuration or otherwise.
+ * 3. When being run from a Kubernetes cluster the production configuration parameters are set via a secret and configmap yaml file, including setting NODE_ENV=production and thus there is no .envProduction file.
+ * - If none of the above three apply then an error will be thrown.
+ *
+ * Note that any environment variables set before loading an .env file are never overwritten.
+ * If NODE_ENV === 'production' then key parameters are checked and warnings are printed if they are not set to match a final production set up.
+ * If NODE_ENV does not equal 'production' and the 'DB_MODE' parameter says that the production database is in use then an error is thrown.
+ *
  */
 import dotenv from 'dotenv';
 import findup from 'find-up';
 
-/* Set path to env file dependent on process.env.NODE_ENV */
-let envPath: string;
 switch (process.env.NODE_ENV) {
-  case 'production': {
-    envPath = findup.sync('.envProduction', { cwd: __dirname })!;
-    break;
-  }
   case 'staging': {
-    envPath = findup.sync('.envStaging', { cwd: __dirname })!;
+    const envPath = findup.sync('.envStaging', { cwd: __dirname })!;
+    /* Load .env file */
+    dotenv.config({ path: envPath });
+
     break;
   }
-  default: {
-    envPath = findup.sync('.envDevelopment', { cwd: __dirname })!;
+  /* If not set it defaults to the development configuration */
+  case 'development': {
+    const envPath = findup.sync('.envDevelopment', { cwd: __dirname })!;
+    /* Load .env file */
+    dotenv.config({ path: envPath });
     break;
   }
 }
-
-/* Set path to common env file containing secrets */
-const envPathSecrets = findup.sync('env', { cwd: __dirname })!;
-
-/* Load both .env files */
-dotenv.config({ path: envPath });
-dotenv.config({ path: envPathSecrets });
 
 /* set up debug function after DEBUG variable is set */
 import { setupDebug } from './debugOutput';
@@ -45,15 +47,22 @@ if (!process.env.DB_HOST) {
   throw new Error('An .env file was not imported => aborting startup');
 }
 
-/* warn when in production on key parameters */
+/* Warn when in production on key parameters */
 if (process.env.NODE_ENV === 'production') {
   if (process.env.DEBUG) {
-    console.info('*** NOTE: DEBUG parameter is set');
+    console.warn('*** NOTE: DEBUG parameter is set');
   }
   if (process.env.TEST_PATHS) {
-    console.info('*** NOTE: TEST_PATHS parameter is set');
+    console.warn('*** NOTE: TEST_PATHS parameter is set');
   }
+  if (process.env.DB_MODE !== 'production') {
+    console.warn('*** NOTE: Production database NOT in use');
+  }
+}
+
+/* Throw an error when not in production mode and the production database is in use */
+if (process.env.NODE_ENV !== 'production') {
   if (process.env.DB_MODE === 'production') {
-    console.info('*** NOTE: Production database in use');
+    throw new Error('Production database in use in a non-production set up');
   }
 }
