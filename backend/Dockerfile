@@ -15,9 +15,6 @@ RUN npm install --only=production
 # Copy rest of the application source code
 COPY . ./
 
-# Default to run in production mode
-ENV NODE_ENV='production'
-
 # TODO
 # Running 'skaffold debug' will add --inspect=9229'
 ENTRYPOINT ["node", "dist/src/app.js"]

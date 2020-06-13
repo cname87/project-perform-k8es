@@ -13,7 +13,7 @@
         "request": "launch",
         "skaffoldConfig": "${workspaceFolder}/skaffold.yaml",
         "watch": true,
-        "cleanUp": false,
+        "cleanUp": true,
         "portForward": true,
         "imageRegistry": "gcr.io/project-perform",
     },

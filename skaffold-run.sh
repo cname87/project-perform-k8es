@@ -23,6 +23,8 @@ export SKAFFOLD_NO_PRUNE_CHILDREN=false
 export SKAFFOLD_TRIGGER=manual
 
 
+export VERSION=v1.0.0
+
 # Run Skaffold
 skaffold run \
 --verbosity=info \

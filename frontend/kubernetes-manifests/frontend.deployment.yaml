@@ -21,7 +21,8 @@ spec:
     spec:
       containers:
       - name: pp-frontend-deploy
-        image: gcr.io/project-perform/pp-frontend:v1.0.0
+#        image: gcr.io/project-perform/pp-frontend:v1.0.0
+        image: gcr.io/google-samples/hello-app:1.0
         ports:
         - name: nginx-port
           # Frontend server must be open on this port

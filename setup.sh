@@ -65,6 +65,3 @@ gsutil mb -p "$PROJECT" gs://$BUCKET
 echo -e "\nReserving and listing a global static ip address\n"
 gcloud compute addresses create ${STATIC_IP_NAME} --global
 gcloud compute addresses describe ${STATIC_IP_NAME} --global
-
-# Can choose to run Skaffold to load the application on to the cluster
-# ./skaffold-run.sh

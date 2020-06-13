@@ -63,6 +63,7 @@ spec:
       terminationGracePeriodSeconds: 30
       dnsPolicy: ClusterFirst
       schedulerName: default-scheduler
+      resources:
   strategy:
     type: RollingUpdate
     rollingUpdate:

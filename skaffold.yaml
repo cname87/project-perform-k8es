@@ -4,7 +4,7 @@ kind: Config
 metadata:
   name: project-perform
 build:
-  # Defines where to find the Dockerfile build configurations at build time and the resulting image names
+  # Defines where to find the Dockerfile build configurations at build time and the resulting image names and tags
   artifacts:
   - image: pp-backend
     context: backend
@@ -21,7 +21,7 @@ build:
           strip: 'dist'
   tagPolicy:
     dateTime: {}
-  # Use locally-installed build tool (Docker) to build
+  # Use the locally-installed build tool (Docker) to build
   local: {
     # If not specified, push true only for remote clusters
     push: true
