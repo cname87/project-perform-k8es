@@ -39,7 +39,7 @@ spec:
         - name: {{ .Chart.Name }}
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
-          image: gcr.io/project-perform/pp-frontend:v1.0.0
+          image:  {{ .Values.frontend.image }}
           # Note: If set to 'Always' will fail on Minikube
           # 'Always' may avoid caching issues when making changes?
           imagePullPolicy: {{ .Values.image.pullPolicy }}

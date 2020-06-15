@@ -1,6 +1,10 @@
-# Default values for pp-chart.
-# This is a YAML-formatted file.
-# Declare variables to be passed into your templates.
+## Released images ##
+
+# Edit the version tag here when a new backend or frontend version is released to be deployed to the production GKE server
+backendRelease: &backendImageVersion gcr.io/project-perform/pp-backend:v1.0.0
+frontendRelease: &frontendImageVersion gcr.io/project-perform/pp-frontend:v1.0.0
+
+##
 
 # Name configuration
 nameOverride: ""
@@ -47,6 +51,7 @@ frontend:
   deployment:
     portName: nginx-port
     portValue: 80
+  image: *frontendImageVersion
 
 # Backend configuration
 backend:
@@ -57,6 +62,7 @@ backend:
   deployment:
     portName: app-port
     portValue: 8080
+  image: *backendImageVersion
 
 # Miscellaneous name tags
 configmap:
@@ -65,7 +71,7 @@ secret:
   nameTag: -backend-secret
 
 
-## The remaining parameters are currently common to frontend and backend deployments
+## The remaining parameters are currently common to both frontend and backend deployments
 
 autoscaling:
   enabled: false
@@ -93,8 +99,6 @@ securityContext: {}
 
 image:
   pullPolicy: Always
-  # Overrides the image tag whose default is the chart version.
-  tag: ""
 
 resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious choice for the user. This also increases chances charts run on environments with little resources, such as Minikube. If you do want to specify resources, uncomment the following lines, adjust them as necessary, and remove the curly braces after 'resources:'.

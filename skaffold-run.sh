@@ -26,8 +26,8 @@ export SKAFFOLD_TRIGGER=manual
 export VERSION=v1.0.0
 
 # Run Skaffold
-skaffold run \
---verbosity=info \
+skaffold dev \
+--verbosity=debug \
 --port-forward=true \
 --filename=./skaffold.yaml \
 --default-repo=gcr.io/project-perform
