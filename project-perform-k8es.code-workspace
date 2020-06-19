@@ -6,10 +6,13 @@
  */
 {
 	"folders": [
-		{
-			"path": "."
-		}
-	],
+    {
+      "path": "."
+    },
+    {
+      "path": "../project-perform-k8es-cd"
+    }
+  ],
 
 	"settings": {
 
@@ -90,6 +93,7 @@
       "Iuri",
       "Jfthop",
       "Jhhj",
+      "KUBECONFIG",
       "KULW",
       "Magneta",
       "NUUPJ",
@@ -121,6 +125,7 @@
       "bjmt",
       "cbranch",
       "check",
+      "cleanup",
       "cname",
       "codelyzer",
       "color",

@@ -231,7 +231,7 @@ const checkE2eEnvironment = async () => {
   if (production === 'true') {
     console.log('Production optimization is enabled');
   } else {
-    console.warn('*** WARNING: Build optimization) is not true');
+    console.warn('*** WARNING: Production optimization is not enabled');
   }
   if (+logLevel === NgxLoggerLevel.OFF) {
     console.log('LogLevel is NgxLoggerLevel.OFF');

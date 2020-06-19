@@ -6,28 +6,26 @@ function check(){
  echo ""
 }
 
-# The application project name: ppk8es
-APPLICATION=ppk8es
-# Name the cluster
-CLUSTER_NAME=${APPLICATION}-cluster
-# The name of the ingress - see ingress yaml file
-INGRESS=pp-app-ingress
-# The name of the reserved static ip address
-# STATIC_IP_NAME=pp-ip
+# Read in variables
+SCRIPT_DIR="${0%/*}"
+# shellcheck source=/dev/null
+source "$SCRIPT_DIR"/set-variables.sh
 
 echo -e "\nDelete ingress and loadbalancer\n"
-kubectl delete ingress ${INGRESS}
+kubectl delete ingress "${INGRESS}"
 
 echo -e "\nManually confirm that the loadbalancer resources are deleted\n"
 check
 
+# Uncomment to delete static ip address during teardown
 # echo -e "\nDelete static ip address\n"
 # gcloud compute addresses delete ${STATIC_IP_NAME} --global --quiet
 
 echo -e "\nDelete cluster\n"
-gcloud container clusters delete ${CLUSTER_NAME} --quiet
+gcloud container clusters delete "${CLUSTER_NAME}" --quiet
 gcloud container clusters list
 
+# Clear Kubectl configuration file entirely - clears old context
 echo -e "\nReset Kubectl configuration file\n"
 cat <<EOF > ~/.kube/config
 apiVersion: v1
