@@ -135,7 +135,7 @@
       5. This then runs e2e tests against the application allowing VSCode debug of the e2e .spec files. Use Chrome DevTools if browser-side debug is needed.
       VALID OPTIONS:
       - Compile ngBuild:e2e (which allows error and cache testing) and then choose the -dev conf file (which is configured to target a local server).
-      - Compile ngBuild:prod (whihc disallows error and cache testing) and choose the -production conf file (which is configured to test against the GKE production server and skip cache and error testing).
+      - Compile ngBuild:prod (which disallows error and cache testing) and choose the -production conf file (which is configured to test against the GKE production server and skip cache and error testing).
       - Note: The -staging conf file is configured to test against a server only available on cloudbuild and skip cache and error testing).
       NOTE: You can target a build directly by setting the BASE_URL below.
       */
@@ -147,13 +147,13 @@
       "protocol": "inspector",
       "args": [
         /* Edit here to choose one of either -dev or -production configuration file . */
-        "${workspaceFolder}/frontend/e2e/src/config/protractor-dev.conf.js",
-        // "${workspaceFolder}/frontend/e2e/src/config/protractor-production.conf.js",
+        // "${workspaceFolder}/frontend/e2e/src/config/protractor-dev.conf.js",
+        "${workspaceFolder}/frontend/e2e/src/config/protractor-production.conf.js",
       ],
       "env": {
         /* can set the base-url to a specific deployed build */
         // "BASE_URL": "http://localhost:8080"
-        // "BASE_URL": "https://project-perform.com"
+        "BASE_URL": "https://project-perform.com"
       },
       "cwd": "${workspaceFolder}/frontend",
       "outputCapture": "std",
