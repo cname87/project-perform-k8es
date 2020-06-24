@@ -1,6 +1,5 @@
 import { setupDebug } from '../../utils/src/debugOutput';
 
-import { configServer } from '../../configServer';
 import { Server } from '../server';
 
 /* set up mocha, sinon & chai */
@@ -57,7 +56,7 @@ describe('Server operations tests', () => {
   it('Creates a listening server', async () => {
     const serverType = http;
     const serverOptions = {};
-    const serverPort = configServer.PORT;
+    const serverPort = +process.env.PORT!;
 
     const server = new Server();
     server.configureServer();
@@ -77,7 +76,7 @@ describe('Server operations tests', () => {
   it('Asks a listening server to listen', async () => {
     const serverType = http;
     const serverOptions = {};
-    const serverPort = configServer.PORT;
+    const serverPort = +process.env.PORT!;
 
     const server = new Server();
     server.setupServer(serverType, serverOptions, app);
@@ -102,7 +101,7 @@ describe('Server operations tests', () => {
   it('Test listening on an occupied port', async () => {
     const serverType = http;
     const serverOptions = {};
-    const serverPort = configServer.PORT;
+    const serverPort = +process.env.PORT!;
 
     const server1 = new Server();
     /* create the first server occupying the port */
@@ -145,7 +144,7 @@ describe('Server operations tests', () => {
   it('Test listening on an occupied port, but clearing port', async () => {
     const serverType = http;
     const serverOptions = {};
-    const serverPort = configServer.PORT;
+    const serverPort = +process.env.PORT!;
 
     /* create the first server occupying the port */
     const server1 = new Server();
@@ -188,7 +187,7 @@ describe('Server operations tests', () => {
   it('Attempt to listen but unexpected error thrown', async () => {
     const serverType = http;
     const serverOptions = {};
-    const serverPort = configServer.PORT;
+    const serverPort = +process.env.PORT!;
 
     const server1 = new Server();
     server1.setupServer(serverType, serverOptions, app, serverPort);
@@ -228,7 +227,7 @@ describe('Server operations tests', () => {
   it('Shuts down a server', async () => {
     const serverType = http;
     const serverOptions = null;
-    const serverPort = configServer.PORT;
+    const serverPort = +process.env.PORT!;
 
     const server1 = new Server();
     server1.setupServer(serverType, serverOptions, app, serverPort);
@@ -244,7 +243,7 @@ describe('Server operations tests', () => {
   it('Shuts down a non-open server', async () => {
     const serverType = http;
     const serverOptions = null;
-    const serverPort = configServer.PORT;
+    const serverPort = +process.env.PORT!;
 
     /* create a listening server */
     const server1 = new Server();

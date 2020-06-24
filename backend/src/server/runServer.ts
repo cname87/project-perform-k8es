@@ -16,8 +16,9 @@ import express, { Application } from 'express';
 import favicon from 'serve-favicon';
 import urlParser from 'url';
 import util from 'util';
-import { setupDebug } from '../utils/src/debugOutput';
+import path from 'path';
 
+import { setupDebug } from '../utils/src/debugOutput';
 const { modulename, debug } = setupDebug(__filename);
 
 /**
@@ -93,7 +94,7 @@ async function runServer(app: Application) {
   }
 
   /* serve favicon */
-  app.use(favicon(app.appLocals.configServer.FAVICON));
+  app.use(favicon(path.resolve(process.env.FAVICON!)));
 
   /* test functionality only */
   if (process.env.TEST_PATHS === 'true') {
@@ -104,7 +105,7 @@ async function runServer(app: Application) {
     app.use(
       '/testServer',
       express.static(
-        app.appLocals.configServer.STATIC_TEST_PATH,
+        path.resolve(process.env.STATIC_TEST_PATH!),
         staticTestOptions,
       ),
     );
@@ -112,7 +113,7 @@ async function runServer(app: Application) {
     app.use(
       '/node_modules',
       express.static(
-        app.appLocals.configServer.NODE_MODULES_PATH,
+        path.resolve(process.env.NODE_MODULES_PATH!),
         staticTestOptions,
       ),
     );
@@ -144,7 +145,7 @@ async function runServer(app: Application) {
   /* calls a api handler */
   app.use(
     /* use for api paths only */
-    app.appLocals.configServer.API_BASE_PATH,
+    process.env.API_BASE_PATH!,
     (req, res, next) => {
       debug(`${modulename}: calling the api controller`);
       app.appLocals.controllers.api(req, res, next);

@@ -7,10 +7,18 @@ FROM nginx:1.18
 WORKDIR /
 
 # Copy the nginx server configuration
-COPY ./nginx-server.conf /etc/nginx/conf.d/default.conf
+COPY ./nginx-server.conf /etc/nginx/templates/default.conf.template
 
 # Copy the files to be served by the nginx reverse proxy
 COPY ./dist /usr/share/www/
 
-# Note: The nginx default command is CMD ["nginx", "-g", "daemon off;"]
-# This runs nginx in the foreground - suitable for a Docker container
+# Run a bash script that calls envsubst to swap the environment variable 'service' in the file /etc/nginx/templates/default.conf.template and write the output to the file /etc/nginx/conf.d/default.conf, and then run nginx in the foreground
+# NOTE: The environment variable is set in the deployment yaml file
+ENTRYPOINT [ \
+"/bin/bash", "-c", \
+"envsubst '${service}' \
+< /etc/nginx/templates/default.conf.template \
+> /etc/nginx/conf.d/default.conf \
+&& nginx -g 'daemon off;'"]
+
+

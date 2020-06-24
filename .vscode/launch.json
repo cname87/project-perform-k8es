@@ -13,10 +13,8 @@
         "request": "launch",
         "skaffoldConfig": "${workspaceFolder}/skaffold.yaml",
         "watch": true,
-        "cleanUp": false,
+        "cleanUp": true,
         "portForward": true,
-        // Where images are pushed (if so configured)
-        // Can also be set in Skaffold's global config
         "imageRegistry": "gcr.io/project-perform",
     },
     /* Attach to backend pods for debug */
@@ -176,7 +174,6 @@
       "cwd": "${workspaceFolder}/backend",
       "env": {
         "NODE_ENV": "development",
-        // "NODE_ENV": "production",
         // "NODE_ENV": "staging"
       },
       "outputCapture": "std",
@@ -255,6 +252,7 @@
         "${workspaceFolder}/backend/dist/src/test/app.test.js",
       ],
       "env": {
+        "NODE_ENV": "development",
         /* set to 'false' (or omit) to automatically run chrome and set to 'true' when using a compound configuration to launch chrome manually */
         "DISABLE_CHROME": "false",
       },

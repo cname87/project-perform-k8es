@@ -3,7 +3,6 @@
 ## ignore from root...
 .git/
 .vscode/
-secrets/
 .editorconfig
 .gcloudignore
 .gitignore
@@ -12,6 +11,7 @@ gcloudBuild.mjs
 LICENCE
 project-perform.code-workspace
 README.md
+runbuild.sh
 skaffold-run.sh
 skaffold.yaml
 startup.sh

@@ -128,7 +128,7 @@ function createModel(
   ModelName: string,
   modelSchema: SchemaDefinition,
   dbCollectionName: string,
-): Model<Document, {}> {
+): Model<Document, Record<string, unknown>> {
   debug(`${modulename}: running createModel`);
 
   /* Identify the database collection and define its schema */
@@ -176,7 +176,7 @@ class Database {
     ModelName: string,
     modelSchema: SchemaDefinition,
     dbCollectionName: string,
-  ) => Model<Document, {}>;
+  ) => Model<Document, Record<string, unknown>>;
 
   #dbConnection: Connection = ({} as unknown) as Connection;
 

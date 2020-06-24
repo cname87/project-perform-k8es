@@ -23,8 +23,6 @@ import { Connection } from 'mongoose';
 import util from 'util';
 import { setupDebug } from './utils/src/debugOutput';
 
-/* server configuration */
-import { configServer } from './configServer';
 /* server functions */
 import { startServer } from './server/startserver';
 import { runServer } from './server/runServer';
@@ -69,7 +67,6 @@ const dumpError = new DumpError(logger) as Perform.DumpErrorFunction;
  */
 const createStore: () => Perform.IAppLocals = () => {
   return {
-    configServer,
     /* route controllers */
     controllers: {
       api: apiController,
@@ -272,7 +269,6 @@ const storeServer = async (store: {
   await startServer(
     app,
     servers, // filled with connected server on return
-    configServer,
     logger,
     dumpError,
   );
@@ -314,7 +310,7 @@ async function runApp(store: Perform.IAppLocals) {
     /* starts database and stores database and connection in store */
     await storeDatabase(store);
     if (!store.dbConnection.readyState) {
-      await sleep(configServer.DATABASE_ERROR_DELAY);
+      await sleep(+process.env.DATABASE_ERROR_DELAY!);
     }
     isDbReady = store.dbConnection.readyState;
   }

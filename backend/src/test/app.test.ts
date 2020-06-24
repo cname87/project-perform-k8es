@@ -16,7 +16,6 @@ import util from 'util';
 import httpRequest from 'request-promise-native';
 import { DumpError } from '../utils/src/dumpError';
 import { Logger } from '../utils/src/logger';
-import { configServer } from '../configServer';
 
 const { modulename, debug } = setupDebug(__filename);
 chai.use(sinonChai);
@@ -36,7 +35,7 @@ describe('the application', () => {
   const dumpError = new DumpError(logger) as Perform.DumpErrorFunction;
 
   let app: any = {};
-  let runIndex: (extraOptions?: object) => void;
+  let runIndex: (extraOptions?: Record<string, unknown>) => void;
   let spyDebug: any;
   let spyLoggerError: any;
   let spyLoggerInfo: any;
@@ -44,7 +43,7 @@ describe('the application', () => {
   let spyDumpError: any;
 
   const options = {
-    url: configServer.HOST,
+    url: `${process.env.HOST}:${process.env.PORT}`,
   };
 
   const serverUpMessage = `${path.sep}app.js: server up and running`;
@@ -288,7 +287,7 @@ describe('the application', () => {
     /* note that server will start after error is thrown */
     runIndex(startDatabaseStub);
     /* In the main app.ts there is a sleep after a database fail.  This will cause a delay in the mocha test. If the sleep is >~ 5s then the serverIsUp may time out before the server is up.  The server will eventually start and will be left up and mocha will not exit => add a sleep here equal to the sleep in app.ts */
-    await sleep(configServer.DATABASE_ERROR_DELAY);
+    await sleep(+process.env.DATABASE_ERROR_DELAY!);
     await serverIsUp();
 
     /* shut her down */

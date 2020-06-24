@@ -1,18 +1,18 @@
 
-apiVersion: skaffold/v2beta3
+apiVersion: skaffold/v2beta5
 kind: Config
 metadata:
   name: project-perform
 build:
-  # Defines where to find the Dockerfile build configurations at build time and the resulting image names
+  # Defines where to find the Dockerfile build configurations at build time and the resulting image names and tags
   artifacts:
-  - image: pp-backend
+  - image: gcr.io/project-perform/pp-backend
     context: backend
     sync:
       manual:
         - src: 'dist/**/*'
           dest: /
-  - image: pp-frontend
+  - image:  gcr.io/project-perform/pp-frontend
     context: frontend
     sync:
       manual:
@@ -21,28 +21,32 @@ build:
           strip: 'dist'
   tagPolicy:
     dateTime: {}
-  # Use locally-installed build tool (Docker) to build
+  # Use the locally-installed build tool (Docker) to build
   local: {
     # If not specified, push true only for remote clusters
     push: true
   }
 deploy:
   statusCheckDeadlineSeconds: 300
-  kubectl:
-  # Defines the Kubernetes manifests to deploy on each run
-    manifests:
-      - ./kubernetes-manifests/backend.service.yaml
-      - ./kubernetes-manifests/frontend.service.yaml
-      - ./kubernetes-manifests/backend.deployment.yaml
-      - ./kubernetes-manifests/frontend.deployment.yaml
-      - ./secrets/app.secret.yaml
-      - ./kubernetes-manifests/gke.ingress.yaml
-      # - ./kubernetes-manifests/nginx.ingress.yaml // Used with Minikube
+  helm:
+    releases:
+      - name: project-perform
+        chartPath: pp-chart
+        valuesFiles:
+          - pp-chart/values.yaml
+        # Override keys in the values.yaml file
+        artifactOverrides:
+          frontend.image: gcr.io/project-perform/pp-frontend
+          backend.image: gcr.io/project-perform/pp-backend
+    # Additional option flags that are passed on the command line to helm.
+    flags:
+      # 20200816 Helm v3.2.2 bug requires this flag or upgrade after watch triggers an upgrade will fail - 'Service is immutable'
+      upgrade: [ "--force=false" ]
 portForward:
   # Forward frontend port 80 to localhost:8080
   # (localhost is seen as secure and avoids exception from Auth0)
 - resourceType: service
-  resourceName: pp-frontend-service
+  resourceName: project-perform-pp-chart-frontend-service
   namespace: default
   port: 80
   address: 127.0.0.1

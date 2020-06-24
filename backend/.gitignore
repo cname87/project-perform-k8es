@@ -1,15 +1,17 @@
 
 ### Security-relevant ignores ###
 
-# ignore all credential keys and certs
-# (but keep directory structure for copying from GCP storage)
-backend/certs/database/mongoKeyAndCert.pem
-backend/certs/database/rootCA.crt
-backend/certs/gcpStorage/gcpStorageKey.json
+# ignore all credential keys and certs and Kubernetes configmaps and secrets
+# (but keep directory structure for copying from GCP storage
+certs/database/mongoKeyAndCert.pem
+certs/database/rootCA.crt
+certs/backend.configmap.yaml
+certs/backend.secret.yaml
 
 # ignore all .env files
 .env
 .env*
+
 
 ### End of security-relevant ignores ###
 

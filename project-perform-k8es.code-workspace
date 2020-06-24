@@ -6,10 +6,13 @@
  */
 {
 	"folders": [
-		{
-			"path": "."
-		}
-	],
+    {
+      "path": "."
+    },
+    {
+      "path": "../project-perform-k8es-cd"
+    }
+  ],
 
 	"settings": {
 
@@ -90,6 +93,7 @@
       "Iuri",
       "Jfthop",
       "Jhhj",
+      "KUBECONFIG",
       "KULW",
       "Magneta",
       "NUUPJ",
@@ -121,6 +125,7 @@
       "bjmt",
       "cbranch",
       "check",
+      "cleanup",
       "cname",
       "codelyzer",
       "color",
@@ -198,6 +203,7 @@
       "mwads",
       "myscript",
       "nginx",
+      "nindent",
       "nomodule",
       "nopts",
       "nospace",
@@ -236,6 +242,7 @@
       "svma",
       "templating",
       "troj",
+      "trunc",
       "tsbuildinfo",
       "tsscmp",
       "unindent",
@@ -287,7 +294,6 @@
     "files.associations": {
       "*.json": "jsonc"
     },
-    "files.exclude": {},
 
     "git.enableSmartCommit": true,
     "gitlens.views.repositories.files.layout": "tree",
@@ -366,12 +372,6 @@
     "workbench.sideBar.location": "right",
 
     "window.zoomLevel": -1,
-    "cloudcode.last-used-context": {
-      "Run on Kubernetes": {
-        "kubeConfigPath": "/home/cname87/.kube/config",
-        "contextName": "minikube"
-      }
-    },
 
 	}
 }
