@@ -8,7 +8,7 @@ export APPLICATION=ppk8es
 export BACKEND_APPLICATION=pp-backend
 export FRONTEND_APPLICATION=pp-frontend
 export BACKEND_VERSION=v1.0.1
-export FRONTEND_VERSION=v1.0.1
+export FRONTEND_VERSION=v1.0.2
 export CLUSTER=${APPLICATION}-cluster
 ZONE=$(gcloud config get-value compute/zone)
 export ZONE

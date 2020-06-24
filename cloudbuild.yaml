@@ -14,49 +14,49 @@ steps:
 # # When a build is executed from GCP via a github trigger the secret files, and associated directories, are not in git so you must download them from GCP Storage.  The directory structure of the GCP storage bucket MUST be set up to match the directory structure of the missing files & directories, as a recursive copy is carried out to copy the directory structure and files.
 # # Note: This step is superfluous when triggered via CLI.
 
-# # Copy the backend .env, frontend e2e .env, database certs, & GCP Storage key files from GCP Storage to the persisted workspace.
-# - id: 'download environment and certs files'
-#   name: 'gcr.io/cloud-builders/gsutil'
-#   dir: '.'
-#   args: [
-#     # Run operations in parallel
-#     '-m',
-#     # Copy recursively
-#     'cp', '-r',
-#     # Don't overwrite
-#     '-n',
-#     'gs://project-perform-gcp-environment-files/*',
-#     '.',
-#   ]
+# Copy the backend .env, frontend e2e .env, database certs, & GCP Storage key files from GCP Storage to the persisted workspace.
+- id: 'download environment and certs files'
+  name: 'gcr.io/cloud-builders/gsutil'
+  dir: '.'
+  args: [
+    # Run operations in parallel
+    '-m',
+    # Copy recursively
+    'cp', '-r',
+    # Don't overwrite
+    '-n',
+    'gs://project-perform-gcp-environment-files/*',
+    '.',
+  ]
 
-# # Install the backend node_modules directory in the persisted workspace.
-# # Note: Using the node-with-puppeteer image (rather than a simple node image) as it is needed in other steps (which means only 1 image download) is required.
-# - id: 'install backend node_modules'
-#   name: 'gcr.io/$PROJECT_ID/node-with-puppeteer'
-#   entrypoint: npm
-#   dir: './backend'
-#   args: ['install']
+# Install the backend node_modules directory in the persisted workspace.
+# Note: Using the node-with-puppeteer image (rather than a simple node image) as it is needed in other steps (which means only 1 image download) is required.
+- id: 'install backend node_modules'
+  name: 'gcr.io/$PROJECT_ID/node-with-puppeteer'
+  entrypoint: npm
+  dir: './backend'
+  args: ['install']
 
-# # Install the backend node_modules directory in the persisted workspace.
-# - id: 'install frontend node_modules'
-#   name: 'gcr.io/$PROJECT_ID/node-with-puppeteer'
-#   entrypoint: npm
-#   dir: './frontend'
-#   args: ['install']
+# Install the backend node_modules directory in the persisted workspace.
+- id: 'install frontend node_modules'
+  name: 'gcr.io/$PROJECT_ID/node-with-puppeteer'
+  entrypoint: npm
+  dir: './frontend'
+  args: ['install']
 
-# # Build the backend in the persisted workspace (replacing the copied in dist files - the newly built files are later deployed).
-# - id: 'build backend'
-#   name: 'gcr.io/$PROJECT_ID/node-with-puppeteer'
-#   entrypoint: npm
-#   dir: './backend'
-#   args: ['run', 'build']
+# Build the backend in the persisted workspace (replacing the copied in dist files - the newly built files are later deployed).
+- id: 'build backend'
+  name: 'gcr.io/$PROJECT_ID/node-with-puppeteer'
+  entrypoint: npm
+  dir: './backend'
+  args: ['run', 'build']
 
-# # Build the frontend in the persisted workspace (replacing the copied-in dist files - the newly built files are later deployed).
-# - id: 'build frontend'
-#   name: 'gcr.io/$PROJECT_ID/node-with-puppeteer'
-#   entrypoint: npm
-#   dir: './frontend'
-#   args: ['run', 'build:prod']
+# Build the frontend in the persisted workspace (replacing the copied-in dist files - the newly built files are later deployed).
+- id: 'build frontend'
+  name: 'gcr.io/$PROJECT_ID/node-with-puppeteer'
+  entrypoint: npm
+  dir: './frontend'
+  args: ['run', 'build:prod']
 
 # # Run all backend unit tests.
 # # Must have Node & Puppeteer in the base image.
@@ -73,42 +73,42 @@ steps:
 #   dir: './frontend'
 #   args: ['npm', 'run', 'test:staging']
 
-# # Build the backend server image (which is later deployed).
-# - id: 'Build backend server image'
-#   name: 'gcr.io/cloud-builders/docker'
-#   dir: './backend'
-#   args: [
-#     'build',
-#     '--file=Dockerfile',
-#     '--tag=${_BACKEND_IMAGE}:${_BACKEND_VERSION}',
-#     '.']
+# Build the backend server image (which is later deployed).
+- id: 'Build backend server image'
+  name: 'gcr.io/cloud-builders/docker'
+  dir: './backend'
+  args: [
+    'build',
+    '--file=Dockerfile',
+    '--tag=${_BACKEND_IMAGE}:${_BACKEND_VERSION}',
+    '.']
 
-# # Push the backend server image so it can be pulled for deployment.
-# - id: 'Push backend server image'
-#   name: 'gcr.io/cloud-builders/docker'
-#   args: [
-#     'push',
-#     '${_BACKEND_IMAGE}:${_BACKEND_VERSION}',
-#   ]
+# Push the backend server image so it can be pulled for deployment.
+- id: 'Push backend server image'
+  name: 'gcr.io/cloud-builders/docker'
+  args: [
+    'push',
+    '${_BACKEND_IMAGE}:${_BACKEND_VERSION}',
+  ]
 
-# # Build the frontend server image (which is later deployed).
-# - id: 'Build frontend server image'
-#   name: 'gcr.io/cloud-builders/docker'
-#   dir: './frontend'
-#   args: [
-#     'build',
-#     '--file=Dockerfile',
-#     '--tag=${_FRONTEND_IMAGE}:${_FRONTEND_VERSION}',
-#     '.',
-#   ]
+# Build the frontend server image (which is later deployed).
+- id: 'Build frontend server image'
+  name: 'gcr.io/cloud-builders/docker'
+  dir: './frontend'
+  args: [
+    'build',
+    '--file=Dockerfile',
+    '--tag=${_FRONTEND_IMAGE}:${_FRONTEND_VERSION}',
+    '.',
+  ]
 
-# # Push the backend server image so it can be pulled for deployment.
-# - id: 'Push frontend server image'
-#   name: 'gcr.io/cloud-builders/docker'
-#   args: [
-#     'push',
-#     '${_FRONTEND_IMAGE}:${_FRONTEND_VERSION}',
-#   ]
+# Push the backend server image so it can be pulled for deployment.
+- id: 'Push frontend server image'
+  name: 'gcr.io/cloud-builders/docker'
+  args: [
+    'push',
+    '${_FRONTEND_IMAGE}:${_FRONTEND_VERSION}',
+  ]
 
 # # Run the backend server in the background.
 # - id: 'Run backend server'
@@ -166,8 +166,8 @@ steps:
   - name: 'ssh'
     path: /root/.ssh
 
-# Set up git with key and domain
-- id: 'Set up git access'
+# Add github.com to known_hosts
+- id: 'Set up github access'
   name: 'gcr.io/cloud-builders/git'
   entrypoint: 'bash'
   args:
@@ -209,7 +209,7 @@ steps:
   - --inplace
   - project-perform-k8es-cd/pp-chart/values.yaml
   - 'frontend.image'
-  - ${_FRONTEND_IMAGE}:${_FRONTEND_VERSION}'
+  - ${_FRONTEND_IMAGE}:${_FRONTEND_VERSION}
 
 # Push the updated Helm chart back to the CD repo
 - name: gcr.io/cloud-builders/git
@@ -221,83 +221,31 @@ steps:
   - |
     set -x && \
     cd project-perform-k8es-cd && \
-    git config user.email cname87@yahoo.com
+    git config user.email $(gcloud auth list --filter=status:ACTIVE --format='value(account)') && \
     git add . && \
-    git commit -m "Deploying image ${_FRONTEND_IMAGE}:${_FRONTEND_VERSION}'
+    git commit -m "Deploys image ${_FRONTEND_IMAGE}:${_FRONTEND_VERSION}
     Built from commit ${COMMIT_SHA} of repository project-perform-k8es
     Author: $(git log --format='%an <%ae>' -n 1 HEAD)" && \
-    git push origin candidate
+    git push git@github.com:cname87/project-perform-k8es-cd candidate
   volumes:
   - name: 'ssh'
     path: /root/.ssh
 
-# - name: gcr.io/cloud-builders/kubectl
-# # View the cluster information for this project
-#   args:
-#     - cluster-info
-#   env:
-#   - 'CLOUDSDK_COMPUTE_ZONE=$_GKE_ZONE'
-#   - 'CLOUDSDK_CONTAINER_CLUSTER=$_GKE_CLUSTER'
-#   - 'KUBECONFIG=~/.kube/config'
-
-# - id: 'Lint Helm chart'
-# # Lint the project Helm chart.
-#   name: 'gcr.io/$PROJECT_ID/helm'
-#   args: ['lint', 'pp-chart']
-#   env:
-#   - 'CLOUDSDK_COMPUTE_ZONE=$_GKE_ZONE'
-#   - 'CLOUDSDK_CONTAINER_CLUSTER=$_GKE_CLUSTER'
-
-# - id: 'Upgrade Helm chart on cluster'
-# # Upgrade or install the Helm chart onto the GKE cluster.
-#   name: 'gcr.io/$PROJECT_ID/helm'
-#   args: [
-#     'upgrade',
-#     '-f', './pp-chart/values.yaml',
-#     '--set', 'frontend.image=${_FRONTEND_IMAGE}:${_FRONTEND_VERSION}',
-#     'project-perform',
-#     './pp-chart',
-#     '--install',
-#     '--atomic',
-#     '--cleanup-on-fail',
-#   ]
-#   env:
-#   - 'CLOUDSDK_COMPUTE_ZONE=$_GKE_ZONE'
-#   - 'CLOUDSDK_CONTAINER_CLUSTER=$_GKE_CLUSTER'
-#   - 'KUBECONFIG=~/.kube/config'
-
-# - id: 'e2e test the production deployment'
-# # Runs e2e test against the newly deployed build.
-# # Does not pre-compile or run a local frontend server so it uses the frontend production build in the production server which does not enable error and cache interceptors in the frontend.
-# # Runs Protractor using a production staging configuration that does not run the cache or errors tests.
-# # BASE_URL is set to run against the production cluster.
-# # The configured test user has access to the production database, (to a 'test' collection).
-# # The production cluster runs with an environment file selected by NODE_ENV=production which sets the backend server to be run with no test paths available.  It also sets that the production database is in use.
-#   name: 'gcr.io/$PROJECT_ID/node-with-puppeteer'
-#   dir: './frontend'
-#   args: ['npm', 'run', 'e2e:production']
-
-# # Push the deployed images to the GCP Container Registry.
-# # Note: images shows an error when 'cloud-build-local --dryrun=true' is run
-# images: [
-#   '${_FRONTEND_IMAGE}:${_FRONTEND_VERSION}',
-#   '${_BACKEND_IMAGE}:${_BACKEND_VERSION}',
-# ]
-
 substitutions: # default values
   # PROJECT_ID: Cloud Build defaults to the ID of your Cloud project
-  # BUILD_ID:Cloud Build defaults to the ID of your build
+  # BUILD_ID: Cloud Build defaults to the ID of your build
+  # COMMIT_SHA: Cloud Build sets this to the git commit hash that triggered this cloud build run, or to '' if cloud build is run manually
   _BACKEND_IMAGE: ''
   _FRONTEND_IMAGE: ''
   _BACKEND_VERSION: ''
   _FRONTEND_VERSION: ''
-  _GKE_CLUSTER: ''
-  _GKE_ZONE: ''
-  _K8S_APP_NAME: ''
+  _GKE_CLUSTER: 'k8es-cluster'
+  _GKE_ZONE: 'europe-west2-c'
+  _TAG: 'ppk8es-CD'
 
 options:
     substitution_option: 'ALLOW_LOOSE'
 
-tags: [$_K8S_APP_NAME]
+tags: [$_TAG]
 
 timeout: 1800s
