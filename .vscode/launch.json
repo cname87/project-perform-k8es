@@ -52,8 +52,9 @@
     // Serve frontend with backend - use for frontend debug with watch
     {
       /*
-      First it calls a task which starts the backend server, and then compiles the frontend with watch and serves it on localhost:4200 (i.e. a local server that serves up the Angular SPA is started listening to port 4200). Note: proxy.conf is configured in angular.json to route api requests (e.g. those headed api-v1) to the backend server.  Thus you need to start the backend server in advance to handle the api requests.
-      Second, once the task ends, this launches Chrome.
+      First it calls a task which starts the backend server, and then compiles the frontend with watch and serves it on localhost:4200 (i.e. a local server that serves up the Angular SPA listening on port 4200).
+      Note: proxy.conf is configured in angular.json to route api requests (i.e.e. those headed api-v1) to the backend server.  Thus you must start the backend server in advance to handle the api requests.
+      Second, once the pre-launch task ends, Chrome launches.
       For debug, you may need to use Chrome DevTools sources to put in the first breakpoint, which should then sync with VSCode.
       Close all open Chrome instances if Chrome won't start. */
       "name": "Serve frontend with backend",
@@ -76,7 +77,7 @@
       /*
       Runs 'Test Frontend' task first, i.e. 'ng test:dev', which compiles and serves the front end and opens Chrome and connects to the Karma runner and runs the unit tests.  Once this task exits without error, following the test run, it THEN starts Chrome again and connects to the Karma runner for a second test run.  Debug should work on the second session.
       You may need to use Chrome DevTools sources to put in the first breakpoint.
-      Run the preLaunch task manually first if problems.
+      If there are probelms, run the preLaunch task manually first.
       Close all open Chrome instances if Chrome won't start.
        */
       "name": "Test frontend",
@@ -121,23 +122,24 @@
     // e2e frontend with backend - use for frontend e2e test debug
     {
       /**
-      1. This does NOT pre-compile the backend like ng e2e.  Therefore you must compile the front-end in advance.  There are 3 compile options (which each load a different environment file.) - a parameter sets the interceptors that allow error or cache testing:
-      (i) ngBuild:dev - should be set to disallow error and cache tests.
-      (ii) ngBuild:prod - should be set to disallow error and cache tests.
-      (iii) ngBuild:e2e - should be set to allow cache and error tests.
-      2. You need to start the application (frontend & backend server) in advance of running this.
-      NOTE: My frontend SPA routes any backend calls to the same host with an added path (e.g. /api-v1). This launch configuration does NOT use a proxy to redirect the backend calls, as ng e2e does, so the server that Protractor points to must both serve the SPA and handle backend calls.
+      1. *** Serve the front-end in advance. ***
+      There are 3 serve options (which each load a different environment file.) - a parameter sets the interceptors that allow error or cache testing. Run 'npm run ...':
+      (i) serve:dev - should be run to disallow error and cache tests.
+      (ii) serve:prod - should be run to disallow error and cache tests.
+      (iii) serve:e2e - should be run to allow cache and error tests.
+      2. *** Start the backend in advance.
       NOTE: Protractor uses a configured baseUrl to point all url requests to a host.  The frontend must be available on the configured Protractor baseUrl.  baseUrl is set in the Protractor conf file:
       - -dev.conf: localhost:8080.
       - -staging.conf: backend:8080 - used only in cloudbuild.
       - -production.conf: project-perform.com - the production GKE cluster.
-      4. Choose the .dev, .staging or .production configuration by editing args below.  These point at a corresponding e2e .env file. The .env file lists the .spec files which are run.
-      5. This then runs e2e tests against the application allowing VSCode debug of the e2e .spec files. Use Chrome DevTools if browser-side debug is needed.
+      3. *** Choose the .dev, .staging or .production configuration by editing args below. ***
+      These point at a corresponding e2e .env file. The .env file lists the .spec files which are run.
+      4. This then runs e2e tests against the application allowing VSCode debug of the e2e .spec files. Use Chrome DevTools if browser-side debug is needed.
       VALID OPTIONS:
-      - Compile ngBuild:e2e (which allows error and cache testing) and then choose the -dev conf file (which is configured to target a local server).
-      - Compile ngBuild:prod (which disallows error and cache testing) and choose the -production conf file (which is configured to test against the GKE production server and skip cache and error testing).
-      - Note: The -staging conf file is configured to test against a server only available on cloudbuild and skip cache and error testing).
-      NOTE: You can target a build directly by setting the BASE_URL below.
+      - Run serve:e2e (which allows error and cache testing) and then choose the -dev conf file (which is configured to target localhost:8080).
+      - Run serve:prod (which disallows error and cache testing) and choose the -production conf file (which is configured to test against projectperform.com and skip cache and error testing).
+      - Note: The -staging conf file is configured to test against a server only available on cloudbuild (and skips cache and error testing).
+      NOTE: You can target a server directly by setting the BASE_URL below.
       */
       "name": "E2e frontend with backend",
       "type": "node",
@@ -147,13 +149,13 @@
       "protocol": "inspector",
       "args": [
         /* Edit here to choose one of either -dev or -production configuration file . */
-        // "${workspaceFolder}/frontend/e2e/src/config/protractor-dev.conf.js",
-        "${workspaceFolder}/frontend/e2e/src/config/protractor-production.conf.js",
+        "${workspaceFolder}/frontend/e2e/src/config/protractor-dev.conf.js",
+        // "${workspaceFolder}/frontend/e2e/src/config/protractor-production.conf.js",
       ],
       "env": {
         /* can set the base-url to a specific deployed build */
-        // "BASE_URL": "http://localhost:8080"
-        "BASE_URL": "https://project-perform.com"
+        // "BASE_URL": "http://localhost:4200"
+        // "BASE_URL": "https://project-perform.com"
       },
       "cwd": "${workspaceFolder}/frontend",
       "outputCapture": "std",
@@ -165,7 +167,7 @@
         "${workspaceFolder}/frontend/node_modules/**/*.js",
       ],
     },
-    // Run the backend server (app.ts).
+    // Run the backend server (app.ts) on localhost:8080.
     {
       "name": "Run backend app.ts",
       "type": "node",
@@ -194,8 +196,11 @@
     },
     // https://localhost:8080/
     {
-      /* Starts Chrome and connects to the home page.
+      /* Starts Chrome and connects to localhost:8080.
       The server is started in a prelaunch task. */
+      /*
+      TODO:  This navigates to the backend only - I should start the backend and serve on 4200 and then open localhost:4200
+      */
       "name": "Open http://localhost:8080/",
       "type": "chrome",
       "preLaunchTask": "Check Server",
@@ -315,7 +320,7 @@
       The test files set up some mocks to simulate errors and also event handlers to recive reports of test starts and completions from a browser.
       Chrome must then be started with a specific url that loads browser-side mocha scripts that test server functionality such as including error condition responses.
       The files start Chrome automatically if process.env.DISABLE_CHROME is false.  This does not allow for using VSCode for client-side debug.
-      Otherwise (to allow using VSCODE for client-side debug) you can load the testServer/xxx-loadmocha.html file manually after running this on one file only, or, if you would like VSCode debug of the browser-side, then use a Chrome launch configuration to load the matching xxx-loadMocha.html - there are two xxx-loadmocha.html files - make sure you use the one that matches the server-side test file. */
+      Otherwise (to allow using VSCODE for client-side debug) you can load the testServer/xxx-loadMocha.html file manually after running this on one file only, or, if you would like VSCode debug of the browser-side, then use a Chrome launch configuration to load the matching xxx-loadMocha.html - there are two xxx-loadMocha.html files - make sure you use the one that matches the server-side test file. */
       "name": "Run Mocha client-fired server tests",
       "type": "node",
       "request": "launch",
@@ -418,6 +423,7 @@
   ],
   "compounds": [
     /* Run backend server and browse to root */
+    /* This is just a demo of a compound configuration */
     {
       /* To debug angular you may need to go into Chrome and set the first breakpoint. If you have difficulty setting breakpoints in vscode then use Chrome DevTools. */
       "name": "Backend/Frontend",

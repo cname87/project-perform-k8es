@@ -65,6 +65,9 @@ const testDatabaseInUse = async () => {
     'GET',
   );
 
+  console.log(process.env.BASE_URL);
+  console.log(testDatabaseResponseBody.isTestDatabase);
+
   /* body will contain { isTestDatabase: <boolean> } */
   if (!testDatabaseResponseBody.isTestDatabase) {
     console.log('*** WARNING: Test database not in use');

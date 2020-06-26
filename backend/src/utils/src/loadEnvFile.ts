@@ -7,7 +7,7 @@
  * Which .env file imported is dependent on the value of process.env.NODE_ENV.
  * 1. NODE_ENV=staging sets a staging configuration - an e2e test stage in GCP Cloud Build sets NODE_ENV=staging,
  * 2. NODE_ENV=development sets a development configuration - NODE_ENV must be set via a VSCode launch configuration or otherwise.
- * 3. When being run from a Kubernetes cluster the production configuration parameters are set via a secret and configmap yaml file, including setting NODE_ENV=production and thus there is no .envProduction file.
+ * 3. When being run from a Kubernetes cluster the production configuration parameters are set via a secret and configmap yaml file, including setting NODE_ENV=production and thus no file is loaded.
  * - If none of the above three apply then an error will be thrown.
  *
  * Note that any environment variables set before loading an .env file are never overwritten.
@@ -18,16 +18,21 @@
 import dotenv from 'dotenv';
 import findup from 'find-up';
 
+console.log(process.env.NODE_ENV);
+
 switch (process.env.NODE_ENV) {
   case 'staging': {
     const envPath = findup.sync('.envStaging', { cwd: __dirname })!;
     /* Load .env file */
     dotenv.config({ path: envPath });
-
+    break;
+  }
+  case 'production': {
+    /* environment set by Kubernetes configuration */
     break;
   }
   /* If not set it defaults to the development configuration */
-  case 'development': {
+  default: {
     const envPath = findup.sync('.envDevelopment', { cwd: __dirname })!;
     /* Load .env file */
     dotenv.config({ path: envPath });

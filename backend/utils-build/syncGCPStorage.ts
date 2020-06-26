@@ -53,7 +53,7 @@ export const bucketName = 'project-perform-gcp-environment-files';
 
 const envBackend = {
   /* Files to be uploaded */
-  filesToUpload: ['.envDevelopment', '.envProduction', '.envStaging'],
+  filesToUpload: ['.envDevelopment', '.envStaging'],
   /* Path relative to rootpath - directory containing package.json */
   deltaPath: '',
 };

@@ -606,7 +606,7 @@ describe('test root page "/" request', () => {
     console.log('Page body: ', readBody);
     chai
       .expect(readBody, 'Page body')
-      .to.eql('You have reached the project-perform backend server');
+      .to.include('You have reached the project-perform backend server');
   });
 });
 

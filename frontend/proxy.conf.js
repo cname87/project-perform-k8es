@@ -23,6 +23,12 @@ const config = [
     secure: false,
     logLevel: 'debug',
   },
+  {
+    context: ['/testServer'],
+    target,
+    secure: false,
+    logLevel: 'debug',
+  },
 ];
 
 module.exports = config;

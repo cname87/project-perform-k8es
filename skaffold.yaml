@@ -31,7 +31,7 @@ deploy:
   helm:
     releases:
       - name: project-perform
-        chartPath: pp-chart
+        chartPath: ../project-perform-k8es-cd/pp-chart
         valuesFiles:
           - pp-chart/values.yaml
         # Override keys in the values.yaml file

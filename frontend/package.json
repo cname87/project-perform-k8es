@@ -16,8 +16,20 @@
   },
   "comments": {
     "scripts": {
-      "preinstall": "Runs before 'npm install'.  Adds versions listed in the 'resolutions' field to the package.lock.json.  Use to fix audit failures where a nested package is not using a version of a problematic package that fixes the audit issue.  This is not without risk and the resolutions field needs to be cleared and updated regularly.",
-      "delDist": "Deletes the './dist' directory"
+      "delDist": "Deletes the './dist' directory",
+      "ngBuild:dev": "Build using default environment.ts file, i.e. development configuration",
+      "ngBuild:e2e": "Build using environment.e2e.ts file, i.e. e2e test configuration",
+      "ngBuild:prod": "Build using environment.prod.ts file, i.e. production configuration",
+      "uploadSecretFiles": "Uploads secret files, that are not stored in git to GCP cloud storage",
+      "startBackend": "Runs a script on the backend package.json that starts the backend server - using the remote test database",
+      "serve:dev": "Serves frontend on 4200 using default environment.ts file, i.e. development configuration, and proxy api-v1/ and testServer/",
+      "serve:e2e": "Serves frontend on 4200 using environment.e2e.ts file, i.e. e2e test configuration, and proxy api-v1/ and testServer/",
+      "serve:production": "Serves frontend on 4200 using environment.prod.e2e.ts file, i.e. e2e test configuration, and proxy api-v1/ and testServer/",
+      "test:dev": "Run the frontend test suite using Chrome",
+      "test:staging": "Run the frontend test suite using headless Chrome",
+      "e2e:dev": "Run e2e with cache error tests on localhost:4200 proxying to a backend on localhost:8080 - you need to start backend separately",
+      "e2e:staging": "Run e2e with cache or error tests on backend:8080 proxying to a backend on backend:8080 - you need to start backend separately",
+      "e2e:production": "Run e2e with no cache or error tests on projectperform.com proxying to a backend on projectperform.com - projectperform.com must be up already"
     }
   },
   "scripts": {
@@ -31,13 +43,15 @@
     "ngBuild:dev": "ng run project-perform:build",
     "ngBuild:e2e": "ng run project-perform:build:e2eTest",
     "ngBuild:prod": "ng run project-perform:build:production",
-    "uploadGCPFiles": "ts-node ./utils-build/syncGCPStorage.ts",
-    "build:dev": "npm-run-all prettier:all eslint:all delDist ngBuild:dev",
-    "build:e2e": "npm-run-all prettier:all eslint:dev delDist ngBuild:e2e uploadGCPFiles",
+    "uploadSecretFiles": "ts-node ./utils-build/syncGCPStorage.ts",
+    "build:dev": "npm-run-all prettier:all eslint:all delDist ngBuild:dev uploadSecretFiles",
+    "build:e2e": "npm-run-all prettier:all eslint:dev delDist ngBuild:e2e ",
     "build:prod": "npm-run-all prettier:all eslint:app delDist ngBuild:prod",
     "startBackend": "cd ../backend && npm run checkServer",
-    "serve": "ng run project-perform:serve",
-    "serveWithBackend": "npm-run-all startBackend serve",
+    "serve:dev": "ng run project-perform:serve",
+    "serve:e2e": "ng run project-perform:serve:e2eTest",
+    "serve:production": "ng run project-perform:serve:production",
+    "serveDevWithBackend": "npm-run-all startBackend serve:dev",
     "test:dev": "ng run project-perform:test:dev",
     "test:staging": "ng run project-perform:test:staging",
     "e2e:dev": "cross-env E2E=development ng run project-perform:e2e:dev",

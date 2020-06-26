@@ -23,6 +23,7 @@
       "args": "terminateAll"
     }
   ],
+  /* Serve frontend with backend */
   "tasks": [
     {
       "label": "Serve Frontend with Backend",
@@ -32,7 +33,7 @@
         "run",
         "--prefix",
         "${workspaceFolder}/frontend",
-        "serveWithBackend"
+        "serveDevWithBackend"
       ],
       "group": {
         "kind": "build",
