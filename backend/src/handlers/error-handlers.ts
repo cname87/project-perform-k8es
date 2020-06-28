@@ -21,7 +21,7 @@ export const { modulename, debug } = setupDebug(__filename);
  * Note: This does not catch errors but rather requests that get this far.
  */
 
-function notFound(_req: Request, _res: Response, next: NextFunction) {
+function notFound(_req: Request, _res: Response, next: NextFunction): void {
   debug(`${modulename}: notFound called`);
   next(createError(404));
 }
@@ -39,7 +39,7 @@ function assignCode(
   _req: Request,
   res: Response,
   next: NextFunction,
-) {
+): void {
   debug(`${modulename}: assignCode called`);
 
   if (typeof err !== 'object') {
@@ -68,7 +68,12 @@ function assignCode(
 /**
  * Log detail on all errors passed in.
  */
-function logError(err: any, req: Request, res: Response, next: NextFunction) {
+function logError(
+  err: any,
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): void {
   debug(`${modulename}: logError started`);
 
   const { logger } = req.app.appLocals;
@@ -106,7 +111,7 @@ function sendErrorResponse(
   _req: Request,
   res: Response,
   next: NextFunction,
-) {
+): void {
   /* set response */
   const message = {
     code: res.statusCode,
@@ -143,7 +148,7 @@ function throwError(
   _req: Request,
   res: Response,
   next: NextFunction,
-) {
+): void {
   debug(`${modulename}: throwError called`);
 
   /* throw an exception */

@@ -8,6 +8,7 @@ import karmaCoverageIstanbulReporter from 'karma-coverage-istanbul-reporter';
 import angularDevkitPluginKarma from '@angular-devkit/build-angular/plugins/karma';
 
 /* Set path to the Chrome executable - using Chromium from Puppeteer for GCP */
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 process.env.CHROME_BIN = require('puppeteer').executablePath();
 
 export default function main(config) {

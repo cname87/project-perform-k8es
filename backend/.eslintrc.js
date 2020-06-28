@@ -42,6 +42,12 @@ module.exports = {
     '@typescript-eslint/no-explicit-any': 'off',
     '@typescript-eslint/no-unused-vars': 'off',
     '@typescript-eslint/no-non-null-assertion': 'off',
+    '@typescript-eslint/explicit-module-boundary-types': [
+      'error',
+      {
+        allowArgumentsExplicitlyTypedAsAny: true,
+      },
+    ],
     /* set personal preferences below */
     'max-len': [
       'error',

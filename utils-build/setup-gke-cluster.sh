@@ -2,36 +2,47 @@
 
 # This sets up a Kubernetes cluster on GKE.
 
-echo -e "\nSetting up cluster configuration parameters\n"
 
 # Read in variables
 SCRIPT_DIR="${0%/*}"
 # shellcheck source=/dev/null
 source "$SCRIPT_DIR"/set-variables.sh
 
+# If there is a '-p' option in the command line then create the production cluster
+# If there is no option, or any other option, in the command line then create a test cluster
+CLUSTER_NAME="${TEST_CLUSTER_NAME}"
+while getopts p option
+do
+case "${option}"
+in
+p) CLUSTER_NAME="${PROD_CLUSTER_NAME}";;
+*) CLUSTER_NAME="${TEST_CLUSTER_NAME}";;
+esac
+done
+
+# Utility confirm function
+function confirm(){
+  echo -e "Run with -t to create the 'test' cluster or with -p to create the production cluster."
+  echo -e "No option, or any other option, will create the test cluster."
+  echo -e "The name ends in 'test', or 'prod', creating the test or production cluster respectively\n"
+  read -r -s -n 1 -p "Press any key to cornfirm or CTRL-C to cancel..."
+  echo ""
+}
+
+echo -e "\nThe cluster to be created is ${CLUSTER_NAME}\n"
+confirm
+
 # List the GCP project parameters - this assumes that the GCP project is set up
 echo "Project: $PROJECT"
 echo "Region: $REGION"
 echo "Zone: $ZONE"
 
-# Clear the Kubectl configuration file entirely, clearing old contexts
-echo -e "\nResetting Kubectl configuration file\n"
-cat <<EOF > ~/.kube/config
-apiVersion: v1
-clusters: []
-contexts: []
-current-context: ""
-kind: Config
-preferences: {}
-users: []
-EOF
-
-echo -e "\nCreating cluster\n"
+echo -e "\nCreating cluster ${CLUSTER_NAME}\n"
 # Using smallest CPU, pre-emptible VMs, with 32GB boot disk (as opposed to default 100GB)
-gcloud container clusters create "${CLUSTER}" \
+gcloud container clusters create "${CLUSTER_NAME}" \
 --project="${PROJECT}" \
 --zone="${ZONE}" \
---cluster-version=1.16.8-gke.15 \
+--cluster-version=1.16.9-gke.6 \
 --machine-type=g1-small \
 --preemptible \
 --disk-size=32 \
@@ -40,8 +51,9 @@ gcloud container clusters create "${CLUSTER}" \
 --num-nodes=3 \
 --quiet
 
-echo -e "\nGetting credentials\n"
-gcloud container clusters get-credentials "${CLUSTER}"
+echo -e "\nUpdate kubeconfig with cluster credentials"
+echo -e "The kubeconfig current context is set to this conext.\n"
+gcloud container clusters get-credentials "${CLUSTER_NAME}"
 
 echo -e "\nConfirming cluster is running\n"
 gcloud container clusters list

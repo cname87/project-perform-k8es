@@ -1,17 +1,44 @@
 #!/usr/bin/env bash
 
-# Utility pause and check function
-function check(){
- read -r -s -n 1 -p "Go to https://console.cloud.google.com/net-services/loadbalancing/loadBalancers/list?project=project-perform and confirm all loadbalancer resources are deleted and then press any key..."
- echo ""
-}
+# This deletes a Kubernetes cluster on GKE.
 
 # Read in variables
 SCRIPT_DIR="${0%/*}"
 # shellcheck source=/dev/null
 source "$SCRIPT_DIR"/set-variables.sh
 
-echo -e "\nDelete ingress and loadbalancer\n"
+# If there is a '-p' option in the command line then delete the production cluster
+# If there is '-t' option in the command line then delete the test cluster
+# If there is no option, or any other option, in the command line then no cluster will be deleted
+CLUSTER_NAME="non-existent"
+while getopts pt option
+do
+case "${option}"
+in
+p) CLUSTER_NAME="${PROD_CLUSTER_NAME}";;
+t) CLUSTER_NAME="${TEST_CLUSTER_NAME}";;
+*) CLUSTER_NAME="non-existent";;
+esac
+done
+
+# Utility confirm function
+function confirm(){
+ echo -e "Run with -t to delete the 'test' cluster or with -p to delete the production cluster."
+ echo -e "No option, or any other option, will attempt to delete a non-existent cluster."
+ read -r -s -n 1 -p "Press any key to confirm or CTRL-C to cancel..."
+ echo ""
+}
+
+# Utility pause and check function
+function check(){
+ read -r -s -n 1 -p "Go to https://console.cloud.google.com/net-services/loadbalancing/loadBalancers/list?project=project-perform and confirm all loadbalancer resources are deleted and then press any key..."
+ echo ""
+}
+
+echo -e "\nThe cluster to be deleted is ${CLUSTER_NAME}\n"
+confirm
+
+echo -e "\nDelete ingress and loadbalancer - may return error if already deleted\n"
 kubectl delete ingress "${INGRESS}"
 
 echo -e "\nManually confirm that the loadbalancer resources are deleted\n"
@@ -23,16 +50,8 @@ check
 
 echo -e "\nDelete cluster\n"
 gcloud container clusters delete "${CLUSTER_NAME}" --quiet
+
+echo -e "\nList remaining clusters\n"
 gcloud container clusters list
 
-# Clear Kubectl configuration file entirely - clears old context
-echo -e "\nReset Kubectl configuration file\n"
-cat <<EOF > ~/.kube/config
-apiVersion: v1
-clusters: []
-contexts: []
-current-context: ""
-kind: Config
-preferences: {}
-users: []
-EOF
+# The associated kubeconfig context is automatically deleted

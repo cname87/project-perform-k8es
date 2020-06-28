@@ -15,8 +15,6 @@ RUN npm install --only=production
 # Copy rest of the application source code
 COPY . ./
 
-# TODO
-# Running 'skaffold debug' will add --inspect=9229'
+# Run with '--inspect=9229' if running 'DeBug Backend on Kubernetes'
+# ENTRYPOINT ["node", "--inspect=9229", "dist/src/app.js"]
 ENTRYPOINT ["node", "dist/src/app.js"]
-
-# CMD ["npm", "run", "start"]

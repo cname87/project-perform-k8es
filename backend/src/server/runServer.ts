@@ -27,7 +27,7 @@ const { modulename, debug } = setupDebug(__filename);
  * @returns Void.
  */
 
-async function runServer(app: Application) {
+async function runServer(app: Application): Promise<void> {
   debug(`${modulename}: running runServer`);
 
   const instanceStarted = new Date().toUTCString();

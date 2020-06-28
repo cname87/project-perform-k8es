@@ -122,22 +122,29 @@
     // e2e frontend with backend - use for frontend e2e test debug
     {
       /**
-      1. *** Serve the front-end in advance. ***
+
+      1. *** Choose the .dev, .staging or .production configuration by editing the args field below. ***
+      These point at a corresponding e2e .env file. The .env file lists the .spec files which are run and the baseUrl to which all url requests sre sent.
+      (i) dev.conf: localhost:4200 and run all tests - USE by DEFAULT
+      (ii) production.conf: project-perform.com and dont' run cache/error tests - use to test the production server.
+      (iii) staging.conf: backend:8080 - used only in cloudbuild.
+
+      2. *** Serve the front-end in advance (unless testing against the production server). ***
       There are 3 serve options (which each load a different environment file.) - a parameter sets the interceptors that allow error or cache testing. Run 'npm run ...':
-      (i) serve:dev - should be run to disallow error and cache tests.
-      (ii) serve:prod - should be run to disallow error and cache tests.
-      (iii) serve:e2e - should be run to allow cache and error tests.
-      2. *** Start the backend in advance.
-      NOTE: Protractor uses a configured baseUrl to point all url requests to a host.  The frontend must be available on the configured Protractor baseUrl.  baseUrl is set in the Protractor conf file:
-      - -dev.conf: localhost:8080.
-      - -staging.conf: backend:8080 - used only in cloudbuild.
-      - -production.conf: project-perform.com - the production GKE cluster.
-      3. *** Choose the .dev, .staging or .production configuration by editing args below. ***
-      These point at a corresponding e2e .env file. The .env file lists the .spec files which are run.
-      4. This then runs e2e tests against the application allowing VSCode debug of the e2e .spec files. Use Chrome DevTools if browser-side debug is needed.
+      (i) serve:e2e - should be run to allow cache and error tests.  USE by DEFAULT
+      (ii) serve:dev - if run will fail error and cache tests => NO.
+      (iii) serve:prod - if run will fail error and cache tests => No.
+
+      3. *** Start the backend server in advance (unless testing against the production server)***
+      If you started the frontend using serve:xxx then calls to /apiv1 and /testServer are proxied (via proxy.conf) to localhots:8080.
+      => Run the launch configuration that starts the baceknd on localhost:8080.
+
+      4. *** Run this launcg configuration ***
+      This then runs e2e tests against the application allowing VSCode debug of the e2e .spec files. Use Chrome DevTools if browser-side debug is needed.
+
       VALID OPTIONS:
-      - Run serve:e2e (which allows error and cache testing) and then choose the -dev conf file (which is configured to target localhost:8080).
-      - Run serve:prod (which disallows error and cache testing) and choose the -production conf file (which is configured to test against projectperform.com and skip cache and error testing).
+      - Choose the -dev conf file (which is configured to target localhost:4200 and proxy to localhost:8080. Then run serve:e2e (which allows error and cache testing) and then launch the backend server on 8080:
+      - Choose the -production conf file (which is configured to test against projectperform.com and skip cache and error testing).  No need to serve a local forntend or backend server.
       - Note: The -staging conf file is configured to test against a server only available on cloudbuild (and skips cache and error testing).
       NOTE: You can target a server directly by setting the BASE_URL below.
       */

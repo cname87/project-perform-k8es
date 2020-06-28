@@ -22,7 +22,10 @@ import util from 'util';
 
 const sleep = util.promisify(setTimeout);
 
-const pingServer = (numRetries = 10, url = 'http://localhost:8080/') => {
+const pingServer = (
+  numRetries = 10,
+  url = 'http://localhost:8080/',
+): Promise<void> => {
   /* server access options */
   const options = {
     url,

@@ -23,7 +23,7 @@ const { modulename, debug } = setupDebug(__filename);
  * A response is sent with a status of 200.
  * Note: There is no checking of the request body data.
  */
-function raiseEvent(req: Request, res: Response, _next: NextFunction) {
+function raiseEvent(req: Request, res: Response, _next: NextFunction): void {
   debug(`${modulename}: handler raiseEvent was called`);
 
   /* retrieve data sent via POST */
@@ -102,7 +102,7 @@ const writeJson = (
   next: NextFunction,
   code: number,
   payload?: Perform.IMember | Perform.IMember[] | Record<string, unknown>,
-) => {
+): void => {
   debug(`${modulename}: running writeJson`);
 
   const validationResult = isResponseValid(context, payload, code);
