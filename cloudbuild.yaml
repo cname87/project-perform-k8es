@@ -11,148 +11,148 @@
 
 steps:
 
-# # # When a build is executed from GCP via a github trigger the secret files, and associated directories, are not in git so you must download them from GCP Storage.  The directory structure of the GCP storage bucket MUST be set up to match the directory structure of the missing files & directories, as a recursive copy is carried out to copy the directory structure and files.
-# # # Note: This step is superfluous when triggered via CLI.
+# # When a build is executed from GCP via a github trigger the secret files, and associated directories, are not in git so you must download them from GCP Storage.  The directory structure of the GCP storage bucket MUST be set up to match the directory structure of the missing files & directories, as a recursive copy is carried out to copy the directory structure and files.
+# # Note: This step is superfluous when triggered via CLI.
 
-# # Copy the backend .env, frontend e2e .env, database certs, & GCP Storage key files from GCP Storage to the persisted workspace.
-# - id: 'download environment and certs files'
-#   name: 'gcr.io/cloud-builders/gsutil'
-#   dir: '.'
-#   args: [
-#     # Run operations in parallel
-#     '-m',
-#     # Copy recursively
-#     'cp', '-r',
-#     # Don't overwrite
-#     '-n',
-#     'gs://project-perform-gcp-environment-files/*',
-#     '.',
-#   ]
+# Copy the backend .env, frontend e2e .env, database certs, & GCP Storage key files from GCP Storage to the persisted workspace.
+- id: 'download environment and certs files'
+  name: 'gcr.io/cloud-builders/gsutil'
+  dir: '.'
+  args: [
+    # Run operations in parallel
+    '-m',
+    # Copy recursively
+    'cp', '-r',
+    # Don't overwrite
+    '-n',
+    'gs://project-perform-gcp-environment-files/*',
+    '.',
+  ]
 
-# # Install the backend node_modules directory in the persisted workspace.
-# # Note: Using the node-with-puppeteer image (rather than a simple node image) as it is needed in other steps (which means only 1 image download) is required.
-# - id: 'install backend node_modules'
-#   name: 'gcr.io/$PROJECT_ID/node-with-puppeteer'
-#   entrypoint: npm
-#   dir: './backend'
-#   args: ['install']
+# Install the backend node_modules directory in the persisted workspace.
+# Note: Using the node-with-puppeteer image (rather than a simple node image) as it is needed in other steps (which means only 1 image download) is required.
+- id: 'install backend node_modules'
+  name: 'gcr.io/$PROJECT_ID/node-with-puppeteer'
+  entrypoint: npm
+  dir: './backend'
+  args: ['install']
 
-# # Install the backend node_modules directory in the persisted workspace.
-# - id: 'install frontend node_modules'
-#   name: 'gcr.io/$PROJECT_ID/node-with-puppeteer'
-#   entrypoint: npm
-#   dir: './frontend'
-#   args: ['install']
+# Install the backend node_modules directory in the persisted workspace.
+- id: 'install frontend node_modules'
+  name: 'gcr.io/$PROJECT_ID/node-with-puppeteer'
+  entrypoint: npm
+  dir: './frontend'
+  args: ['install']
 
-# # Build the backend in the persisted workspace (replacing the copied in dist files - the newly built files are later deployed).
-# - id: 'build backend'
-#   name: 'gcr.io/$PROJECT_ID/node-with-puppeteer'
-#   entrypoint: npm
-#   dir: './backend'
-#   args: ['run', 'build']
+# Build the backend in the persisted workspace (replacing the copied in dist files - the newly built files are later deployed).
+- id: 'build backend'
+  name: 'gcr.io/$PROJECT_ID/node-with-puppeteer'
+  entrypoint: npm
+  dir: './backend'
+  args: ['run', 'build']
 
-# # Build the frontend in the persisted workspace (replacing the copied-in dist files - the newly built files are later deployed).
-# - id: 'build frontend'
-#   name: 'gcr.io/$PROJECT_ID/node-with-puppeteer'
-#   entrypoint: npm
-#   dir: './frontend'
-#   args: ['run', 'build:prod']
+# Build the frontend in the persisted workspace (replacing the copied-in dist files - the newly built files are later deployed).
+- id: 'build frontend'
+  name: 'gcr.io/$PROJECT_ID/node-with-puppeteer'
+  entrypoint: npm
+  dir: './frontend'
+  args: ['run', 'build:prod']
 
-# # Run all backend unit tests.
-# # Must have Node & Puppeteer in the base image.
-# - id: 'unit test backend'
-#   name: 'gcr.io/$PROJECT_ID/node-with-puppeteer'
-#   dir: './backend'
-#   env: ['NODE_ENV=staging']
-#   args: ['npm', 'run', 'test']
+# Run all backend unit tests.
+# Must have Node & Puppeteer in the base image.
+- id: 'unit test backend'
+  name: 'gcr.io/$PROJECT_ID/node-with-puppeteer'
+  dir: './backend'
+  env: ['NODE_ENV=staging']
+  args: ['npm', 'run', 'test']
 
-# # Run all frontend unit tests.
-# # Must have Node & Puppeteer in the base image.
-# - id: 'unit test frontend'
-#   name: 'gcr.io/$PROJECT_ID/node-with-puppeteer'
-#   dir: './frontend'
-#   args: ['npm', 'run', 'test:staging']
+# Run all frontend unit tests.
+# Must have Node & Puppeteer in the base image.
+- id: 'unit test frontend'
+  name: 'gcr.io/$PROJECT_ID/node-with-puppeteer'
+  dir: './frontend'
+  args: ['npm', 'run', 'test:staging']
 
-# # Build the backend server image (which is later deployed).
-# - id: 'Build backend server image'
-#   name: 'gcr.io/cloud-builders/docker'
-#   dir: './backend'
-#   args: [
-#     'build',
-#     '--file=Dockerfile',
-#     '--tag=${_BACKEND_IMAGE}:${_BACKEND_VERSION}',
-#     '.']
+# Build the backend server image (which is later deployed).
+- id: 'Build backend server image'
+  name: 'gcr.io/cloud-builders/docker'
+  dir: './backend'
+  args: [
+    'build',
+    '--file=Dockerfile',
+    '--tag=${_BACKEND_IMAGE}:${_BACKEND_VERSION}',
+    '.']
 
-# # Push the backend server image so it can be pulled for deployment.
-# - id: 'Push backend server image'
-#   name: 'gcr.io/cloud-builders/docker'
-#   args: [
-#     'push',
-#     '${_BACKEND_IMAGE}:${_BACKEND_VERSION}',
-#   ]
+# Push the backend server image so it can be pulled for deployment.
+- id: 'Push backend server image'
+  name: 'gcr.io/cloud-builders/docker'
+  args: [
+    'push',
+    '${_BACKEND_IMAGE}:${_BACKEND_VERSION}',
+  ]
 
-# # Build the frontend server image (which is later deployed).
-# - id: 'Build frontend server image'
-#   name: 'gcr.io/cloud-builders/docker'
-#   dir: './frontend'
-#   args: [
-#     'build',
-#     '--file=Dockerfile',
-#     '--tag=${_FRONTEND_IMAGE}:${_FRONTEND_VERSION}',
-#     '.',
-#   ]
+# Build the frontend server image (which is later deployed).
+- id: 'Build frontend server image'
+  name: 'gcr.io/cloud-builders/docker'
+  dir: './frontend'
+  args: [
+    'build',
+    '--file=Dockerfile',
+    '--tag=${_FRONTEND_IMAGE}:${_FRONTEND_VERSION}',
+    '.',
+  ]
 
-# # Push the backend server image so it can be pulled for deployment.
-# - id: 'Push frontend server image'
-#   name: 'gcr.io/cloud-builders/docker'
-#   args: [
-#     'push',
-#     '${_FRONTEND_IMAGE}:${_FRONTEND_VERSION}',
-#   ]
+# Push the backend server image so it can be pulled for deployment.
+- id: 'Push frontend server image'
+  name: 'gcr.io/cloud-builders/docker'
+  args: [
+    'push',
+    '${_FRONTEND_IMAGE}:${_FRONTEND_VERSION}',
+  ]
 
-# # Run the backend server in the background.
-# - id: 'Run backend server'
-#   name: 'gcr.io/cloud-builders/docker'
-#   dir: './backend'
-#   args: [
-#     'run',
-#     # The name matches the proxy url set up in the e2e configuration.
-#     '--name=backend',
-#     # Remove container when stopped.
-#     '--rm',
-#     # Run detached.
-#     '-d=true',
-#     # Expose port on backend (8080)
-#     '-p=8080:8080',
-#     # Attach to the local Docker network named cloudbuild to which the container in each build step is attached.
-#     '--network=cloudbuild',
-#     # Run with NODE_ENV=staging => TEST_PATHS available.
-#     '--env', 'NODE_ENV=staging',
-#     # Runs the image built in a previous build step.
-#     '${_BACKEND_IMAGE}:${_BACKEND_VERSION}'
-#   ]
+# Run the backend server in the background.
+- id: 'Run backend server'
+  name: 'gcr.io/cloud-builders/docker'
+  dir: './backend'
+  args: [
+    'run',
+    # The name matches the proxy url set up in the e2e configuration.
+    '--name=backend',
+    # Remove container when stopped.
+    '--rm',
+    # Run detached.
+    '-d=true',
+    # Expose port on backend (8080)
+    '-p=8080:8080',
+    # Attach to the local Docker network named cloudbuild to which the container in each build step is attached.
+    '--network=cloudbuild',
+    # Run with NODE_ENV=staging => TEST_PATHS available.
+    '--env', 'NODE_ENV=staging',
+    # Runs the image built in a previous build step.
+    '${_BACKEND_IMAGE}:${_BACKEND_VERSION}'
+  ]
 
-# # Runs an e2e test against the built backend server.
-# # Runs a local frontend server serving the built frontend.
-# # Pre-compiles the frontend using a staging environment file that enables error and cache interceptors in the frontend.
-# # Runs Protractor using a staging configuration that runs the cache or errors tests.
-# # BASE_URL is set to run against the server running in the backend.
-# # The configured test user has access to the test database.
-# # The staging environment file selected by NODE_ENV=staging sets the backend server to be run with test paths available.  It also sets that the test database is in use.
-# - id: 'Run e2e test in staging environment'
-#   name: 'gcr.io/$PROJECT_ID/node-with-puppeteer'
-#   dir: './frontend'
-#   args: ['npm', 'run', 'e2e:staging']
+# Runs an e2e test against the built backend server.
+# Runs a local frontend server serving the built frontend.
+# Pre-compiles the frontend using a staging environment file that enables error and cache interceptors in the frontend.
+# Runs Protractor using a staging configuration that runs the cache or errors tests.
+# BASE_URL is set to run against the server running in the backend.
+# The configured test user has access to the test database.
+# The staging environment file selected by NODE_ENV=staging sets the backend server to be run with test paths available.  It also sets that the test database is in use.
+- id: 'Run e2e test in staging environment'
+  name: 'gcr.io/$PROJECT_ID/node-with-puppeteer'
+  dir: './frontend'
+  args: ['npm', 'run', 'e2e:staging']
 
-# # Stops the backend server running in the background, (and it is removed automatically).
-# - id: 'Stop backend server'
-#   name: 'gcr.io/cloud-builders/docker'
-#   dir: './backend'
-#   args: [
-#     'container',
-#     'stop',
-#     'backend',
-#   ]
+# Stops the backend server running in the background, (and it is removed automatically).
+- id: 'Stop backend server'
+  name: 'gcr.io/cloud-builders/docker'
+  dir: './backend'
+  args: [
+    'container',
+    'stop',
+    'backend',
+  ]
 
 # 'Get private ssh key from Google Secret Manager to allow push access to Github'
 - id: 'Get github access'
