@@ -2,6 +2,8 @@
 
 # This installs or upgrades a cluster with the application Helm chart.
 
+# Print message if the script is ended by Ctrl+C
+TRAP "{ echo 'Terminated with Ctrl+C' }" SIGINT
 
 # Read in variables
 SCRIPT_DIR="${0%/*}"
@@ -33,7 +35,6 @@ function confirm(){
 }
 
 echo -e "\nThe cluster to be upgraded is ${CLUSTER_NAME}\n"
-
 confirm
 
 echo -e "\nSet the current kubeconfig context to ${CONTEXT}\n"

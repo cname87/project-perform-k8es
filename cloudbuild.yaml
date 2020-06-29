@@ -11,52 +11,52 @@
 
 steps:
 
-# # When a build is executed from GCP via a github trigger the secret files, and associated directories, are not in git so you must download them from GCP Storage.  The directory structure of the GCP storage bucket MUST be set up to match the directory structure of the missing files & directories, as a recursive copy is carried out to copy the directory structure and files.
-# # Note: This step is superfluous when triggered via CLI.
+# # # When a build is executed from GCP via a github trigger the secret files, and associated directories, are not in git so you must download them from GCP Storage.  The directory structure of the GCP storage bucket MUST be set up to match the directory structure of the missing files & directories, as a recursive copy is carried out to copy the directory structure and files.
+# # # Note: This step is superfluous when triggered via CLI.
 
-# Copy the backend .env, frontend e2e .env, database certs, & GCP Storage key files from GCP Storage to the persisted workspace.
-- id: 'download environment and certs files'
-  name: 'gcr.io/cloud-builders/gsutil'
-  dir: '.'
-  args: [
-    # Run operations in parallel
-    '-m',
-    # Copy recursively
-    'cp', '-r',
-    # Don't overwrite
-    '-n',
-    'gs://project-perform-gcp-environment-files/*',
-    '.',
-  ]
+# # Copy the backend .env, frontend e2e .env, database certs, & GCP Storage key files from GCP Storage to the persisted workspace.
+# - id: 'download environment and certs files'
+#   name: 'gcr.io/cloud-builders/gsutil'
+#   dir: '.'
+#   args: [
+#     # Run operations in parallel
+#     '-m',
+#     # Copy recursively
+#     'cp', '-r',
+#     # Don't overwrite
+#     '-n',
+#     'gs://project-perform-gcp-environment-files/*',
+#     '.',
+#   ]
 
-# Install the backend node_modules directory in the persisted workspace.
-# Note: Using the node-with-puppeteer image (rather than a simple node image) as it is needed in other steps (which means only 1 image download) is required.
-- id: 'install backend node_modules'
-  name: 'gcr.io/$PROJECT_ID/node-with-puppeteer'
-  entrypoint: npm
-  dir: './backend'
-  args: ['install']
+# # Install the backend node_modules directory in the persisted workspace.
+# # Note: Using the node-with-puppeteer image (rather than a simple node image) as it is needed in other steps (which means only 1 image download) is required.
+# - id: 'install backend node_modules'
+#   name: 'gcr.io/$PROJECT_ID/node-with-puppeteer'
+#   entrypoint: npm
+#   dir: './backend'
+#   args: ['install']
 
-# Install the backend node_modules directory in the persisted workspace.
-- id: 'install frontend node_modules'
-  name: 'gcr.io/$PROJECT_ID/node-with-puppeteer'
-  entrypoint: npm
-  dir: './frontend'
-  args: ['install']
+# # Install the backend node_modules directory in the persisted workspace.
+# - id: 'install frontend node_modules'
+#   name: 'gcr.io/$PROJECT_ID/node-with-puppeteer'
+#   entrypoint: npm
+#   dir: './frontend'
+#   args: ['install']
 
-# Build the backend in the persisted workspace (replacing the copied in dist files - the newly built files are later deployed).
-- id: 'build backend'
-  name: 'gcr.io/$PROJECT_ID/node-with-puppeteer'
-  entrypoint: npm
-  dir: './backend'
-  args: ['run', 'build']
+# # Build the backend in the persisted workspace (replacing the copied in dist files - the newly built files are later deployed).
+# - id: 'build backend'
+#   name: 'gcr.io/$PROJECT_ID/node-with-puppeteer'
+#   entrypoint: npm
+#   dir: './backend'
+#   args: ['run', 'build']
 
-# Build the frontend in the persisted workspace (replacing the copied-in dist files - the newly built files are later deployed).
-- id: 'build frontend'
-  name: 'gcr.io/$PROJECT_ID/node-with-puppeteer'
-  entrypoint: npm
-  dir: './frontend'
-  args: ['run', 'build:prod']
+# # Build the frontend in the persisted workspace (replacing the copied-in dist files - the newly built files are later deployed).
+# - id: 'build frontend'
+#   name: 'gcr.io/$PROJECT_ID/node-with-puppeteer'
+#   entrypoint: npm
+#   dir: './frontend'
+#   args: ['run', 'build:prod']
 
 # # Run all backend unit tests.
 # # Must have Node & Puppeteer in the base image.
@@ -73,42 +73,42 @@ steps:
 #   dir: './frontend'
 #   args: ['npm', 'run', 'test:staging']
 
-# Build the backend server image (which is later deployed).
-- id: 'Build backend server image'
-  name: 'gcr.io/cloud-builders/docker'
-  dir: './backend'
-  args: [
-    'build',
-    '--file=Dockerfile',
-    '--tag=${_BACKEND_IMAGE}:${_BACKEND_VERSION}',
-    '.']
+# # Build the backend server image (which is later deployed).
+# - id: 'Build backend server image'
+#   name: 'gcr.io/cloud-builders/docker'
+#   dir: './backend'
+#   args: [
+#     'build',
+#     '--file=Dockerfile',
+#     '--tag=${_BACKEND_IMAGE}:${_BACKEND_VERSION}',
+#     '.']
 
-# Push the backend server image so it can be pulled for deployment.
-- id: 'Push backend server image'
-  name: 'gcr.io/cloud-builders/docker'
-  args: [
-    'push',
-    '${_BACKEND_IMAGE}:${_BACKEND_VERSION}',
-  ]
+# # Push the backend server image so it can be pulled for deployment.
+# - id: 'Push backend server image'
+#   name: 'gcr.io/cloud-builders/docker'
+#   args: [
+#     'push',
+#     '${_BACKEND_IMAGE}:${_BACKEND_VERSION}',
+#   ]
 
-# Build the frontend server image (which is later deployed).
-- id: 'Build frontend server image'
-  name: 'gcr.io/cloud-builders/docker'
-  dir: './frontend'
-  args: [
-    'build',
-    '--file=Dockerfile',
-    '--tag=${_FRONTEND_IMAGE}:${_FRONTEND_VERSION}',
-    '.',
-  ]
+# # Build the frontend server image (which is later deployed).
+# - id: 'Build frontend server image'
+#   name: 'gcr.io/cloud-builders/docker'
+#   dir: './frontend'
+#   args: [
+#     'build',
+#     '--file=Dockerfile',
+#     '--tag=${_FRONTEND_IMAGE}:${_FRONTEND_VERSION}',
+#     '.',
+#   ]
 
-# Push the backend server image so it can be pulled for deployment.
-- id: 'Push frontend server image'
-  name: 'gcr.io/cloud-builders/docker'
-  args: [
-    'push',
-    '${_FRONTEND_IMAGE}:${_FRONTEND_VERSION}',
-  ]
+# # Push the backend server image so it can be pulled for deployment.
+# - id: 'Push frontend server image'
+#   name: 'gcr.io/cloud-builders/docker'
+#   args: [
+#     'push',
+#     '${_FRONTEND_IMAGE}:${_FRONTEND_VERSION}',
+#   ]
 
 # # Run the backend server in the background.
 # - id: 'Run backend server'
@@ -154,26 +154,28 @@ steps:
 #     'backend',
 #   ]
 
-# 'Get private ssh key from Secret Manager to allow push access to Github'
+# 'Get private ssh key from Google Secret Manager to allow push access to Github'
 - id: 'Get github access'
   name: gcr.io/cloud-builders/gcloud
   entrypoint: 'bash'
-  args: [
-    '-c',
-    'gcloud secrets versions access latest --secret=id_github > /root/.ssh/id_github',
-  ]
+  args:
+  - '-c'
+  - |
+    set -x && \
+    gcloud secrets versions access latest --secret=id_github > /root/.ssh/id_github
   volumes:
   - name: 'ssh'
     path: /root/.ssh
 
-# Add github.com to known_hosts
+# Add github.com public key to known_hosts - allows client to authenticate github.com is indeed github.com
 - id: 'Set up github access'
   name: 'gcr.io/cloud-builders/git'
   entrypoint: 'bash'
   args:
   - '-c'
   - |
-    chmod 600 /root/.ssh/id_github
+    set -x && \
+    chmod 600 /root/.ssh/id_github && \
     cat <<EOF >/root/.ssh/config
     Hostname github.com
     IdentityFile /root/.ssh/id_github
@@ -183,7 +185,7 @@ steps:
   - name: 'ssh'
     path: /root/.ssh
 
-# Clone the project Continuous Delivery repository (project-perform-k8es-cd) which makes the project Helm chart available.
+# Clone the project Continuous Delivery repository and checkout the candidate branch.
 - id: Clone CD repository
   name: 'gcr.io/cloud-builders/git'
   entrypoint: /bin/sh
@@ -192,26 +194,56 @@ steps:
   - '-c'
   - |
     set -x && \
-    git clone git@github.com:cname87/project-perform-k8es-cd && \
-    cd  project-perform-k8es-cd  && \
-    git checkout candidate && \
-    git push origin
+    git clone git@github.com:cname87/$_CD_REPO && \
+    cd  $_CD_REPO  && \
+    git checkout candidate
   volumes:
   - name: 'ssh'
     path: /root/.ssh
 
-# Update the project Helm chart to refer to the new image
-- id: Update chart
+# 'Copy the local Helm chart to the CD Repo'
+- id: 'Copy Helm chart to CD Repo'
+  name: gcr.io/cloud-builders/gcloud
+  entrypoint: 'bash'
+  args:
+  -  '-c'
+  - |
+    set -x && \
+    cp -rf ./pp-chart ./$_CD_REPO
+
+# Update the CD Repo Helm chart to refer to the new frontend image
+- id: Update frontend image in the Helm chart
   name: gcr.io/$PROJECT_ID/yq
   args:
   - yq
   - write
   - --inplace
-  - project-perform-k8es-cd/pp-chart/values.yaml
+  - $_CD_REPO/pp-chart/values.yaml
   - 'frontend.image'
   - ${_FRONTEND_IMAGE}:${_FRONTEND_VERSION}
 
-# Push the updated Helm chart back to the CD repo
+# Update the CD Repo Helm chart to refer to the new backend image
+- id: Update backend image in the Helm chart
+  name: gcr.io/$PROJECT_ID/yq
+  args:
+  - yq
+  - write
+  - --inplace
+  - $_CD_REPO/pp-chart/values.yaml
+  - 'backend.image'
+  - ${_BACKEND_IMAGE}:${_BACKEND_VERSION}
+
+# 'Cat '
+- id: 'Cat'
+  name: gcr.io/cloud-builders/gcloud
+  entrypoint: 'bash'
+  args:
+  -  '-c'
+  - |
+    set -x && \
+    cat $_CD_REPO/pp-chart/values.yaml
+
+# Push the updated Helm chart back to the remote CD repo
 - name: gcr.io/cloud-builders/git
   id: Push edited chart back to the CD repo
   entrypoint: /bin/sh
@@ -220,7 +252,7 @@ steps:
   - '-c'
   - |
     set -x && \
-    cd project-perform-k8es-cd && \
+    cd $_CD_REPO && \
     git config user.email $(gcloud auth list --filter=status:ACTIVE --format='value(account)') && \
     git add . && \
     git commit -m "Deploys image ${_FRONTEND_IMAGE}:${_FRONTEND_VERSION}
@@ -235,17 +267,19 @@ substitutions: # default values
   # PROJECT_ID: Cloud Build defaults to the ID of your Cloud project
   # BUILD_ID: Cloud Build defaults to the ID of your build
   # COMMIT_SHA: Cloud Build sets this to the git commit hash that triggered this cloud build run, or to '' if cloud build is run manually
-  _BACKEND_IMAGE: ''
-  _FRONTEND_IMAGE: ''
-  _BACKEND_VERSION: ''
-  _FRONTEND_VERSION: ''
-  _GKE_CLUSTER: 'k8es-cluster'
-  _GKE_ZONE: 'europe-west2-c'
-  _TAG: 'ppk8es-CD'
+  # SHORT_SHA: Cloud Build sets this to the first 7 characters of the git commit hash that triggered this cloud build run, or to '' if cloud build is run manually
+  # TAG_NAME: Cloud Build sets this to the tag of the git commit that triggered this cloud build run, or to '' if cloud build is run manually
+  _BACKEND_IMAGE: 'pp-backend'
+  _FRONTEND_IMAGE: 'pp-frontend'
+  _BACKEND_VERSION: '${TAG_NAME}:${SHORT_SHA}'
+  _FRONTEND_VERSION: '${TAG_NAME}:${SHORT_SHA}'
+  _CD_REPO: 'project-perform-pp-chart-k8es-cd'
+
+  _BUILD_TAG: 'ppk8es-CI'
 
 options:
     substitution_option: 'ALLOW_LOOSE'
 
-tags: [$_TAG]
+tags: [$_BUILD_TAG]
 
 timeout: 1800s
