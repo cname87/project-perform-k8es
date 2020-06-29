@@ -259,10 +259,10 @@ substitutions: # default values
   # COMMIT_SHA: Cloud Build sets this to the git commit hash that triggered this cloud build run, or to '' if cloud build is run manually
   # SHORT_SHA: Cloud Build sets this to the first 7 characters of the git commit hash that triggered this cloud build run, or to '' if cloud build is run manually
   # TAG_NAME: Cloud Build sets this to the tag of the git commit that triggered this cloud build run, or to '' if cloud build is run manually
-  _BACKEND_IMAGE: 'pp-backend'
-  _FRONTEND_IMAGE: 'pp-frontend'
-  _BACKEND_VERSION: '${TAG_NAME}-${SHORT_SHA}'
-  _FRONTEND_VERSION: '${TAG_NAME}-${SHORT_SHA}'
+  _BACKEND_IMAGE: 'pp-backend/production'
+  _FRONTEND_IMAGE: 'pp-frontend/production'
+  _BACKEND_VERSION: '${TAG_NAME}_${SHORT_SHA}'
+  _FRONTEND_VERSION: '${TAG_NAME}_${SHORT_SHA}'
   _CD_REPO: 'project-perform-pp-chart-k8es-cd'
   _BUILD_TAG: 'ppk8es-CI'
 
