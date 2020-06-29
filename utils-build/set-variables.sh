@@ -17,8 +17,8 @@ export TEST_CONTEXT=gke_${PROJECT}_${ZONE}_${TEST_CLUSTER_NAME}
 export HELM_RELEASE=project-perform
 export HELM_CHART=pp-chart
 export CD_REPO=${PROJECT}-k8es-cd
-export BACKEND_APPLICATION=pp-backend
-export FRONTEND_APPLICATION=pp-frontend
+export BACKEND_APPLICATION=pp-backend/production
+export FRONTEND_APPLICATION=pp-frontend/production
 export STATIC_IP_NAME=pp-ip
 # The name of the ingress from Helm chart
 export INGRESS=project-perform-pp-chart-app-ingress

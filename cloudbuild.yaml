@@ -233,16 +233,6 @@ steps:
   - 'backend.image'
   - ${_BACKEND_IMAGE}:${_BACKEND_VERSION}
 
-# 'Cat '
-- id: 'Cat'
-  name: gcr.io/cloud-builders/gcloud
-  entrypoint: 'bash'
-  args:
-  -  '-c'
-  - |
-    set -x && \
-    cat $_CD_REPO/pp-chart/values.yaml
-
 # Push the updated Helm chart back to the remote CD repo
 - name: gcr.io/cloud-builders/git
   id: Push edited chart back to the CD repo
