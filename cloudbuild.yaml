@@ -1,4 +1,8 @@
-# Cloud Build...
+## Continuous Integration cloud build ##
+
+# The CI cloud build is triggered by a commit to the master branch of the project-perform-k8es CI repo.  It units tests and builds the frontend and backend images and pushes them to the cloud registry.  It e2e tests the built images.  It clones the CD repo and copies the Helm chart to be deployed to the candidate branch of the CD repo.  It edits the Helm in the cloned repo to point to the new images.  Finally it commits and pushes the edited candidate branch back to the remote CD repo.
+
+## Cloud Build explanation...
 # 1. Copies the source project files & directories, excluding those directories listed in .gcloudignore.  (Note that when running gcloud locally it appears to ignore .gcloudignore).
 # 2. Each step builds an image and runs an associated container with the copied source files mounted at /workspace.
 # Changes made to the /workspace directory are persisted between each build step.
@@ -11,10 +15,10 @@
 
 steps:
 
-# # When a build is executed from GCP via a github trigger the secret files, and associated directories, are not in git so you must download them from GCP Storage.  The directory structure of the GCP storage bucket MUST be set up to match the directory structure of the missing files & directories, as a recursive copy is carried out to copy the directory structure and files.
-# # Note: This step is superfluous when triggered via CLI.
+# When a build is executed from GCP via a github trigger the secret files, and associated directories, are not in git so you must download them from GCP Storage.  The directory structure of the GCP storage bucket MUST be set up to match the directory structure of the missing files & directories, as a recursive copy is carried out to copy the directory structure and files.
+# Note: This step is superfluous when triggered via CLI.
 
-# Copy the backend .env, frontend e2e .env, database certs, & GCP Storage key files from GCP Storage to the persisted workspace.
+# Copy the backend .env, frontend e2e .env, database certs, & GCP Storage key files from GCP Storage to the persisted workspace
 - id: 'download environment and certs files'
   name: 'gcr.io/cloud-builders/gsutil'
   dir: '.'
@@ -29,51 +33,51 @@ steps:
     '.',
   ]
 
-# Install the backend node_modules directory in the persisted workspace.
-# Note: Using the node-with-puppeteer image (rather than a simple node image) as it is needed in other steps (which means only 1 image download) is required.
+# Install the backend node_modules directory in the persisted workspace
+# Note: Using the node-with-puppeteer image (rather than a simple node image) as it is needed in other steps (which means only 1 image download) is required
 - id: 'install backend node_modules'
   name: 'gcr.io/$PROJECT_ID/node-with-puppeteer'
   entrypoint: npm
   dir: './backend'
   args: ['install']
 
-# Install the backend node_modules directory in the persisted workspace.
+# Install the frontend node_modules directory in the persisted workspace
 - id: 'install frontend node_modules'
   name: 'gcr.io/$PROJECT_ID/node-with-puppeteer'
   entrypoint: npm
   dir: './frontend'
   args: ['install']
 
-# Build the backend in the persisted workspace (replacing the copied in dist files - the newly built files are later deployed).
+# Build the backend in the persisted workspace in the dist directory.  The newly built dist files are later deployed.
 - id: 'build backend'
   name: 'gcr.io/$PROJECT_ID/node-with-puppeteer'
   entrypoint: npm
   dir: './backend'
   args: ['run', 'build']
 
-# Build the frontend in the persisted workspace (replacing the copied-in dist files - the newly built files are later deployed).
+# Build the frontend in the persisted workspace in the dist directory.  The newly built dist files are later deployed.
 - id: 'build frontend'
   name: 'gcr.io/$PROJECT_ID/node-with-puppeteer'
   entrypoint: npm
   dir: './frontend'
   args: ['run', 'build:prod']
 
-# Run all backend unit tests.
-# Must have Node & Puppeteer in the base image.
-- id: 'unit test backend'
-  name: 'gcr.io/$PROJECT_ID/node-with-puppeteer'
-  dir: './backend'
-  env: ['NODE_ENV=staging']
-  args: ['npm', 'run', 'test']
+# # Run all backend unit tests
+# # Must have Node & Puppeteer in the base image
+# - id: 'unit test backend'
+#   name: 'gcr.io/$PROJECT_ID/node-with-puppeteer'
+#   dir: './backend'
+#   env: ['NODE_ENV=staging']
+#   args: ['npm', 'run', 'test']
 
-# Run all frontend unit tests.
-# Must have Node & Puppeteer in the base image.
-- id: 'unit test frontend'
-  name: 'gcr.io/$PROJECT_ID/node-with-puppeteer'
-  dir: './frontend'
-  args: ['npm', 'run', 'test:staging']
+# # Run all frontend unit tests.
+# # Must have Node & Puppeteer in the base image
+# - id: 'unit test frontend'
+#   name: 'gcr.io/$PROJECT_ID/node-with-puppeteer'
+#   dir: './frontend'
+#   args: ['npm', 'run', 'test:staging']
 
-# Build the backend server image (which is later deployed).
+# Build the backend server image (which is later deployed)
 - id: 'Build backend server image'
   name: 'gcr.io/cloud-builders/docker'
   dir: './backend'
@@ -83,7 +87,7 @@ steps:
     '--tag=${_BACKEND_IMAGE}:${_BACKEND_VERSION}',
     '.']
 
-# Push the backend server image so it can be pulled for deployment.
+# Push the backend server image so it can be pulled for deployment
 - id: 'Push backend server image'
   name: 'gcr.io/cloud-builders/docker'
   args: [
@@ -91,7 +95,7 @@ steps:
     '${_BACKEND_IMAGE}:${_BACKEND_VERSION}',
   ]
 
-# Build the frontend server image (which is later deployed).
+# Build the frontend server image (which is later deployed)
 - id: 'Build frontend server image'
   name: 'gcr.io/cloud-builders/docker'
   dir: './frontend'
@@ -102,7 +106,7 @@ steps:
     '.',
   ]
 
-# Push the backend server image so it can be pulled for deployment.
+# Push the backend server image so it can be pulled for deployment
 - id: 'Push frontend server image'
   name: 'gcr.io/cloud-builders/docker'
   args: [
@@ -110,51 +114,51 @@ steps:
     '${_FRONTEND_IMAGE}:${_FRONTEND_VERSION}',
   ]
 
-# Run the backend server in the background.
-- id: 'Run backend server'
-  name: 'gcr.io/cloud-builders/docker'
-  dir: './backend'
-  args: [
-    'run',
-    # The name matches the proxy url set up in the e2e configuration.
-    '--name=backend',
-    # Remove container when stopped.
-    '--rm',
-    # Run detached.
-    '-d=true',
-    # Expose port on backend (8080)
-    '-p=8080:8080',
-    # Attach to the local Docker network named cloudbuild to which the container in each build step is attached.
-    '--network=cloudbuild',
-    # Run with NODE_ENV=staging => TEST_PATHS available.
-    '--env', 'NODE_ENV=staging',
-    # Runs the image built in a previous build step.
-    '${_BACKEND_IMAGE}:${_BACKEND_VERSION}'
-  ]
+# # Run the backend server in the background (for e2e test)
+# - id: 'Run backend server'
+#   name: 'gcr.io/cloud-builders/docker'
+#   dir: './backend'
+#   args: [
+#     'run',
+#     # The name matches the proxy url set up in the e2e configuration.
+#     '--name=backend',
+#     # Remove container when stopped.
+#     '--rm',
+#     # Run detached.
+#     '-d=true',
+#     # Expose port on backend (8080)
+#     '-p=8080:8080',
+#     # Attach to the local Docker network named cloudbuild to which the container in each build step is attached.
+#     '--network=cloudbuild',
+#     # Run with NODE_ENV=staging => TEST_PATHS available.
+#     '--env', 'NODE_ENV=staging',
+#     # Runs the image built in a previous build step.
+#     '${_BACKEND_IMAGE}:${_BACKEND_VERSION}'
+#   ]
 
-# Runs an e2e test against the built backend server.
-# Runs a local frontend server serving the built frontend.
-# Pre-compiles the frontend using a staging environment file that enables error and cache interceptors in the frontend.
-# Runs Protractor using a staging configuration that runs the cache or errors tests.
-# BASE_URL is set to run against the server running in the backend.
-# The configured test user has access to the test database.
-# The staging environment file selected by NODE_ENV=staging sets the backend server to be run with test paths available.  It also sets that the test database is in use.
-- id: 'Run e2e test in staging environment'
-  name: 'gcr.io/$PROJECT_ID/node-with-puppeteer'
-  dir: './frontend'
-  args: ['npm', 'run', 'e2e:staging']
+# # Runs an e2e test against the built backend server.
+# # Runs a local frontend server serving the built frontend.
+# # Pre-compiles the frontend using a staging environment file that enables error and cache interceptors in the frontend.
+# # Runs Protractor using a staging configuration that runs the cache or errors tests.
+# # BASE_URL is set to run against the server running in the backend.
+# # The configured test user has access to the test database.
+# # The staging environment file selected by NODE_ENV=staging sets the backend server to be run with test paths available.  It also sets that the test database is in use.
+# - id: 'Run e2e test in staging environment'
+#   name: 'gcr.io/$PROJECT_ID/node-with-puppeteer'
+#   dir: './frontend'
+#   args: ['npm', 'run', 'e2e:staging']
 
-# Stops the backend server running in the background, (and it is removed automatically).
-- id: 'Stop backend server'
-  name: 'gcr.io/cloud-builders/docker'
-  dir: './backend'
-  args: [
-    'container',
-    'stop',
-    'backend',
-  ]
+# # Stops the backend server running in the background, (and it is removed automatically).
+# - id: 'Stop backend server'
+#   name: 'gcr.io/cloud-builders/docker'
+#   dir: './backend'
+#   args: [
+#     'container',
+#     'stop',
+#     'backend',
+#   ]
 
-# 'Get private ssh key from Google Secret Manager to allow push access to Github'
+# Get private ssh key from Google Secret Manager to allow push access to Github
 - id: 'Get github access'
   name: gcr.io/cloud-builders/gcloud
   entrypoint: 'bash'
@@ -185,8 +189,8 @@ steps:
   - name: 'ssh'
     path: /root/.ssh
 
-# Clone the project Continuous Delivery repository and checkout the candidate branch.
-- id: Clone CD repository
+# Clone the project repository and checkout the candidate branch
+- id: Clone repository
   name: 'gcr.io/cloud-builders/git'
   entrypoint: /bin/sh
   dir: '.'
@@ -194,14 +198,14 @@ steps:
   - '-c'
   - |
     set -x && \
-    git clone git@github.com:cname87/$_CD_REPO && \
+    git clone --depth 1 --no-single-branch git@github.com:cname87/$_CD_REPO && \
     cd  $_CD_REPO  && \
     git checkout candidate
   volumes:
   - name: 'ssh'
     path: /root/.ssh
 
-# 'Copy the local Helm chart to the CD Repo'
+# 'Copy the local Helm chart to the cloned Repo (candidate branch)'
 - id: 'Copy Helm chart to CD Repo'
   name: gcr.io/cloud-builders/gcloud
   entrypoint: 'bash'
@@ -211,7 +215,7 @@ steps:
     set -x && \
     cp -rf ./pp-chart ./$_CD_REPO
 
-# Update the CD Repo Helm chart to refer to the new frontend image
+# Update the repo Helm chart to refer to the new frontend image
 - id: Update frontend image in the Helm chart
   name: gcr.io/$PROJECT_ID/yq
   args:
@@ -222,7 +226,7 @@ steps:
   - 'frontend.image'
   - ${_FRONTEND_IMAGE}:${_FRONTEND_VERSION}
 
-# Update the CD Repo Helm chart to refer to the new backend image
+# Update the repo Helm chart to refer to the new backend image
 - id: Update backend image in the Helm chart
   name: gcr.io/$PROJECT_ID/yq
   args:
@@ -233,9 +237,9 @@ steps:
   - 'backend.image'
   - ${_BACKEND_IMAGE}:${_BACKEND_VERSION}
 
-# Push the updated Helm chart back to the remote CD repo
-- name: gcr.io/cloud-builders/git
-  id: Push edited chart back to the CD repo
+# Push the updated Helm chart back to the remote repo (candidate branch)
+- id: Push edited chart back to the CD repo
+  name: gcr.io/cloud-builders/git
   entrypoint: /bin/sh
   dir: '.'
   args:
@@ -246,25 +250,88 @@ steps:
     git config user.email $(gcloud auth list --filter=status:ACTIVE --format='value(account)') && \
     git add . && \
     git commit -m "Deploys image ${_FRONTEND_IMAGE}:${_FRONTEND_VERSION}
-    Built from commit ${COMMIT_SHA} of repository project-perform-k8es
+    Built from commit ${COMMIT_SHA} of repository $_CD_REPO
     Author: $(git log --format='%an <%ae>' -n 1 HEAD)" && \
-    git push git@github.com:cname87/project-perform-k8es-cd candidate
+    git push git@github.com:cname87/$_CD_REPO candidate
   volumes:
   - name: 'ssh'
     path: /root/.ssh
 
-substitutions: # default values
+# Lint the project Helm chart.
+- id: 'Lint Helm chart'
+  name: 'gcr.io/$PROJECT_ID/helm'
+  dir: '$_CD_REPO'
+  args: ['lint', 'pp-chart']
+  env:
+  - 'CLOUDSDK_COMPUTE_ZONE=$_GKE_ZONE'
+  - 'CLOUDSDK_CONTAINER_CLUSTER=$_GKE_CLUSTER'
+
+# Upgrade or install the Helm chart onto the GKE cluster.
+- id: 'Upgrade Helm chart on cluster'
+  name: 'gcr.io/$PROJECT_ID/helm'
+  dir: '$_CD_REPO'
+  args: [
+    'upgrade',
+    '-f', './pp-chart/values.yaml',
+    'project-perform',
+    './pp-chart',
+    '--install',
+    '--atomic',
+    '--cleanup-on-fail',
+  ]
+  env:
+  - 'CLOUDSDK_COMPUTE_ZONE=$_GKE_ZONE'
+  - 'CLOUDSDK_CONTAINER_CLUSTER=$_GKE_CLUSTER'
+  - 'KUBECONFIG=~/.kube/config'
+
+# # Runs e2e test against the newly deployed build.
+# # Does not pre-compile or run a local frontend server so it uses the frontend production build in the production server which does not enable error and cache interceptors in the frontend.
+# # Runs Protractor using a production staging configuration that does not run the cache or errors tests.
+# # BASE_URL is set to run against the production cluster.
+# # The configured test user has access to the production database, (to a 'test' collection).
+# # The production cluster runs with an environment file selected by NODE_ENV=production which sets the backend server to be run with no test paths available.  It also sets that the production database is in use.
+# - id: 'e2e test the production deployment'
+#   name: 'gcr.io/$PROJECT_ID/node-with-puppeteer'
+#   dir: './frontend'
+#   args: ['npm', 'run', 'e2e:production']
+
+# This step copies the Helm chart to the production branch and pushes back to remote
+- id: Push edited chart back to the production branch on the remote repo
+  name: gcr.io/cloud-builders/git
+  entrypoint: /bin/sh
+  dir: '.'
+  args:
+  - '-c'
+  - |
+    set -x && \
+    cd $_CD_REPO && \
+    git config user.email $(gcloud auth list --filter=status:ACTIVE --format='value(account)') && \
+    git checkout production && \
+    git add . && \
+    git commit -m "Deploys image ${_FRONTEND_IMAGE}:${_FRONTEND_VERSION}
+    Built from commit ${COMMIT_SHA} of repository project-perform-k8es
+    Author: $(git log --format='%an <%ae>' -n 1 HEAD)" && \
+    git push git@github.com:cname87/$_CD_REPO candidate
+  volumes:
+  - name: 'ssh'
+    path: /root/.ssh
+
+substitutions: # default values - can be overwritten
   # PROJECT_ID: Cloud Build defaults to the ID of your Cloud project
   # BUILD_ID: Cloud Build defaults to the ID of your build
   # COMMIT_SHA: Cloud Build sets this to the git commit hash that triggered this cloud build run, or to '' if cloud build is run manually
   # SHORT_SHA: Cloud Build sets this to the first 7 characters of the git commit hash that triggered this cloud build run, or to '' if cloud build is run manually
-  # TAG_NAME: Cloud Build sets this to the tag of the git commit that triggered this cloud build run, or to '' if cloud build is run manually
+  _GKE_CLUSTER: ppk8es-cluster-prod
+  _GKE_ZONE: europe-west2-c
+  # Use production directory for the images
   _BACKEND_IMAGE: 'pp-backend/production'
   _FRONTEND_IMAGE: 'pp-frontend/production'
-  _BACKEND_VERSION: '${TAG_NAME}_${SHORT_SHA}'
-  _FRONTEND_VERSION: '${TAG_NAME}_${SHORT_SHA}'
-  _CD_REPO: 'project-perform-pp-chart-k8es-cd'
-  _BUILD_TAG: 'ppk8es-CI'
+  # The images are tagged with the git short commit hash
+  _BACKEND_VERSION: '${SHORT_SHA}'
+  _FRONTEND_VERSION: '${SHORT_SHA}'
+  # The name of the CD repo (which deploys the Helm chart)
+  _CD_REPO: 'project-perform-k8es'
+  _BUILD_TAG: 'ppk8es-CI-CD'
 
 options:
     substitution_option: 'ALLOW_LOOSE'

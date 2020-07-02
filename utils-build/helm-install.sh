@@ -2,8 +2,6 @@
 
 # This installs or upgrades a cluster with the application Helm chart.
 
-# Print message if the script is ended by Ctrl+C
-TRAP "{ echo 'Terminated with Ctrl+C' }" SIGINT
 
 # Read in variables
 SCRIPT_DIR="${0%/*}"

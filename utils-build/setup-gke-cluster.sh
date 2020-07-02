@@ -2,7 +2,6 @@
 
 # This sets up a Kubernetes cluster on GKE.
 
-
 # Read in variables
 SCRIPT_DIR="${0%/*}"
 # shellcheck source=/dev/null
