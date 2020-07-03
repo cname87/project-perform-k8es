@@ -24,12 +24,13 @@ esac
 done
 
 echo -e "\nSetting frontend and backend versions\n"
-BACKEND_VERSION=latest
-FRONTEND_VERSION=latest
+# BACKEND_VERSION=latest
+# FRONTEND_VERSION=latest
+BACKEND_VERSION=test7
+FRONTEND_VERSION=test7
 
 echo -e "\nRunning ${COMMAND}\n"
-BACKEND_VERSION=test6
-FRONTEND_VERSION=test6
+
 
 # Compose and run the command
 COMMAND="$COMMAND \

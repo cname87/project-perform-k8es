@@ -248,7 +248,7 @@ steps:
   - |
     set -x && \
     git config user.email $(gcloud auth list --filter=status:ACTIVE --format='value(account)') && \
-    git add -A && \
+    git add . && \
     git commit -m "Deploys image ${_FRONTEND_IMAGE}:${_FRONTEND_VERSION}
     Built from commit ${COMMIT_SHA} of repository $_CD_REPO
     Author: $(git log --format='%an <%ae>' -n 1 HEAD)" && \
@@ -322,7 +322,7 @@ steps:
     git checkout production && \
     # Copy Helm chart to repo in the checked out production branch
     cp -rf ../pp-chart .
-    git add -A && \
+    git add . && \
     git commit -m "Deploys image ${_FRONTEND_IMAGE}:${_FRONTEND_VERSION}
     Built from commit ${COMMIT_SHA} of repository $_CD_REPO
     Author: $(git log --format='%an <%ae>' -n 1 HEAD)" && \
