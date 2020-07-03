@@ -62,20 +62,20 @@ steps:
   dir: './frontend'
   args: ['run', 'build:prod']
 
-# # Run all backend unit tests
-# # Must have Node & Puppeteer in the base image
-# - id: 'unit test backend'
-#   name: 'gcr.io/$PROJECT_ID/node-with-puppeteer'
-#   dir: './backend'
-#   env: ['NODE_ENV=staging']
-#   args: ['npm', 'run', 'test']
+# # # Run all backend unit tests
+# # # Must have Node & Puppeteer in the base image
+# # - id: 'unit test backend'
+# #   name: 'gcr.io/$PROJECT_ID/node-with-puppeteer'
+# #   dir: './backend'
+# #   env: ['NODE_ENV=staging']
+# #   args: ['npm', 'run', 'test']
 
-# # Run all frontend unit tests.
-# # Must have Node & Puppeteer in the base image
-# - id: 'unit test frontend'
-#   name: 'gcr.io/$PROJECT_ID/node-with-puppeteer'
-#   dir: './frontend'
-#   args: ['npm', 'run', 'test:staging']
+# # # Run all frontend unit tests.
+# # # Must have Node & Puppeteer in the base image
+# # - id: 'unit test frontend'
+# #   name: 'gcr.io/$PROJECT_ID/node-with-puppeteer'
+# #   dir: './frontend'
+# #   args: ['npm', 'run', 'test:staging']
 
 # Build the backend server image (which is later deployed)
 - id: 'Build backend server image'
@@ -158,6 +158,28 @@ steps:
 #     'backend',
 #   ]
 
+# Update the local Helm chart to refer to the new frontend image
+- id: Update frontend image in the Helm chart
+  name: gcr.io/$PROJECT_ID/yq
+  args:
+  - yq
+  - write
+  - --inplace
+  - ./pp-chart/values.yaml
+  - 'frontend.image'
+  - ${_FRONTEND_IMAGE}:${_FRONTEND_VERSION}
+
+# Update the local Helm chart to refer to the new backend image
+- id: Update backend image in the Helm chart
+  name: gcr.io/$PROJECT_ID/yq
+  args:
+  - yq
+  - write
+  - --inplace
+  - ./pp-chart/values.yaml
+  - 'backend.image'
+  - ${_BACKEND_IMAGE}:${_BACKEND_VERSION}
+
 # Get private ssh key from Google Secret Manager to allow push access to Github
 - id: 'Get github access'
   name: gcr.io/cloud-builders/gcloud
@@ -205,50 +227,28 @@ steps:
   - name: 'ssh'
     path: /root/.ssh
 
-# 'Copy the local Helm chart to the cloned Repo (candidate branch)'
-- id: 'Copy Helm chart to CD Repo'
+# Copy the local Helm chart to the cloned repo (candidate branch)
+- id: Copy Helm chart to repo in the checked out candidate branch
   name: gcr.io/cloud-builders/gcloud
   entrypoint: 'bash'
+  dir: '.'
   args:
   -  '-c'
   - |
     set -x && \
     cp -rf ./pp-chart ./$_CD_REPO
 
-# Update the repo Helm chart to refer to the new frontend image
-- id: Update frontend image in the Helm chart
-  name: gcr.io/$PROJECT_ID/yq
-  args:
-  - yq
-  - write
-  - --inplace
-  - $_CD_REPO/pp-chart/values.yaml
-  - 'frontend.image'
-  - ${_FRONTEND_IMAGE}:${_FRONTEND_VERSION}
-
-# Update the repo Helm chart to refer to the new backend image
-- id: Update backend image in the Helm chart
-  name: gcr.io/$PROJECT_ID/yq
-  args:
-  - yq
-  - write
-  - --inplace
-  - $_CD_REPO/pp-chart/values.yaml
-  - 'backend.image'
-  - ${_BACKEND_IMAGE}:${_BACKEND_VERSION}
-
 # Push the updated Helm chart back to the remote repo (candidate branch)
-- id: Push edited chart back to the CD repo
+- id: Push edited chart back to the candidate branch on the remote repo
   name: gcr.io/cloud-builders/git
   entrypoint: /bin/sh
-  dir: '.'
+  dir: '$_CD_REPO '
   args:
   - '-c'
   - |
     set -x && \
-    cd $_CD_REPO && \
     git config user.email $(gcloud auth list --filter=status:ACTIVE --format='value(account)') && \
-    git add . && \
+    git add -A && \
     git commit -m "Deploys image ${_FRONTEND_IMAGE}:${_FRONTEND_VERSION}
     Built from commit ${COMMIT_SHA} of repository $_CD_REPO
     Author: $(git log --format='%an <%ae>' -n 1 HEAD)" && \
@@ -256,6 +256,16 @@ steps:
   volumes:
   - name: 'ssh'
     path: /root/.ssh
+
+# Confirm gcloud credentials and cluster access.
+- id: Confirm gcloud cluster access
+  name: gcr.io/cloud-builders/kubectl
+  args:
+    - cluster-info
+  env:
+  - 'CLOUDSDK_COMPUTE_ZONE=$_GKE_ZONE'
+  - 'CLOUDSDK_CONTAINER_CLUSTER=$_GKE_CLUSTER'
+  - 'KUBECONFIG=~/.kube/config'
 
 # Lint the project Helm chart.
 - id: 'Lint Helm chart'
@@ -295,23 +305,28 @@ steps:
 #   dir: './frontend'
 #   args: ['npm', 'run', 'e2e:production']
 
+
+### need to figure out how to the edited values.yaml to the production branch
+
+
 # This step copies the Helm chart to the production branch and pushes back to remote
 - id: Push edited chart back to the production branch on the remote repo
   name: gcr.io/cloud-builders/git
   entrypoint: /bin/sh
-  dir: '.'
+  dir: '$_CD_REPO'
   args:
   - '-c'
   - |
     set -x && \
-    cd $_CD_REPO && \
     git config user.email $(gcloud auth list --filter=status:ACTIVE --format='value(account)') && \
     git checkout production && \
-    git add . && \
+    # Copy Helm chart to repo in the checked out production branch
+    cp -rf ../pp-chart .
+    git add -A && \
     git commit -m "Deploys image ${_FRONTEND_IMAGE}:${_FRONTEND_VERSION}
-    Built from commit ${COMMIT_SHA} of repository project-perform-k8es
+    Built from commit ${COMMIT_SHA} of repository $_CD_REPO
     Author: $(git log --format='%an <%ae>' -n 1 HEAD)" && \
-    git push git@github.com:cname87/$_CD_REPO candidate
+    git push git@github.com:cname87/$_CD_REPO production
   volumes:
   - name: 'ssh'
     path: /root/.ssh

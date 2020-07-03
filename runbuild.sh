@@ -28,6 +28,8 @@ BACKEND_VERSION=latest
 FRONTEND_VERSION=latest
 
 echo -e "\nRunning ${COMMAND}\n"
+BACKEND_VERSION=test6
+FRONTEND_VERSION=test6
 
 # Compose and run the command
 COMMAND="$COMMAND \
