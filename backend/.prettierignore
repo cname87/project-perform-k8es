@@ -1,6 +1,0 @@
-# Don't prettier the following:
-api
-certs
-dist
-node_modules
-

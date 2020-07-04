@@ -8,9 +8,6 @@
 	"folders": [
     {
       "path": "."
-    },
-    {
-      "path": "../project-perform-k8es-cd"
     }
   ],
 
