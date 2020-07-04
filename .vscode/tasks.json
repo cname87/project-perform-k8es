@@ -1,0 +1,399 @@
+{
+  // See https://go.microsoft.com/fwlink/?LinkId=733558
+  // for the documentation about the tasks.json format
+  "version": "2.0.0",
+  "presentation": {
+    "panel": "dedicated"
+  },
+  "windows": {
+    "options": {
+      "shell": {
+        "executable": "cmd.exe",
+        "args": [
+            "/d", "/c"
+        ]
+      }
+    }
+  },
+  "inputs": [
+    {
+      "id": "terminate",
+      "type": "command",
+      "command": "workbench.action.tasks.terminate",
+      "args": "terminateAll"
+    }
+  ],
+  /* Serve frontend with backend */
+  "tasks": [
+    {
+      "label": "Serve Frontend with Backend",
+      "type": "shell",
+      "command": "npm",
+      "args": [
+        "run",
+        "--prefix",
+        "${workspaceFolder}/frontend",
+        "serveDevWithBackend"
+      ],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "isBackground": true,
+      "problemMatcher": {
+        "owner": "typescript",
+        "source": "ts",
+        "applyTo": "closedDocuments",
+        "fileLocation": [
+          "relative",
+          "${cwd}"
+        ],
+        "pattern": "$tsc",
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": {
+            "regexp": "(.*?)"
+          },
+          "endsPattern": {
+            "regexp": "Compiled | Failed to compile."
+          }
+        }
+      }
+    },
+    {
+      "label": "Test Frontend",
+      "type": "shell",
+      "command": "npm",
+      "args": [
+        "run",
+        "--prefix",
+        "${workspaceFolder}/frontend",
+        "test:dev"
+      ],
+      "group": "build",
+      "isBackground": true,
+      "problemMatcher": {
+        "owner": "typescript",
+        "source": "ts",
+        "applyTo": "closedDocuments",
+        "fileLocation": [
+          "relative",
+          "${cwd}"
+        ],
+        "pattern": "$tsc",
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": {
+            "regexp": "(.*?)"
+          },
+          "endsPattern": {
+            "regexp": "TOTAL:"
+          }
+        }
+      }
+    },
+    {
+      "label": "npm start backend app.js",
+      "type": "npm",
+      "script": "start",
+      "options": {
+        "cwd": "${workspaceFolder}/backend"
+      },
+      "group": "build",
+      "problemMatcher": []
+    },
+    {
+      "label": "npm backend server-side watch",
+      "type": "npm",
+      "script": "tscBackendWatch",
+      "options": {
+        "cwd": "${workspaceFolder}/backend"
+      },
+      "group": "build",
+      "problemMatcher": []
+    },
+    {
+      "label": "npm build backend",
+      "type": "npm",
+      "script": "build",
+      "options": {
+        "cwd": "${workspaceFolder}/backend"
+      },
+      "group": "build",
+      "problemMatcher": []
+    },
+    {
+      "label": "npm build:dev frontend",
+      "type": "shell",
+      "command": "npm",
+      "args": [
+        "run",
+        "--prefix",
+        "${workspaceFolder}/frontend",
+        "build:dev"
+      ],
+      "group": "build",
+      "isBackground": true,
+      "problemMatcher": {
+        "owner": "typescript",
+        "source": "ts",
+        "applyTo": "closedDocuments",
+        "fileLocation": [
+          "relative",
+          "${cwd}"
+        ],
+        "pattern": "$tsc",
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": {
+            "regexp": "(.*?)"
+          },
+          "endsPattern": {
+            "regexp": "Compiled | Failed to compile."
+          }
+        }
+      }
+    },
+    {
+      "label": "npm build:e2e frontend",
+      "type": "shell",
+      "command": "npm",
+      "args": [
+        "run",
+        "--prefix",
+        "${workspaceFolder}/frontend",
+        "build:e2e"
+      ],
+      "group": "build",
+      "isBackground": true,
+      "problemMatcher": {
+        "owner": "typescript",
+        "source": "ts",
+        "applyTo": "closedDocuments",
+        "fileLocation": [
+          "relative",
+          "${cwd}"
+        ],
+        "pattern": "$tsc",
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": {
+            "regexp": "(.*?)"
+          },
+          "endsPattern": {
+            "regexp": "Compiled | Failed to compile."
+          }
+        }
+      }
+    },
+    {
+      "label": "npm build:prod frontend",
+      "type": "shell",
+      "command": "npm",
+      "args": [
+        "run",
+        "--prefix",
+        "${workspaceFolder}/frontend",
+        "build:prod"
+      ],
+      "group": "build",
+      "isBackground": true,
+      "problemMatcher": {
+        "owner": "typescript",
+        "source": "ts",
+        "applyTo": "closedDocuments",
+        "fileLocation": [
+          "relative",
+          "${cwd}"
+        ],
+        "pattern": "$tsc",
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": {
+            "regexp": "(.*?)"
+          },
+          "endsPattern": {
+            "regexp": "Compiled | Failed to compile."
+          }
+        }
+      }
+    },
+    {
+      "label": "gcloudBuild",
+      "type": "process",
+      "command": "node",
+      "args": [
+        "backend/utils-build/gcloudBuild.mjs"
+      ],
+      "group": "test",
+      "problemMatcher": []
+    },
+    {
+      "label": "Is Server Up?",
+      "type": "shell",
+      "command": "npm",
+      "args": [
+        "run",
+        "--prefix",
+        "${workspaceFolder}",
+        "isServerUp"
+      ],
+      "isBackground": true,
+      "problemMatcher": {
+        "pattern": {
+          "regexp": ".",
+          "file": 1,
+          "location": 2,
+          "message": 3
+        },
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": ".",
+          "endsPattern": "Connected to"
+        }
+      }
+    },
+    {
+      /* Starts the server and leaves it running in the background */
+      "label": "Check Server",
+      "type": "shell",
+      "command": "npm",
+      "args": [
+        "run",
+        "--prefix",
+        "${workspaceFolder}/backend",
+        "checkServer"
+      ],
+      "isBackground": true,
+      "group": "test",
+      "problemMatcher": {
+        "pattern": {
+          "regexp": ".",
+          "file": 1,
+          "location": 2,
+          "message": 3
+        },
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": ".",
+          "endsPattern": "Connected | Failed "
+        }
+      }
+    },
+    {
+      "label": "Start local mongoDB database server",
+      "type": "shell",
+      "presentation": {
+        "focus": true
+      },
+      "linux": {
+        "command": "sudo systemctl start mongod"
+      },
+      "windows": {
+        "command": "C:\\Program Files\\MongoDB\\Server\\4.2\\bin\\mongod.exe",
+        "args": [
+          "--config",
+          "C:\\Users\\cname\\Dropbox\\software\\mongodb\\config\\.mongo.conf"
+        ]
+      },
+      "group": "test",
+      "problemMatcher": []
+    },
+    {
+      "label": "Stop local mongoDB database server",
+      "type": "shell",
+      "presentation": {
+        "focus": true
+      },
+      "linux": {
+        "command": "sudo systemctl stop mongod"
+      },
+      "windows": {
+        "command": "C:\\Program Files\\MongoDB\\Server\\4.2\\bin\\mongo.exe",
+        "args": [
+          "--host",
+          "localhost",
+          "--port",
+          "27017",
+          "-u",
+          "syPerformAdmin",
+          "-p",
+          "performMongo_1",
+          "--authenticationDatabase",
+          "admin",
+          "--tls",
+          "--tlsCertificateKeyFile",
+          "C:\\Users\\cname\\Dropbox\\software\\mongodb\\config\\certs\\nodeKeyAndCert.pem",
+          "--tlsCAFile",
+          "C:\\Users\\cname\\Dropbox\\software\\mongodb\\config\\certs\\rootCA.crt",
+          "admin",
+          "--eval",
+          "db.shutdownServer()"
+        ]
+      },
+      "group": "test",
+      "problemMatcher": []
+    },
+    // Kill all node processes
+    {
+      /* Kills all running node instances.  E.g. use to kill the node server launched by Checkserver */
+      "label": "Taskkill node.exe",
+      "type": "shell",
+      "windows": {
+        "command": "TASKKILL",
+        "args": [
+          "/IM",
+          "node.exe",
+          "/F"
+        ]
+      },
+      "linux": {
+        "command": "sudo",
+        "args": [
+          "killall",
+          "node"
+        ]
+      },
+      "presentation": {
+        "echo": true,
+        "reveal": "never",
+        "focus": false,
+        "panel": "shared",
+        "showReuseMessage": true,
+        "clear": true
+      },
+      "group": "test",
+      "problemMatcher": []
+    },
+    // Runs skaffold as per the skaffold-run.sh script
+    {
+      "label": "skaffold-run",
+      "type": "shell",
+      "linux": {
+        "command": "./skaffold-run.sh"
+      },
+      "options": {
+        "cwd": "${workspaceFolder}",
+        "env": {
+          "PATH": "/home/cname87/.nvm/versions/node/v13.12.0/bin:/home/cname87/google-cloud-sdk/bin:/home/cname87/bin:/usr/sbin:/sbin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin"
+        }
+      },
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": true,
+        "panel": "dedicated",
+        "showReuseMessage": true,
+        "clear": true
+      },
+      "problemMatcher": []
+    },
+    // Terminate all tasks
+    {
+      "label": "Terminate All Tasks",
+      "command": "echo ${input:terminate}",
+      "type": "shell",
+      "problemMatcher": []
+    }
+  ],
+}
