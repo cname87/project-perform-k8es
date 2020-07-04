@@ -1,66 +1,91 @@
-## Continuous Integration cloud build ##
+## Continuous Integration & Delivery cloud build ##
 
-# The CI cloud build is triggered by a commit to the master branch of the project-perform-k8es CI repo.  It units tests and builds the frontend and backend images and pushes them to the cloud registry.  It e2e tests the built images.  It clones the CD repo and copies the Helm chart to be deployed to the candidate branch of the CD repo.  It edits the Helm in the cloned repo to point to the new images.  Finally it commits and pushes the edited candidate branch back to the remote CD repo.
+# The cloud build is triggered by a commit to the master branch of the project-perform-k8es repo.  It downloads secrets that are not stored on the git repo, installs and builds the frontend and backend applications, units tests them, and then builds the frontend and backend images and pushes them to the cloud registry.  It e2e tests the built images. It then edits the Helm Chart to point to the new images. It clones the repo, copies the Helm chart to be deployed to the cloned repo, commits and then pushes back to the candidate branch of the remote repo.  It then deploys the Helm chart to the production Kubernetes cluster and runs an e2e test on the production cluster.  Finally it copies the updated Helm chart to the production branch of the cloned repo and pushes to the production branch of the remote repo.
 
 ## Cloud Build explanation...
-# 1. Copies the source project files & directories, excluding those directories listed in .gcloudignore.  (Note that when running gcloud locally it appears to ignore .gcloudignore).
+# 1. It copies the source project files & directories, excluding those directories listed in .gcloudignore.  (Note that when running gcloud locally it appears to ignore .gcloudignore).
 # 2. Each step builds an image and runs an associated container with the copied source files mounted at /workspace.
 # Changes made to the /workspace directory are persisted between each build step.
-# Note: Define the working directory of the container in each step using a relative path, which will be relative to /workspace, i.e. relative to the project source files. (If you define an absolute path, e.g. 'dir: /' the working directory would be the root of the container which is typically not what you want).
+# Note: Define the working directory of the container in each step using a relative path, which will be relative to /workspace, i.e. relative to the project source files. (The absolute path '/' would make the working directory be the root of the container which is typically not what you want).
 
 # To run...
+# A build is triggered by a check in to the master branch on the repo (if so configured).
 # Run 'gcloud builds submit --config cloudbuild.yaml .' from the project root to trigger a cloud build.
 # Run 'cloud-build-local --dryrun=false .' to trigger a local build.
-# A build can also be triggered by a change in a github repo (if so configured).
+
 
 steps:
+
+# Print out local variables
+- id: 'Print variables'
+  name: gcr.io/cloud-builders/gcloud
+  entrypoint: 'bash'
+  args:
+  - '-c'
+  - |
+    echo 'The BUILD_TAG suffix informs the source of the build'
+    echo 'BUILD_TAG: $_BUILD_TAG'
+    echo 'PROJECT_ID: $PROJECT_ID'
+    echo 'BUILD_ID: $BUILD_ID'
+    echo 'COMMIT_SHA: $COMMIT_SHA'
+    echo 'SHORT_SHA: $SHORT_SHA'
+    echo 'TAG_NAME: $TAG_NAME'
+    echo 'GKE_CLUSTER: $_GKE_CLUSTER'
+    echo 'GKE_ZONE: $_GKE_ZONE'
+    echo 'Images may be from the test or production registries'
+    echo 'BACKEND_IMAGE: $_BACKEND_IMAGE'
+    echo 'FRONTEND_IMAGE: $_FRONTEND_IMAGE'
+    echo 'Versions may be a commit short SHA or a test tag'
+    echo 'BACKEND_VERSION: $_BACKEND_VERSION'
+    echo 'FRONTEND_VERSION: $_FRONTEND_VERSION'
+    echo 'REPO: $_REPO'
 
 # When a build is executed from GCP via a github trigger the secret files, and associated directories, are not in git so you must download them from GCP Storage.  The directory structure of the GCP storage bucket MUST be set up to match the directory structure of the missing files & directories, as a recursive copy is carried out to copy the directory structure and files.
 # Note: This step is superfluous when triggered via CLI.
 
-# # Copy the backend .env, frontend e2e .env, database certs, & GCP Storage key files from GCP Storage to the persisted workspace
-# - id: 'download environment and certs files'
-#   name: 'gcr.io/cloud-builders/gsutil'
-#   dir: '.'
-#   args: [
-#     # Run operations in parallel
-#     '-m',
-#     # Copy recursively
-#     'cp', '-r',
-#     # Don't overwrite
-#     '-n',
-#     'gs://project-perform-gcp-environment-files/*',
-#     '.',
-#   ]
+# Copy the backend .env, frontend e2e .env, database certs, & GCP Storage key files from GCP Storage to the persisted workspace
+- id: 'download environment and certs files'
+  name: 'gcr.io/cloud-builders/gsutil'
+  dir: '.'
+  args: [
+    # Run operations in parallel
+    '-m',
+    # Copy recursively
+    'cp', '-r',
+    # Don't overwrite
+    '-n',
+    'gs://project-perform-gcp-environment-files/*',
+    '.',
+  ]
 
-# # Install the backend node_modules directory in the persisted workspace
-# # Note: Using the node-with-puppeteer image (rather than a simple node image) as it is needed in other steps (which means only 1 image download) is required
-# - id: 'install backend node_modules'
-#   name: 'gcr.io/$PROJECT_ID/node-with-puppeteer'
-#   entrypoint: npm
-#   dir: './backend'
-#   args: ['install']
+# Install the backend node_modules directory in the persisted workspace
+# Note: Using the node-with-puppeteer image (rather than a simple node image) as it is needed in other steps (which means only 1 image download) is required
+- id: 'install backend node_modules'
+  name: 'gcr.io/$PROJECT_ID/node-with-puppeteer'
+  entrypoint: npm
+  dir: './backend'
+  args: ['install']
 
-# # Install the frontend node_modules directory in the persisted workspace
-# - id: 'install frontend node_modules'
-#   name: 'gcr.io/$PROJECT_ID/node-with-puppeteer'
-#   entrypoint: npm
-#   dir: './frontend'
-#   args: ['install']
+# Install the frontend node_modules directory in the persisted workspace
+- id: 'install frontend node_modules'
+  name: 'gcr.io/$PROJECT_ID/node-with-puppeteer'
+  entrypoint: npm
+  dir: './frontend'
+  args: ['install']
 
-# # Build the backend in the persisted workspace in the dist directory.  The newly built dist files are later deployed.
-# - id: 'build backend'
-#   name: 'gcr.io/$PROJECT_ID/node-with-puppeteer'
-#   entrypoint: npm
-#   dir: './backend'
-#   args: ['run', 'build']
+# Build the backend in the persisted workspace in the dist directory.  The newly built dist files are later deployed.
+- id: 'build backend'
+  name: 'gcr.io/$PROJECT_ID/node-with-puppeteer'
+  entrypoint: npm
+  dir: './backend'
+  args: ['run', 'build']
 
-# # Build the frontend in the persisted workspace in the dist directory.  The newly built dist files are later deployed.
-# - id: 'build frontend'
-#   name: 'gcr.io/$PROJECT_ID/node-with-puppeteer'
-#   entrypoint: npm
-#   dir: './frontend'
-#   args: ['run', 'build:prod']
+# Build the frontend in the persisted workspace in the dist directory.  The newly built dist files are later deployed.
+- id: 'build frontend'
+  name: 'gcr.io/$PROJECT_ID/node-with-puppeteer'
+  entrypoint: npm
+  dir: './frontend'
+  args: ['run', 'build:prod']
 
 # # Run all backend unit tests
 # # Must have Node & Puppeteer in the base image
@@ -106,7 +131,7 @@ steps:
 #     '.',
 #   ]
 
-# # Push the backend server image so it can be pulled for deployment
+# # Push the frontend server image so it can be pulled for deployment
 # - id: 'Push frontend server image'
 #   name: 'gcr.io/cloud-builders/docker'
 #   args: [
@@ -159,6 +184,8 @@ steps:
 #   ]
 
 # Update the local Helm chart to refer to the new frontend image
+# In the case of a build triggered from git, the image version is set to the the 'short SHA' of the git commit that triggered the build
+# In the case of a local build the image version is set to whatever the _VERSION variable substitution in the cloudbuild call
 - id: Update frontend image in the Helm chart
   name: gcr.io/$PROJECT_ID/yq
   args:
@@ -170,6 +197,8 @@ steps:
   - ${_FRONTEND_IMAGE}:${_FRONTEND_VERSION}
 
 # Update the local Helm chart to refer to the new backend image
+# In the case of a build triggered from git, the image version is set to the the 'short SHA' of the git commit that triggered the build
+# In the case of a local build the image version is set to whatever the _VERSION variable substitution in the cloudbuild call
 - id: Update backend image in the Helm chart
   name: gcr.io/$PROJECT_ID/yq
   args:
@@ -227,9 +256,8 @@ steps:
   - name: 'ssh'
     path: /root/.ssh
 
-
-# Copy the updated Helm chart to the local candidate branch, commit and push back to the remote repo
-# Check out the production branch. (Do this here rather than at the start of a step as it takes time)
+# Copy the updated Helm chart in the workspace to the cloned repo, (on the candidate branch), commit and push back to the remote repo
+# Check out the production branch. (Do this here rather than at the start of a step as it appears the operation is not complete before the command is run)
 - id: Push edited chart back to the candidate branch on the remote repo
   name: gcr.io/cloud-builders/git
   entrypoint: /bin/sh
@@ -238,7 +266,7 @@ steps:
   - '-c'
   - |
     set -x && \
-    cp -f ../pp-chart/values.yaml ./pp-chart/values.yaml && \
+    cp -rf ../pp-chart . && \
     git config user.email $(gcloud auth list --filter=status:ACTIVE --format='value(account)') && \
     git add . && \
     git commit -m "Deploys image ${_FRONTEND_IMAGE}:${_FRONTEND_VERSION}
@@ -260,24 +288,24 @@ steps:
   - 'CLOUDSDK_CONTAINER_CLUSTER=$_GKE_CLUSTER'
   - 'KUBECONFIG=~/.kube/config'
 
-# Lint the project Helm chart.
+# Lint the updated project Helm chart
 - id: 'Lint Helm chart'
   name: 'gcr.io/$PROJECT_ID/helm'
-  dir: '$_REPO'
+  dir: '.'
   args: ['lint', 'pp-chart']
   env:
   - 'CLOUDSDK_COMPUTE_ZONE=$_GKE_ZONE'
   - 'CLOUDSDK_CONTAINER_CLUSTER=$_GKE_CLUSTER'
 
-# Upgrade or install the Helm chart onto the GKE cluster.
+# Upgrade or install the updated Helm chart onto the GKE cluster
 - id: 'Upgrade Helm chart on cluster'
   name: 'gcr.io/$PROJECT_ID/helm'
-  dir: '$_REPO'
+  dir: '.'
   args: [
     'upgrade',
-    '-f', './pp-chart/values.yaml',
+    '-f', 'pp-chart/values.yaml',
     'project-perform',
-    './pp-chart',
+    'pp-chart',
     '--install',
     '--atomic',
     '--cleanup-on-fail',
@@ -298,7 +326,8 @@ steps:
   dir: './frontend'
   args: ['npm', 'run', 'e2e:production']
 
-# This step copies the Helm chart to the production branch and pushes back to remote.  (The production branch is checked out from a previous step)
+# This step copies the Helm chart to the production branch and pushes back to remote
+# Note: The production branch is checked out from a previous step
 - id: Push edited chart back to the production branch on the remote repo
   name: gcr.io/cloud-builders/git
   entrypoint: /bin/sh
@@ -310,7 +339,7 @@ steps:
     ls && \
     git config user.email $(gcloud auth list --filter=status:ACTIVE --format='value(account)') && \
     # Copy Helm chart to repo in the checked out production branch
-    cp -f ../pp-chart/values.yaml ./pp-chart/values.yaml && \
+    cp -rf ../pp-chart . && \
     git add . && \
     git commit -m "Deploys image ${_FRONTEND_IMAGE}:${_FRONTEND_VERSION}
     Built from commit ${COMMIT_SHA} of repository $_REPO

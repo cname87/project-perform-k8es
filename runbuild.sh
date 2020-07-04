@@ -17,30 +17,34 @@ while getopts rd option
 do
 case "${option}"
 in
-r) COMMAND="gcloud builds submit";;
-d) COMMAND="cloud-build-local --dryrun=true";;
-*) COMMAND="cloud-build-local --dryrun=false";;
+r) COMMAND="gcloud builds submit" && SUFFIX="cli-cloud";;
+d) COMMAND="cloud-build-local --dryrun=true" && SUFFIX="cli-dryrun";;
+*) COMMAND="cloud-build-local --dryrun=false" && SUFFIX="cli-local";;
 esac
 done
 
 echo -e "\nSetting frontend and backend versions\n"
-# BACKEND_VERSION=latest
-# FRONTEND_VERSION=latest
-BACKEND_VERSION=test5
-FRONTEND_VERSION=test5
+# Change before each run so git has something to commit
+# If you use a tag that is in the registry you can comment out the install and build steps in the cloudbuild.yaml
+BACKEND_VERSION=test6
+FRONTEND_VERSION=test6
+echo "BACKEND_VERSION: ${BACKEND_VERSION}"
+echo "FRONTEND_VERSION: ${FRONTEND_VERSION}"
 
-echo -e "\nRunning ${COMMAND}\n"
+echo -e "\nSetting the cluster\n"
+CLUSTER_NAME=$PROD_CLUSTER_NAME
+echo "Cluster name: ${CLUSTER_NAME}"
 
-
-# Compose and run the command
 COMMAND="$COMMAND \
 --config=cloudbuild.yaml \
 --substitutions=\
+_GKE_CLUSTER=$CLUSTER_NAME,\
+_GKE_ZONE=$ZONE,\
 _BACKEND_IMAGE=gcr.io/$PROJECT/$BACKEND_APPLICATION,\
 _FRONTEND_IMAGE=gcr.io/$PROJECT/$FRONTEND_APPLICATION,\
 _BACKEND_VERSION=$BACKEND_VERSION,\
 _FRONTEND_VERSION=$FRONTEND_VERSION,\
 _REPO=${REPO},\
-_BUILD_TAG=${APPLICATION} \
+_BUILD_TAG=${APPLICATION}-${SUFFIX} \
 ."
 $COMMAND
