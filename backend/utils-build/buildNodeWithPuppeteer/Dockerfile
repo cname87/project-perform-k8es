@@ -4,8 +4,8 @@
 
 # Taken from https://hub.docker.com/r/buildkite/puppeteer/dockerfile
 
-# The version of Node should match that used in the production environment.
-FROM node:13.12.0
+# The version of Node should match that used in the backend Dockerfile.
+FROM node:14
 
 RUN  apt-get update \
      && apt-get install -y wget gnupg ca-certificates \

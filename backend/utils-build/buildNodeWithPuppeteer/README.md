@@ -10,9 +10,8 @@ This image is used in a Dockerfile (in the root directory) that builds the actua
 
 You run a gcloud build command which runs a local cloudbuild.yaml file, which in turn calls Docker to build using a local Dockerfile.  The resulting image is pushed to the project GCP Registry.
 
-1. Open the GCP GDK console.
-2. Change to this directory (which hosts the required cloudbuild.yaml and Dockerfile files).
-3. Type: gcloud builds submit --config=cloudbuild.yaml .
+1. Change to this directory (which hosts the required cloudbuild.yaml and Dockerfile files).
+2. Type: gcloud builds submit --config=cloudbuild.yaml .
 
 This should push a Docker image to the project-perform Docker registry named 'gcr.io/project-perform/node-with-puppeteer' and add the tags ':latest, and also a tag containing the node version used.
 

@@ -1,7 +1,7 @@
 # Build the backend application
 
 # Use a base node image from Docker hub
-FROM node:13.12.0
+FROM node:14-alpine3.12
 
 # Set the image working directory
 WORKDIR /backend
