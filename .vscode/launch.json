@@ -123,20 +123,21 @@
     {
       /**
 
-      1. *** Choose the .dev, .staging or .production configuration by editing the args field below. ***
+      1. *** Choose the .dev, .staging or .production configuration by editing the args field below. Choose .dev by DEFAULT***
       These point at a corresponding e2e .env file. The .env file lists the .spec files which are run and the baseUrl to which all url requests sre sent.
       (i) dev.conf: localhost:4200 and run all tests - USE by DEFAULT
       (ii) production.conf: project-perform.com and dont' run cache/error tests - use to test the production server.
       (iii) staging.conf: backend:8080 - used only in cloudbuild.
 
       2. *** Serve the front-end in advance (unless testing against the production server). ***
-      There are 3 serve options (which each load a different environment file.) - a parameter sets the interceptors that allow error or cache testing. Run 'npm run ...':
+      There are 3 serve options (which each load a different environment file.) - a parameter sets the interceptors that allow error or cache testing. Run 'npm run ...' from frontend:
       (i) serve:e2e - should be run to allow cache and error tests.  USE by DEFAULT
       (ii) serve:dev - if run will fail error and cache tests => NO.
       (iii) serve:prod - if run will fail error and cache tests => No.
 
       3. *** Start the backend server in advance (unless testing against the production server)***
-      If you started the frontend using serve:xxx then calls to /apiv1 and /testServer are proxied (via proxy.conf) to localhots:8080.
+      If you started the frontend using serve:xxx then calls to /api-v1 and /testServer are proxied (via proxy.conf) to localhots:8080.
+      => Run 'npm run start' from the backend directory, or
       => Run the launch configuration that starts the baceknd on localhost:8080.
 
       4. *** Run this launcg configuration ***

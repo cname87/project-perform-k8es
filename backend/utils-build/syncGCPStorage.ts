@@ -63,7 +63,13 @@ const dbCerts = {
   /* Path relative to rootpath - directory containing package.json */
   deltaPath: 'certs/database/',
 };
-export const uploadJobs = [envBackend, dbCerts];
+const gcpStorageKey = {
+  /* Names of files to be uploaded */
+  filesToUpload: ['gcpStorageKey.json'],
+  /* Path relative to rootpath - directory containing package.json */
+  deltaPath: '../certs/gcpStorage/',
+};
+export const uploadJobs = [envBackend, dbCerts, gcpStorageKey];
 
 /* Upload a file to gcp */
 const uploadFile = async (srcFilename: string, destFilename: string) => {

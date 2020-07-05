@@ -38,7 +38,7 @@ export const authenticateHandler = (
     secret,
     audience: process.env.AUTH0_CONFIG_AUDIENCE,
     issuer: `https://${process.env.AUTH0_CONFIG_DOMAIN}/`,
-    algorithm: ['RS256'],
+    algorithms: ['RS256'],
     requestProperty: 'auth',
   });
 

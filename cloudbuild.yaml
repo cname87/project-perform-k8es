@@ -87,79 +87,79 @@ steps:
   dir: './frontend'
   args: ['run', 'build:prod']
 
-# # Run all backend unit tests
-# # Must have Node & Puppeteer in the base image
-# - id: 'unit test backend'
-#   name: 'gcr.io/$PROJECT_ID/node-with-puppeteer'
-#   dir: './backend'
-#   env: ['NODE_ENV=staging']
-#   args: ['npm', 'run', 'test']
+# Run all backend unit tests
+# Must have Node & Puppeteer in the base image
+- id: 'unit test backend'
+  name: 'gcr.io/$PROJECT_ID/node-with-puppeteer'
+  dir: './backend'
+  env: ['NODE_ENV=staging']
+  args: ['npm', 'run', 'test']
 
-# # Run all frontend unit tests.
-# # Must have Node & Puppeteer in the base image
-# - id: 'unit test frontend'
-#   name: 'gcr.io/$PROJECT_ID/node-with-puppeteer'
-#   dir: './frontend'
-#   args: ['npm', 'run', 'test:staging']
+# Run all frontend unit tests.
+# Must have Node & Puppeteer in the base image
+- id: 'unit test frontend'
+  name: 'gcr.io/$PROJECT_ID/node-with-puppeteer'
+  dir: './frontend'
+  args: ['npm', 'run', 'test:staging']
 
-# # Build the backend server image (which is later deployed)
-# - id: 'Build backend server image'
-#   name: 'gcr.io/cloud-builders/docker'
-#   dir: './backend'
-#   args: [
-#     'build',
-#     '--file=Dockerfile',
-#     '--tag=${_BACKEND_IMAGE}:${_BACKEND_VERSION}',
-#     '.']
+# Build the backend server image (which is later deployed)
+- id: 'Build backend server image'
+  name: 'gcr.io/cloud-builders/docker'
+  dir: './backend'
+  args: [
+    'build',
+    '--file=Dockerfile',
+    '--tag=${_BACKEND_IMAGE}:${_BACKEND_VERSION}',
+    '.']
 
-# # Push the backend server image so it can be pulled for deployment
-# - id: 'Push backend server image'
-#   name: 'gcr.io/cloud-builders/docker'
-#   args: [
-#     'push',
-#     '${_BACKEND_IMAGE}:${_BACKEND_VERSION}',
-#   ]
+# Push the backend server image so it can be pulled for deployment
+- id: 'Push backend server image'
+  name: 'gcr.io/cloud-builders/docker'
+  args: [
+    'push',
+    '${_BACKEND_IMAGE}:${_BACKEND_VERSION}',
+  ]
 
-# # Build the frontend server image (which is later deployed)
-# - id: 'Build frontend server image'
-#   name: 'gcr.io/cloud-builders/docker'
-#   dir: './frontend'
-#   args: [
-#     'build',
-#     '--file=Dockerfile',
-#     '--tag=${_FRONTEND_IMAGE}:${_FRONTEND_VERSION}',
-#     '.',
-#   ]
+# Build the frontend server image (which is later deployed)
+- id: 'Build frontend server image'
+  name: 'gcr.io/cloud-builders/docker'
+  dir: './frontend'
+  args: [
+    'build',
+    '--file=Dockerfile',
+    '--tag=${_FRONTEND_IMAGE}:${_FRONTEND_VERSION}',
+    '.',
+  ]
 
-# # Push the frontend server image so it can be pulled for deployment
-# - id: 'Push frontend server image'
-#   name: 'gcr.io/cloud-builders/docker'
-#   args: [
-#     'push',
-#     '${_FRONTEND_IMAGE}:${_FRONTEND_VERSION}',
-#   ]
+# Push the frontend server image so it can be pulled for deployment
+- id: 'Push frontend server image'
+  name: 'gcr.io/cloud-builders/docker'
+  args: [
+    'push',
+    '${_FRONTEND_IMAGE}:${_FRONTEND_VERSION}',
+  ]
 
-# # Run the backend server in the background (for e2e test)
-# - id: 'Run backend server'
-#   name: 'gcr.io/cloud-builders/docker'
-#   dir: './backend'
-#   args: [
-#     'run',
-#     # The name matches the proxy url set up in the e2e configuration.
-#     '--name=backend',
-#     # Remove container when stopped.
-#     '--rm',
-#     # Run detached.
-#     '-d=true',
-#     # Expose port on backend (8080)
-#     '-p=8080:8080',
-#     # Attach to the local Docker network named cloudbuild to which the container in each build step is attached.
-#     '--network=cloudbuild',
-#     # Run with NODE_ENV=staging => TEST_PATHS available.
-#     '--env', 'NODE_ENV=staging',
-#     # Runs the image built in a previous build step.
-#     '${_BACKEND_IMAGE}:${_BACKEND_VERSION}'
-#   ]
+# Run the backend server in the background (for e2e test)
+- id: 'Run backend server'
+  name: 'gcr.io/cloud-builders/docker'
+  dir: './backend'
+  args: [
+    'run',
+    # The name matches the proxy url set up in the e2e configuration.
+    '--name=backend',
+    # Remove container when stopped.
+    '--rm',
+    # Run detached.
+    '-d=true',
+    # Expose port on backend (8080)
+    '-p=8080:8080',
+    # Attach to the local Docker network named cloudbuild to which the container in each build step is attached.
+    '--network=cloudbuild',
+    # Run with NODE_ENV=staging => TEST_PATHS available.
+    '--env', 'NODE_ENV=staging',
+    # Runs the image built in a previous build step.
+    '${_BACKEND_IMAGE}:${_BACKEND_VERSION}'
+  ]
 
 # Runs an e2e test against the built backend server.
 # Runs a local frontend server serving the built frontend.
@@ -168,20 +168,20 @@ steps:
 # BASE_URL is set to run against the server running in the backend.
 # The configured test user has access to the test database.
 # The staging environment file selected by NODE_ENV=staging sets the backend server to be run with test paths available.  It also sets that the test database is in use.
-# - id: 'Run e2e test in staging environment'
-#   name: 'gcr.io/$PROJECT_ID/node-with-puppeteer'
-#   dir: './frontend'
-#   args: ['npm', 'run', 'e2e:staging']
+- id: 'Run e2e test in staging environment'
+  name: 'gcr.io/$PROJECT_ID/node-with-puppeteer'
+  dir: './frontend'
+  args: ['npm', 'run', 'e2e:staging']
 
-# # Stops the backend server running in the background, (and it is removed automatically).
-# - id: 'Stop backend server'
-#   name: 'gcr.io/cloud-builders/docker'
-#   dir: './backend'
-#   args: [
-#     'container',
-#     'stop',
-#     'backend',
-#   ]
+# Stops the backend server running in the background, (and it is removed automatically).
+- id: 'Stop backend server'
+  name: 'gcr.io/cloud-builders/docker'
+  dir: './backend'
+  args: [
+    'container',
+    'stop',
+    'backend',
+  ]
 
 # Update the local Helm chart to refer to the new frontend image
 # In the case of a build triggered from git, the image version is set to the the 'short SHA' of the git commit that triggered the build
@@ -359,10 +359,10 @@ substitutions: # default values - can be overwritten
   # Use production directory for the images
   _BACKEND_IMAGE: 'gcr.io/project-perform/pp-backend/production'
   _FRONTEND_IMAGE: 'gcr.io/project-perform/pp-frontend/production'
-  # The images are tagged with the git short commit hash
+  # When triggered from git, the images are tagged with the git short commit hash - this is overridden when calling locally
   _BACKEND_VERSION: '${SHORT_SHA}'
   _FRONTEND_VERSION: '${SHORT_SHA}'
-  # The name of the CD repo (which deploys the Helm chart)
+  # The name of the repo
   _REPO: 'project-perform-k8es'
   _BUILD_TAG: 'ppk8es'
 

@@ -56,7 +56,13 @@ const envFrontendE2e = {
   /* Path relative to rootpath - directory containing package.json */
   deltaPath: 'e2e/',
 };
-export const uploadJobs = [envFrontendE2e];
+const gcpStorageKey = {
+  /* Names of files to be uploaded */
+  filesToUpload: ['gcpStorageKey.json'],
+  /* Path relative to rootpath - directory containing package.json */
+  deltaPath: '../certs/gcpStorage/',
+};
+export const uploadJobs = [envFrontendE2e, gcpStorageKey];
 
 /* Upload a file to gcp */
 const uploadFile = async (srcFilename: string, destFilename: string) => {
@@ -135,7 +141,7 @@ export const setFilePathsAndCallUpload = async (
       }
     } else {
       console.error('No local file exists => error');
-      throw new Error('No local file exists');
+      throw new Error('No local file exists: ' + localFilePath);
     }
   }
 };
