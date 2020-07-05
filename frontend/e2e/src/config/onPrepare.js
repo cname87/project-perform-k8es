@@ -29,11 +29,11 @@ const { NgxLoggerLevel } = require('ngx-logger');
 
 /* awaits for an element to be visible on the page */
 const awaitElementVisible = async (element) =>
-  browser.wait(ExpectedConditions.visibilityOf(element), 120000);
+  browser.wait(ExpectedConditions.visibilityOf(element), 1200000);
 
 /* awaits for an element to be invisible on the page */
 const awaitElementInvisible = async (element) =>
-  browser.wait(ExpectedConditions.invisibilityOf(element), 120000);
+  browser.wait(ExpectedConditions.invisibilityOf(element), 1200000);
 
 /* sends a configured request to the server */
 const askServer = async (
