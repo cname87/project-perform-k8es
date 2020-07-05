@@ -315,17 +315,6 @@ steps:
   - 'CLOUDSDK_CONTAINER_CLUSTER=$_GKE_CLUSTER'
   - 'KUBECONFIG=~/.kube/config'
 
-# Runs e2e test against the newly deployed build.
-# Does not pre-compile or run a local frontend server so it uses the frontend production build in the production server which does not enable error and cache interceptors in the frontend.
-# Runs Protractor using a production staging configuration that does not run the cache or errors tests.
-# BASE_URL is set to run against the production cluster.
-# The configured test user has access to the production database, (to a 'test' collection).
-# The production cluster runs with an environment file selected by NODE_ENV=production which sets the backend server to be run with no test paths available.  It also sets that the production database is in use.
-- id: 'e2e test the production deployment'
-  name: 'gcr.io/$PROJECT_ID/node-with-puppeteer'
-  dir: './frontend'
-  args: ['npm', 'run', 'e2e:production']
-
 # This step copies the Helm chart to the production branch and pushes back to remote
 # Note: The production branch is checked out from a previous step
 - id: Push edited chart back to the production branch on the remote repo
@@ -348,6 +337,17 @@ steps:
   volumes:
   - name: 'ssh'
     path: /root/.ssh
+
+# Runs e2e test against the newly deployed build.
+# Does not pre-compile or run a local frontend server so it uses the frontend production build in the production server which does not enable error and cache interceptors in the frontend.
+# Runs Protractor using a production staging configuration that does not run the cache or errors tests.
+# BASE_URL is set to run against the production cluster.
+# The configured test user has access to the production database, (to a 'test' collection).
+# The production cluster runs with an environment file selected by NODE_ENV=production which sets the backend server to be run with no test paths available.  It also sets that the production database is in use.
+- id: 'e2e test the production deployment'
+  name: 'gcr.io/$PROJECT_ID/node-with-puppeteer'
+  dir: './frontend'
+  args: ['npm', 'run', 'e2e:production']
 
 substitutions: # default values - can be overwritten
   # PROJECT_ID: Cloud Build defaults to the ID of your Cloud project
