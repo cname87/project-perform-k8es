@@ -40,7 +40,7 @@ frontend:
     portName: nginx-port
     portValue: 80
   # This is replaced during cloud build
-  image: gcr.io/project-perform/pp-frontend/production:7909d38
+  image: gcr.io/project-perform/pp-frontend/production:458ef2b
 # Backend configuration
 backend:
   nameTag: -backend-service
@@ -51,7 +51,7 @@ backend:
     portName: app-port
     portValue: 8080
   # This is replaced during cloud build
-  image: gcr.io/project-perform/pp-backend/production:7909d38
+  image: gcr.io/project-perform/pp-backend/production:458ef2b
 # Miscellaneous name tags
 configmap:
   nameTag: -backend-configmap
