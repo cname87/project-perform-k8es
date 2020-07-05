@@ -258,7 +258,7 @@ export const run = async () => {
   await loadRootPage(false);
   await checkE2eEnvironment();
   await login('card');
-  setTimeout(120000);
+  setTimeout(1200000);
 };
 
 /* export login */

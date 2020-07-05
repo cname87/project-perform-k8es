@@ -38,7 +38,7 @@ describe('Error Handling', () => {
   beforeAll(async () => {
     /* test that test database is in use and reset it */
     await resetDatabase();
-    setTimeout(120000);
+    setTimeout(1200000);
   });
 
   afterAll(() => {
