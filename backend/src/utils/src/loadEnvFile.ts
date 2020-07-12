@@ -6,9 +6,8 @@
  *
  * Which .env file imported is dependent on the value of process.env.NODE_ENV.
  * 1. NODE_ENV=staging sets a staging configuration - an e2e test stage in GCP Cloud Build sets NODE_ENV=staging,
- * 2. NODE_ENV=development sets a development configuration - NODE_ENV must be set via a VSCode launch configuration or otherwise.
- * 3. When being run from a Kubernetes cluster the production configuration parameters are set via a secret and configmap yaml file, including setting NODE_ENV=production and thus no file is loaded.
- * - If none of the above three apply then an error will be thrown.
+ * 2. When being run from a Kubernetes cluster the production configuration parameters are set via a secret and configmap yaml file, including setting NODE_ENV=production and thus no file is loaded.
+ * 3. If NODE_ENV equals anything else (including 'development') it sets a development configuration.
  *
  * Note that any environment variables set before loading an .env file are never overwritten.
  * If NODE_ENV === 'production' then key parameters are checked and warnings are printed if they are not set to match a final production set up.

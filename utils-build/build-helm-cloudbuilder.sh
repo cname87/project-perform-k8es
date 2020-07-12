@@ -1,6 +1,7 @@
 #!/bin/bash
 
-# This loads the Helm cloud builder into the GCP Cloud Registry for use in cloudbuild.yaml.  It downloads all community builders to a created directory, then builds and pushes the Helm cloud builder, and finally deltes the downloaded directory.  You can set the version of Helm below.
+# This script loads the Helm cloud builder into the GCP Cloud Registry for use in cloudbuild.yaml.  It downloads all community builders to a created directory, then builds and pushes the Helm cloud builder, and finally deletes the downloaded directory.  You can set the version of Helm below.
+
 
 echo 'A directory named "cloud-builders-community" will be created but should be deleted before this script exits'
 

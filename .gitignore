@@ -1,5 +1,7 @@
 ### Security-relevant ignores ###
 certs
+# Ignore yaml secrets files
+**/*secret.yaml
 
 # Ignore the project-perform-k8es.cd repo
 project-perform-k8es-cd

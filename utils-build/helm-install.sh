@@ -1,16 +1,17 @@
 #!/usr/bin/env bash
 
-# This installs or upgrades a cluster with the application Helm chart.
+# This script installs or upgrades a cluster with the application Helm chart.
 
 
 # Read in variables
+# Get the directory containing this script and source the set-variables script - enure the set-variables script is on the configured path
 SCRIPT_DIR="${0%/*}"
 # shellcheck source=/dev/null
 source "$SCRIPT_DIR"/set-variables.sh
 
 # If there is a '-p' option in the command line then upgrade the production cluster
-# If there is a '-p' option in the command line then upgrade the test cluster
-# If there is no option, or any other option, in the command line then upgrade a test clustet
+# If there is a '-t' option in the command line then upgrade the test cluster
+# If there is no option, or any other option, in the command line then upgrade a test cluster
 CONTEXT="${TEST_CONTEXT}" ; CLUSTER_NAME="${TEST_CLUSTER_NAME}"
 while getopts pt option
 do
@@ -24,10 +25,10 @@ done
 
 # Utility confirm function
 function confirm(){
-   echo -e "Run with -t to upgrade the 'test' cluster or with -p to upgrade the production cluster."
-   echo -e "No option, or any other option, will upgrade the test cluster."
- echo -e "The cluster name ends in 'test', or 'prod', upgrading the test or production cluster respectively\n"
- echo -e "NOTE: If the application chart is installed on both clusters then the ingress on the first one installed will use the configured static ip address and the other will fail to create an ingress.  Therefore create the production cluster before the test cluster - the test cluster should only be accessed via localhost.\n"
+  echo -e "Run with -t to upgrade the 'test' cluster or with -p to upgrade the production cluster."
+  echo -e "No option, or any other option, will upgrade the test cluster."
+  echo -e "The cluster name ends in 'test', or 'prod', upgrading the test or production cluster respectively\n"
+  echo -e "NOTE: If the application chart is installed on both clusters then the ingress on the first one installed will use the configured static ip address and the other will fail to create an ingress.  Therefore create the production cluster before the test cluster - the test cluster cn be accessed via localhost so doesn;t neeed an ingress.\n"
  read -r -s -n 1 -p "Press any key to cornfirm or CTRL-C to cancel..."
  echo ""
 }

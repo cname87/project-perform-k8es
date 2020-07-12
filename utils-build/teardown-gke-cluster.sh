@@ -3,6 +3,7 @@
 # This deletes a Kubernetes cluster on GKE.
 
 # Read in variables
+# Get the directory containing this script and source the set-variables script - enure the set-variables script is on the configured path
 SCRIPT_DIR="${0%/*}"
 # shellcheck source=/dev/null
 source "$SCRIPT_DIR"/set-variables.sh

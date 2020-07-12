@@ -1,10 +1,6 @@
-# Proof of Concept project-perform web application
+# Proof of Concept web application hosted on Kubernetes
 
-The functionality in this POC is limited but the application is fully production-ready and very extensible.
-
-The application is hosted on Google Cloud Platform at <https://projectperform.com/>.  It runs a Single Page Application on the user’s web browser and accesses a database hosted by MongoDB Atlas via a REST API described using OpenAPI specification at <https://app.swaggerhub.com/apis/cname87/Teams/1.0.0>.  The source code is hosted on GitHub at <https://github.com/cname87/project-perform>. Full CI/CD is in place with every check-in to the master branch triggering a cloud build on GCP that runs full backend and front-end unit tests and application e2e tests before deploying to a Google Kubernetes Engine cluster.
-
-The web application is built on a MEAN stack – ‘MongoDB, Express.js, Angular, Node.js’ with full-featured logging, error handling reporting & monitoring via <https://rollbar.com/>, high unit test coverage using Mocha and Karma/Jasmine, & full e2e test coverage using Protractor.  It includes Auth0 authentication using <https://auth0.com/>. It is hosted on Google Cloud Platform App Engine which offers performance, reliability & monitoring.
+This POC is an single page web application hosted at <https://projectperform.com/> that runs as containerized microservices in a Kubernetes cluster.  An external ingress controller routes incoming https traffic to a frontend microservice that implements an nginx server serving the static Angular single page content and acting as a reverse proxy to the backend microservice via a loadbalancer.  The backend microservice implements the business logic and communicates with the external database hosted on MongoDB Atlas.  The Kubernetes cluster is managed using Helm. The application was developed using Skaffold which allows you to build, push, and deploy your application from VSCode.  The application is deployed on a Google Kubernetes Engine cluster via a Google Cloudbuild CI/CD pipeline that checks in to git all candidate and deployed Helm Charts to allow for audit and rollback.  The source code is hosted on GitHub at <https://github.com/cname87/project-perform-k8es>.
 
 ## Technologies
 
@@ -24,7 +20,7 @@ The web application is built on a MEAN stack – ‘MongoDB, Express.js, Angular
 * **NPM**:  npm provides a means for sourcing and managing external packages, and also scripting for building and testing the application.
 * **Express.js**: A Node.js web application for developing a HTTP server – provides the ability to easily define routes and request handlers.
 * **OpenAPI**: A tool to describe a backend API and then generate server stubs.
-* Mocha: Mocha provides a unit-test framework.
+* **Mocha**: Mocha provides a unit-test framework.
 
 ### Database technology
 
@@ -43,10 +39,13 @@ The web application is built on a MEAN stack – ‘MongoDB, Express.js, Angular
 
 * **Git**: Git is a distributed version control system – the source code is hosted on GitHub.
 * **VSCode**: Visual Studio Code is a streamlined code editor with support for development operations like debugging, task running, and version control.
+* **Skaffold**: Skaffold is a command line tool that facilitates continuous development for Kubernetes-native applications.
 
 ### Build & Deployment
 
-* **Google Cloud Build**: Cloud Build is a service that executes builds on GCP’s infrastructure producing a Docker image for deployment.
+* **Google Cloud Build**: Cloud Build is a service that executes builds on GCP’s infrastructure producing Docker images for deployment.
 * **Docker**: Docker is the underlying container technology used by Cloud Build.
 * **Google Cloud Storage**: Cloud Storage is used to host environment variables, certs, keys and other sensitive data not hosted on GitHub.
-* **Google Cloud Platform**: The application is hosted on the Google GKE environment.
+* **Google Kubernetes Environment**: The application is hosted on a Kubernetes cluster provided by the Google GKE environment.
+* **Kubernetes**: Kubernetes is an open-source system for automating deployment, scaling, and management of containerized applications
+* **Helm**: Helm packages Kubernetes application configuration to help define, install, and upgrade the application.

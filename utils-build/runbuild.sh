@@ -5,6 +5,7 @@
 
 
 # Read in variables
+# Get the directory containing this script and source the set-variables script - enure the set-variables script is on the configured path
 SCRIPT_DIR="${0%/*}"
 # shellcheck source=/dev/null
 source "$SCRIPT_DIR"/utils-build/set-variables.sh
@@ -36,7 +37,7 @@ CLUSTER_NAME=$PROD_CLUSTER_NAME
 echo "Cluster name: ${CLUSTER_NAME}"
 
 COMMAND="$COMMAND \
---config=cloudbuild.yaml \
+--config=../cloudbuild.yaml \
 --substitutions=\
 _GKE_CLUSTER=$CLUSTER_NAME,\
 _GKE_ZONE=$ZONE,\
@@ -45,6 +46,6 @@ _FRONTEND_IMAGE=gcr.io/$PROJECT/$FRONTEND_APPLICATION,\
 _BACKEND_VERSION=$BACKEND_VERSION,\
 _FRONTEND_VERSION=$FRONTEND_VERSION,\
 _REPO=${REPO},\
-_BUILD_TAG=${APPLICATION}-${SUFFIX} \
-."
+_BUILD_TAG=${APPLICATION}_${SUFFIX} \
+.."
 $COMMAND

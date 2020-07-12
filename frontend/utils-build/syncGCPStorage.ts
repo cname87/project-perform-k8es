@@ -8,11 +8,13 @@
  * The utility is run from an npm script:
  * "npm run ts-node syncGCPStorage.js.
  *
- * This utility has the following configuration:
+ * This utility is configured with:
  * - Path to gcpStorageKey.json for GOOGLE_APPLICATION_CREDENTIALS environment variable.
  * - Cloud Storage bucket name.
  * - Paths to files to be uploaded.
  * - Paths on Cloud Storage.
+ *
+ * This utility just loads up the frontend secret files only.
  *
  * NOTE: The structure of the Cloud Storage bucket (set by the paths on Cloud Storage below) must match the directory structure of the application. When the files are downloaded during Cloud Build they are copied recursively and saved loud Storage file structure.  (Note that git does not save empty directores so some directories must also be created).  This is guaranteed by setting up a directory on the Cloud Storage bucket that matches the name of the rootpath (i.e. the directory containing package.json) and configuring a deltaPath to each uploaded file from the root path and then constructing the local and Cloud Storage filepaths from that delta path.
  *
@@ -51,18 +53,11 @@ export const bucketName = 'project-perform-gcp-environment-files';
 /* Define a set of upload jobs */
 
 const envFrontendE2e = {
-  /* Names of files to be uploaded */
   filesToUpload: ['.env-e2e-dev', '.env-e2e-production', '.env-e2e-staging'],
   /* Path relative to rootpath - directory containing package.json */
   deltaPath: 'e2e/',
 };
-const gcpStorageKey = {
-  /* Names of files to be uploaded */
-  filesToUpload: ['gcpStorageKey.json'],
-  /* Path relative to rootpath - directory containing package.json */
-  deltaPath: '../certs/gcpStorage/',
-};
-export const uploadJobs = [envFrontendE2e, gcpStorageKey];
+export const uploadJobs = [envFrontendE2e];
 
 /* Upload a file to gcp */
 const uploadFile = async (srcFilename: string, destFilename: string) => {
