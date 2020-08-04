@@ -129,7 +129,7 @@ describe('memberInputComponent', () => {
       await fixture.whenStable();
       /* test all elements, including button not displaying */
       expect(page.input!.value).toBe('', 'initial input value');
-      expect(page.input!.getAttribute('placeholder')).toBe(
+      expect(page.input!.placeholder).toBe(
         expected.addPlaceholder,
         'placeholder value',
       );

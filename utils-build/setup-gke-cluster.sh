@@ -25,7 +25,7 @@ function confirm(){
   echo -e "Run with -t to create the 'test' cluster or with -p to create the production cluster."
   echo -e "No option, or any other option, will create the test cluster."
   echo -e "The name ends in 'test', or 'prod', creating the test or production cluster respectively\n"
-  read -r -s -n 1 -p "Press any key to cornfirm or CTRL-C to cancel..."
+  read -r -s -n 1 -p "Press any key to confirm or CTRL-C to cancel..."
   echo ""
 }
 

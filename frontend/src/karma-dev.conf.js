@@ -26,6 +26,8 @@ export default function main(config) {
   config.set({
     basePath: '',
     frameworks: ['jasmine', '@angular-devkit/build-angular'],
+    /* Added to prevent slow build losing the browser */
+    captureTimeout: 300000,
     plugins: [
       karmaJasmine,
       karmaChromeLauncher,

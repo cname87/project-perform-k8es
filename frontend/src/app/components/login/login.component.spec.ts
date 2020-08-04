@@ -1,12 +1,13 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { APP_BASE_HREF } from '@angular/common';
 import { TestBed, ComponentFixture } from '@angular/core/testing';
-// import { RouterTestingModule } from '@angular/router/testing';
+import { RouterTestingModule } from '@angular/router/testing';
 import { NGXLogger } from 'ngx-logger';
 
 import { AppModule } from '../../app.module';
 import { LoginComponent } from './login.component';
 import { AuthService } from '../../shared/auth.service/auth.service';
+import { AuthGuard } from '../../router/guards/auth.guard';
 import {
   findCssOrNot,
   click,
@@ -14,6 +15,7 @@ import {
   RouterLinkDirectiveStub,
 } from '../../shared/test-helpers';
 import { routes } from '../../config';
+import { ProfileComponent } from '../user-profile/user-profile.component';
 
 /* spy interfaces */
 interface IAuthServiceSpy {
@@ -38,14 +40,22 @@ describe('LoginComponent', () => {
       ...authServiceSpy,
       isLoggedIn: true,
     };
+    /* stub authGuard canActivate() method to avoid error when you route in profile button test below */
+    const authGuardSpy = jasmine.createSpyObj('authGuard', ['canActivate']);
 
     /* set up Testbed */
     await TestBed.configureTestingModule({
-      imports: [AppModule],
+      imports: [
+        AppModule,
+        RouterTestingModule.withRoutes([
+          { path: 'profile', component: ProfileComponent },
+        ]),
+      ],
       declarations: [],
       providers: [
         { provide: APP_BASE_HREF, useValue: '/' }, // avoids an error message
         { provide: AuthService, useValue: authServiceSpy },
+        { provide: AuthGuard, useValue: authGuardSpy },
         { provide: NGXLogger, useValue: loggerSpy },
       ],
     })
@@ -146,7 +156,7 @@ describe('LoginComponent', () => {
     return testVars;
   }
 
-  /* setup function run by each it test function that runs tests after the component and view are fully established */
+  /* setup function run by each it test function after the component and view are fully established */
   async function setup() {
     const testVars = await preSetup();
     /* initiate ngOnInit and view changes etc */

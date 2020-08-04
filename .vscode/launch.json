@@ -109,10 +109,10 @@
       },
       "sourceMaps": true,
       "smartStep": true,
-      "disableNetworkCache": true,
-      "showAsyncStacks": true,
-      "breakOnLoad": true,
-      "breakOnLoadStrategy": "instrument",
+      // "disableNetworkCache": true,
+      // "showAsyncStacks": true,
+      // "breakOnLoad": true,
+      // "breakOnLoadStrategy": "instrument",
       "skipFiles": [
         "<node_internals>/**/*.js",
         "${workspaceFolder}/frontend/node_modules/**/*",
@@ -136,11 +136,11 @@
       (iii) serve:prod - if run will fail error and cache tests => No.
 
       3. *** Start the backend server in advance (unless testing against the production server)***
-      If you started the frontend using serve:xxx then calls to /api-v1 and /testServer are proxied (via proxy.conf) to localhots:8080.
+      If you started the frontend using serve:xxx then calls to /api-v1 and /testServer are proxied (via proxy.conf) to localhost:8080.
       => Run 'npm run start' from the backend directory, or
       => Run the launch configuration that starts the baceknd on localhost:8080.
 
-      4. *** Run this launcg configuration ***
+      4. *** Run this launch configuration ***
       This then runs e2e tests against the application allowing VSCode debug of the e2e .spec files. Use Chrome DevTools if browser-side debug is needed.
 
       VALID OPTIONS:
@@ -202,16 +202,13 @@
       ],
       "smartStep": true,
     },
-    // https://localhost:8080/
+    // https://localhost:4200/
     {
-      /* Starts Chrome and connects to localhost:8080.
-      The server is started in a prelaunch task. */
-      /*
-      TODO:  This navigates to the backend only - I should start the backend and serve on 4200 and then open localhost:4200
-      */
-      "name": "Open http://localhost:8080/",
+      /* Starts Chrome and connects to localhost:4200.
+      The backend server is started, and the frontend is served on localhost:4200, in a prelaunch task. */
+      "name": "Open http://localhost:4200/",
       "type": "chrome",
-      "preLaunchTask": "Check Server",
+      "preLaunchTask": "Serve Frontend with Backend",
       "postDebugTask": "Taskkill node.exe",
       "request": "launch",
       "linux": {
@@ -227,7 +224,7 @@
         "--disable-popup-blocking", // necessary for window.open() to work
       ],
       "userDataDir": true,
-      "url": "http://localhost:8080/",
+      "url": "http://localhost:4200/",
       // tell vscode where to find scripts on the server
       "webRoot": "${workspaceFolder}/frontend/dist",
       "pathMapping": {
@@ -437,7 +434,7 @@
       "name": "Backend/Frontend",
       "configurations": [
         "Run backend app.ts",
-        "Open http://localhost:8080/",
+        "Open http://localhost:4200/",
       ]
     },
   ],
