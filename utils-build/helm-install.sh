@@ -9,16 +9,17 @@ SCRIPT_DIR="${0%/*}"
 # shellcheck source=/dev/null
 source "$SCRIPT_DIR"/set-variables.sh
 
-# If there is a '-p' option in the command line then upgrade the production cluster
-# If there is a '-t' option in the command line then upgrade the test cluster
-# If there is no option, or any other option, in the command line then upgrade a test cluster
+# If there is no option in the command line then upgrade a test cluster
 CONTEXT="${TEST_CONTEXT}" ; CLUSTER_NAME="${TEST_CLUSTER_NAME}"
 while getopts pt option
 do
 case "${option}"
 in
+# If there is a '-p' option in the command line then upgrade the production cluster
 p) CONTEXT="${PROD_CONTEXT}" ; CLUSTER_NAME="${PROD_CLUSTER_NAME}";;
+# If there is a '-t' option in the command line then upgrade the test cluster
 t) CONTEXT="${TEST_CONTEXT}" ; CLUSTER_NAME="${TEST_CLUSTER_NAME}";;
+# If there is an invalid option in the command line then upgrade a test cluster
 *) CONTEXT="${TEST_CONTEXT}" ; CLUSTER_NAME="${TEST_CLUSTER_NAME}";;
 esac
 done

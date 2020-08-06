@@ -5,6 +5,7 @@
 # Taken from https://hub.docker.com/r/buildkite/puppeteer/dockerfile
 
 # The version of Node should match that used in the backend Dockerfile.
+# If you change this then update the version tag in cloudbuild.yaml.
 FROM node:14
 
 RUN  apt-get update \

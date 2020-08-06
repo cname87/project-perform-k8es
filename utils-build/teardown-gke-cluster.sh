@@ -8,16 +8,17 @@ SCRIPT_DIR="${0%/*}"
 # shellcheck source=/dev/null
 source "$SCRIPT_DIR"/set-variables.sh
 
-# If there is a '-p' option in the command line then delete the production cluster
-# If there is '-t' option in the command line then delete the test cluster
-# If there is no option, or any other option, in the command line then no cluster will be deleted
+# If there is no option in the command line then no cluster will be deleted
 CLUSTER_NAME="non-existent"
 while getopts pt option
 do
 case "${option}"
 in
+# If there is a '-p' option in the command line then delete the production cluster
 p) CLUSTER_NAME="${PROD_CLUSTER_NAME}";;
+# If there is '-t' option in the command line then delete the test cluster
 t) CLUSTER_NAME="${TEST_CLUSTER_NAME}";;
+# If there isr any other option in the command line then no cluster will be deleted
 *) CLUSTER_NAME="non-existent";;
 esac
 done

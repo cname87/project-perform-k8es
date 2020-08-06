@@ -8,14 +8,15 @@ SCRIPT_DIR="${0%/*}"
 # shellcheck source=/dev/null
 source "$SCRIPT_DIR"/set-variables.sh
 
-# If there is a '-p' option in the command line then create the production cluster
-# If there is no option, or any other option, in the command line then create a test cluster
+# If there is no option in the command line then create a test cluster
 CLUSTER_NAME="${TEST_CLUSTER_NAME}"
 while getopts p option
 do
 case "${option}"
 in
+# If there is a '-p' option in the command line then create the production cluster
 p) CLUSTER_NAME="${PROD_CLUSTER_NAME}";;
+# If there is an invalid option in the command line then create a test cluster
 *) CLUSTER_NAME="${TEST_CLUSTER_NAME}";;
 esac
 done

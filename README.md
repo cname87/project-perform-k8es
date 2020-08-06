@@ -57,7 +57,7 @@ Note: Tracing disabled but e2e test parameters enabled.
 
 ### Creation of a test cluster
 
-A test GKE cluster, e.g. named 'ppk8es-test', can be created using the cluster creation utility 'setup-gke-cluster.sh'.
+A test GKE cluster, e.g. named 'ppk8es-test', can be created using the cluster creation utility 'setup-gke-cluster.sh' with the parameter -t.
 
 Note that the ssl certificate is only enabled on one cluster.  If the production cluster is running then the ingress with ssl certificate will not be enabled on the test cluster.  Use port-mapping to access the front end (or backend) services.
 
@@ -67,7 +67,7 @@ The git repo includes a skaffold.yaml and associated VSCode launch configuration
 
 ### Running a local cloud build
 
-A cloud build can be run on the local machine - see the cloudbuild.yaml file for instructions.  It will deploy to the test cluster unless otherwise manually configured.
+A cloud build can be run on the local machine.  Run ./utils-build/runbuild.sh -t.  Note that the variables are set in a variables file - it will deploy to the test cluster unless otherwise manually configured.
 
 ### Deletion of the test cluster
 
@@ -79,7 +79,7 @@ Note: Check that the loadbalancer and ssl certificate are deleted.
 
 ### Creation of a production cluster
 
-A production GKE cluster, e.g. named 'ppk8es-prod', can be created using the cluster creation utility 'setup-gke-cluster.sh'.
+A production GKE cluster, e.g. named 'ppk8es-prod', can be created using the cluster creation utility 'setup-gke-cluster.sh' with the parameter -p.
 
 Note that the ssl certificate is only enabled on one cluster so ensure any test cluster is deleted before creating the production cluster.
 
@@ -87,7 +87,7 @@ Note that it can take up to 30 minutes or longer for the ssl certificate to be p
 
 ### First-time deployment
 
-Manually build the frontend and backend, run the unit and e2e tests and then deploy to the production cluster using Helm install.
+Manually build the frontend and backend, run the unit and e2e tests and then deploy to the production cluster using Helm install: helm install -f pp-chart/values.yaml project-perform pp-chart
 
 ### Ongoing CI / CD
 
