@@ -85,10 +85,6 @@ Note that the ssl certificate is only enabled on one cluster so ensure any test 
 
 Note that it can take up to 30 minutes or longer for the ssl certificate to be provisioned i.e. before project-perform.com becomes operational.
 
-### First-time deployment
-
-Manually build the frontend and backend, run the unit and e2e tests and then deploy to the production cluster using Helm install: helm install -f pp-chart/values.yaml project-perform pp-chart
-
 ### Ongoing CI / CD
 
 Steps:
