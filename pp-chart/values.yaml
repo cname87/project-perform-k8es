@@ -56,7 +56,7 @@ frontend:
     portValue: 80
   # This is replaced during cloud build
 
-  image: gcr.io/project-perform/pp-frontend/development:testB
+  image: gcr.io/project-perform/pp-frontend/development:testA
 # Backend configuration
 
 backend:
@@ -69,7 +69,7 @@ backend:
     portValue: 8080
   # This is replaced during cloud build
 
-  image: gcr.io/project-perform/pp-backend/development:testB
+  image: gcr.io/project-perform/pp-backend/development:testA
 # Miscellaneous name tags
 
 configmap:
