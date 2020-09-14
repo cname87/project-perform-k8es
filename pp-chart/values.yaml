@@ -1,47 +1,64 @@
 # Name configuration
+
 nameOverride: ""
 fullnameOverride: ""
 # Service Account configuration
+
 serviceAccount:
-  # Specifies whether a service account should be created
   create: false
   # Annotations to add to the service account
+
+  # Specifies whether a service account should be created
   annotations: {}
   # The name of the service account to use.
+
   # If not set and create is true, a name is generated using the fullname template
+
   # If not set and create is false, the name 'default' is used
   name: ""
 # ssl certificate details
+
 ssl:
   name: &ssl-name pp-ssl-certificate
   domain: &host project-perform.com
 # Ingress configuration
+
 ingress:
   enabled: true
   annotations:
     kubernetes.io/ingress.global-static-ip-name: pp-ip
+    # Use a static external IP address that you previously created.
+
     networking.gke.io/managed-certificates: *ssl-name
-    # kubernetes.io/ingress.allow-http: "false"
+    # Block http traffic
+
+    kubernetes.io/ingress.allow-http: "false"
   # tls not enabled - using GCP Managed Certificates
+
   tls: {}
   hosts:
     - host: *host
       paths: [/*]
 # Frontend configuration
+
 frontend:
   nameTag: -frontend-service
   annotations:
     cloud.google.com/neg: '{"ingress": true}'
+    # Load balancing directly to pod endpoints
   service:
-    # NodePort is the required type for a Ingress Controller backend
     type: NodePort
+    # NodePort is the required type for a Ingress Controller backend
+
     port: 80
   deployment:
     portName: nginx-port
     portValue: 80
   # This is replaced during cloud build
-  image: gcr.io/project-perform/pp-frontend/production:349ade7
+
+  image: gcr.io/project-perform/pp-frontend/development:testA
 # Backend configuration
+
 backend:
   nameTag: -backend-service
   service:
@@ -51,13 +68,16 @@ backend:
     portName: app-port
     portValue: 8080
   # This is replaced during cloud build
-  image: gcr.io/project-perform/pp-backend/production:349ade7
+
+  image: gcr.io/project-perform/pp-backend/development:testA
 # Miscellaneous name tags
+
 configmap:
   nameTag: -backend-configmap
 secret:
   nameTag: -backend-secret
 ## The remaining parameters are currently common to both frontend and backend deployments
+
 autoscaling:
   enabled: false
   minReplicas: 1
@@ -72,23 +92,32 @@ podSecurityContext: {}
 
 securityContext: {}
 # capabilities:
-#   drop:
-#   - ALL
-# readOnlyRootFilesystem: true
-# runAsNonRoot: true
-# runAsUser: 1000
 
+#   drop:
+
+#   - ALL
+
+# readOnlyRootFilesystem: true
+
+# runAsNonRoot: true
+
+# runAsUser: 1000
 image:
   pullPolicy: Always
 resources: {}
 # We usually recommend not to specify default resources and to leave this as a conscious choice for the user. This also increases chances charts run on environments with little resources, such as Minikube. If you do want to specify resources, uncomment the following lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+
 # limits:
+
 #   cpu: 100m
-#   memory: 128Mi
-# requests:
-#   cpu: 100m
+
 #   memory: 128Mi
 
+# requests:
+
+#   cpu: 100m
+
+#   memory: 128Mi
 nodeSelector: {}
 affinity: {}
 tolerations: []
