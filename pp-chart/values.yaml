@@ -19,9 +19,11 @@ ssl:
 ingress:
   enabled: true
   annotations:
+    # Use a static external IP address that you previously created.
     kubernetes.io/ingress.global-static-ip-name: pp-ip
     networking.gke.io/managed-certificates: *ssl-name
-    # kubernetes.io/ingress.allow-http: "false"
+    # Block http traffic
+    kubernetes.io/ingress.allow-http: "false"
   # tls not enabled - using GCP Managed Certificates
   tls: {}
   hosts:
@@ -31,6 +33,7 @@ ingress:
 frontend:
   nameTag: -frontend-service
   annotations:
+  # Load balancing directly to pod endpoints
     cloud.google.com/neg: '{"ingress": true}'
   service:
     # NodePort is the required type for a Ingress Controller backend
@@ -40,7 +43,7 @@ frontend:
     portName: nginx-port
     portValue: 80
   # This is replaced during cloud build
-  image: gcr.io/project-perform/pp-frontend/production:349ade7
+  image: gcr.io/project-perform/pp-frontend/development:test6
 # Backend configuration
 backend:
   nameTag: -backend-service
@@ -51,7 +54,7 @@ backend:
     portName: app-port
     portValue: 8080
   # This is replaced during cloud build
-  image: gcr.io/project-perform/pp-backend/production:349ade7
+  image: gcr.io/project-perform/pp-backend/development:test6
 # Miscellaneous name tags
 configmap:
   nameTag: -backend-configmap

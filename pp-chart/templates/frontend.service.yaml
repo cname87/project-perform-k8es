@@ -26,4 +26,5 @@ spec:
     tier: frontend
   type: {{ .Values.frontend.service.type }}
   sessionAffinity: None
-  externalTrafficPolicy: Cluster
+  # Route to a pod on the node
+  externalTrafficPolicy: Local
