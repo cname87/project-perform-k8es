@@ -62,8 +62,7 @@ echo -e "\nConfirming connection to cluster\n"
 kubectl cluster-info
 
 # Note: It is assumed all required GCP APIs are enabled and have appropriate permissions on the cluster, i.e. ...
-# - Cloud Build
- API is enabled
+# - Cloud Build API is enabled
 # - Cloud Build service account has access to your project's clusters - grant it the Kubernetes Engine Developer Role
 
 # If already created, an error will be returned but the ip address will be listed

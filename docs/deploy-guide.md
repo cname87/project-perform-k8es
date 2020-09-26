@@ -1,7 +1,5 @@
 # Deployment
 
-
-
 ## Manual deployment to a cluster
 
 Install the application to a cluster using the Helm install utility 'helm-install.sh' to install the Helm chart.

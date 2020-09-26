@@ -34,16 +34,18 @@ Run 'npm run test' from the backend directory and 'npm run test:dev' from the fr
 
 You can start the local database before running the backend unit tests to run the associated unit tests.
 
-To run e2e tests start the backend server, by running 'npm run startBackend' from frontend/, and the  run 'npm run e2e;dev' from frontend/.
+To run e2e tests, first start the backend server, by running 'npm run startBackend' from frontend/, and then run 'npm run e2e;dev' from frontend/.
 
-You can run the local tests from VSCode launch configurations if debug is required - see the detail in .vscode/launch.json.
+If debug is required, the run the local tests from VSCode launch configurations - see the detail in .vscode/launch.json.
 
 ## Creation of a cluster
 
 A test GKE cluster, e.g. named 'ppk8es-test', can be created using the cluster creation utility 'setup-gke-cluster.sh' with the parameter -t.
 A production GKE cluster, e.g. named 'ppk8es-prod', can be created using the cluster creation utility 'setup-gke-cluster.sh' with the parameter -p.
 
-(Note that the clusters are named in the utility 'set-variables.sh).
+Note that a static ip address is reserved.  This is referenced in the Ingress Controller.
+
+Note that the clusters are named in the utility 'set-variables.sh.
 
 Note: Use 'gcloud config set ...' to configure the gcloud project as 'project-perform' and zone as 'europe-west2-c'.
 
@@ -55,7 +57,25 @@ The git repo includes a skaffold.yaml and associated VSCode launch configuration
 
 To run Skaffold run the 'Run On Kubernetes' launch configuration as detailed in .vscode/launch.json.
 
-Note that the frontend is port mapped to localhost:8080 and the backend is port mapped to localhost:80801 so you can develop the microservices without worrying about external ingress.
+Note that the frontend is port mapped to localhost:8080 and the backend is port mapped to localhost:8081 so you can develop the microservices without worrying about external ingress.
+
+## GKE Ingress (including tsl)
+
+You can develop without worrying access from an external ip address using kubectl port mapping.  However, external ingress is needed in production.  This can be tested manually on the test cluster.
+
+NB: Do not make any changes to the ingress or certificate yaml files without carefully testing first.
+
+### Static IP address
+
+I have set up to use a GKE Ingress Controller via the app-ingress.yaml file.  The ingress yaml file references the static ip address already set up in the cluster creation utility so calls to that ip address are routed to the ingress.  The same static-ip address must also be referenced in the reserved domain name project-perform.com so that the domain name routes to the ingress.
+
+### HTTPS
+
+Only https will work, not http.  I use Google Managed Certificate to provide tsl access via an certificate yaml file referenced in the ingress yaml file.  Note that it takes up to 30min for the ssl certificate to be provisioned and it can only apply to one cluster.
+
+### Ingress
+
+The ingress routes all requests to the frontend service.
 
 ## Manual deployment to a cluster
 
