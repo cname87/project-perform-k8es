@@ -37,13 +37,13 @@ const pingServer = (
       tryConnectCount++
     ) {
       try {
-        console.log('Connect to local host' + ` - attempt ${tryConnectCount}`);
+        console.log(`Connect to local host - attempt ${tryConnectCount}`);
         const response = await request.get(options);
         resolve(response);
         break; // loop will continue even though promise resolved
       } catch (err) {
         console.log(
-          'Failed to connect to local host' + ` - attempt ${tryConnectCount}`,
+          `Failed to connect to local host - attempt ${tryConnectCount}`,
         );
         await sleep(1000);
         continue;

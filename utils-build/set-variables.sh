@@ -17,6 +17,7 @@ export TEST_CONTEXT=gke_${PROJECT}_${ZONE}_${TEST_CLUSTER_NAME}
 export HELM_RELEASE=project-perform
 export HELM_CHART=pp-chart
 export REPO=${PROJECT}-k8es
+# Use development images by default
 export BACKEND_APPLICATION=pp-backend/development
 export FRONTEND_APPLICATION=pp-frontend/development
 export STATIC_IP_NAME=pp-ip

@@ -22,77 +22,15 @@ As the second stage of my web application, I refactored from the original monoli
 
 ## Application Configuration
 
-### Backend microservice configuration
-
-The backend microservice application is configured by means of process.env environment global variables that are loaded via either .env files or a configmaps.yaml file in the Helm chart.  The .env files are loaded via backend/src/utils/src/loadEnvFile.ts.
-
-There are three different environments to consider:
-
-1. Development  
-The development environment is used for development and test.  It is set if process.env.NODE_ENV is not set to either 'staging' or 'production' when app.ts is called, i.e. it is the default configuration.  The development environment is configured via the .envDevelopment file.
-
-2. Staging  
-The staging environment is used during cloud build for unit test.  It is set if process.env.NODE_ENV is set to 'staging' when app.ts is called.  The staging environment is configured via the .envStaging file.
-
-3. Production  
-The production environment is used when running from the production cluster.  It is set if process.env.NODE_ENV is set to 'production' when app.ts is called.  The production environment is configured via the configmaps.yaml file in the Helm chart stored in the pp-chart directory.
-
-### Frontend microservice configuration
-
-During build of the dist front end directory a specific environment.ts file is loaded depending on the build command:
-
-- 'ng build' (default):  
-Loads environment.ts - corresponds to the development environment.  
-Note: Enables tracing but disables e2e test parameters.
-
-- 'ng build -prod' (production):  
-Loads environment.prod.ts - corresponds to the production environment.  
-Note: Tracing and e2e test parameters disabled.
-
-- 'ng build -e2e' (e2e):  
-Loads environment.e2e.ts - corresponds to thr e2e test environment.  
-Note: Tracing disabled but e2e test parameters enabled.
+Refer to the configuration guide [here.](./docs/config-guide.md)
 
 ## Development
 
-### Creation of a test cluster
-
-A test GKE cluster, e.g. named 'ppk8es-test', can be created using the cluster creation utility 'setup-gke-cluster.sh' with the parameter -t.
-
-Note that the ssl certificate is only enabled on one cluster.  If the production cluster is running then the ingress with ssl certificate will not be enabled on the test cluster.  Use port-mapping to access the front end (or backend) services.
-
-### Use of Skaffold and VSCode
-
-The git repo includes a skaffold.yaml and associated VSCode launch configurations.  Skaffold builds and deploys the microservices to a chosen Kubectl environment (i.e. GKE cluster).  It rebuilds on change.
-
-### Running a local cloud build
-
-A cloud build can be run on the local machine.  Run ./utils-build/runbuild.sh -t.  Note that the variables are set in a variables file - it will deploy to the test cluster unless otherwise manually configured.
-
-### Deletion of the test cluster
-
-The test GKE cluster can be deleted using the cluster deletion utility 'teardown-gke-cluster.sh'.
-
-Note: Check that the loadbalancer and ssl certificate are deleted.
+Refer to the development guide [here.](./docs/development-guide.md)
 
 ## Deployment
 
-### Creation of a production cluster
-
-A production GKE cluster, e.g. named 'ppk8es-prod', can be created using the cluster creation utility 'setup-gke-cluster.sh' with the parameter -p.
-
-Note that the ssl certificate is only enabled on one cluster so ensure any test cluster is deleted before creating the production cluster.
-
-Note that it can take up to 30 minutes or longer for the ssl certificate to be provisioned i.e. before project-perform.com becomes operational.
-
-### Ongoing CI / CD
-
-Steps:
-
-- The production cluster should be up and running on GKE with the previously deployed version.
-- Develop the application locally on a test GKE cluster using Skaffold and running unit and e2e tests manually.
-- When tests pass check in to the master branch on the Github repository.
-- This triggers a cloud build that builds the frontend and backend, runs the frontend and backend unit tests and e2e application tests, copies the Helm chart to a 'Candidate' branch in the git repo, installs the Helm chart on the production cluster and copies the Helm chart to the 'Deployed' branch in the git repo, and runs an e2e test against the newly deployed production cluster.
+Refer to the deployment guide [here.](./docs/deploy-guide.md)
 
 ## Technologies
 

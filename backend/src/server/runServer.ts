@@ -162,7 +162,7 @@ async function runServer(app: Application): Promise<void> {
     const isTestPaths = process.env.TEST_PATHS === 'true';
     const resText = `You have reached the project-perform backend server<br/>
     Environment: ${nodeEnvironment}<br/>
-    Local database in use: ${isDbLocal}<br/>
+    Local database server in use: ${isDbLocal}<br/>
     Production database in use: ${isDbProduction}<br/>
     Test paths enabled: ${isTestPaths}`;
     res.status(200).send(resText);

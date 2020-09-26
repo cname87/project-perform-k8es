@@ -219,23 +219,13 @@
       }
     },
     {
-      "label": "gcloudBuild",
-      "type": "process",
-      "command": "node",
-      "args": [
-        "backend/utils-build/gcloudBuild.mjs"
-      ],
-      "group": "test",
-      "problemMatcher": []
-    },
-    {
       "label": "Is Server Up?",
       "type": "shell",
       "command": "npm",
       "args": [
         "run",
         "--prefix",
-        "${workspaceFolder}",
+        "${workspaceFolder}/backend",
         "isServerUp"
       ],
       "isBackground": true,

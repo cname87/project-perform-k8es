@@ -20,6 +20,7 @@ import fs from 'fs';
 import findup from 'find-up';
 import { Storage } from '@google-cloud/storage';
 import { loadJobs } from './syncGCPStorage';
+import { rootDir } from './syncGCPStorage';
 
 console.log('Loading secrets files with GCP Cloud Storage');
 const storage = new Storage();
@@ -30,10 +31,8 @@ export const rootPath = path.dirname(
   findup.sync('package.json', { cwd: __dirname })!,
 );
 
-/* The root directory to store the files on the gsutil bucket */
-const rootDir = 'frontend/';
-
 /* Set the path to the GCP Storage credentials here (as well as in the .env files) as this may be called when no .env file is loaded */
+/* Note: This is the key associated with the storage-access@project-perform.iam.gserviceaccount.com service account */
 process.env.GOOGLE_APPLICATION_CREDENTIALS = path.resolve(
   rootPath,
   '..',
@@ -70,6 +69,12 @@ const downloadFile = async (srcFilename: string, destFilename: string) => {
     console.log(`Downloading ${srcFilename} to ${destFilename}.`);
     await storage.bucket(bucketName).file(srcFilename).download(options);
   } catch (err) {
+    /* If a file was created then delete it */
+    try {
+      fs.unlinkSync(destFilename);
+    } catch (err) {
+      /* No file was craeated => ignore this error */
+    }
     console.error(
       `Error downloading ${srcFilename} from gs://${bucketName}/${destFilename}.`,
     );

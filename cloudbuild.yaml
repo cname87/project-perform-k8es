@@ -1,4 +1,4 @@
-## Continuous Integration & Delivery cloud build ##
+## Continuous Integration & Continuous Delivery cloud build ##
 
 # The cloud build is triggered by a commit to the master branch of the project-perform-k8es repo.  It downloads secrets that are not stored on the git repo, installs and builds the frontend and backend applications, units tests them, and then builds the frontend and backend images and pushes them to the cloud registry.  It e2e tests the built images. It then edits the Helm Chart to point to the new images. It clones the repo, copies the Helm chart to be deployed to the cloned repo, commits and then pushes back to the candidate branch of the remote repo.  It then deploys the Helm chart to the production Kubernetes cluster and runs an e2e test on the production cluster.  Finally it copies the updated Helm chart to the production branch of the cloned repo and pushes to the production branch of the remote repo.
 
@@ -161,6 +161,15 @@ steps:
     '${_BACKEND_IMAGE}:${_BACKEND_VERSION}'
   ]
 
+# Run a test to cancel build gracefully if we only want to build images
+- id: 'Test and break if this is a build only run'
+  name: 'gcr.io/cloud-builders/gcloud'
+  entrypoint: 'sh'
+  args:
+    - '-c'
+    - |
+      test "dummy1" = "dummy2" && gcloud builds cancel $BUILD_ID > /dev/null || true
+
 # Runs an e2e test against the built backend server.
 # Runs a local frontend server serving the built frontend.
 # Pre-compiles the frontend using a staging environment file that enables error and cache interceptors in the frontend.
@@ -210,6 +219,7 @@ steps:
   - ${_BACKEND_IMAGE}:${_BACKEND_VERSION}
 
 # Get private ssh key from Google Secret Manager to allow push access to Github
+# See https://cloud.google.com/cloud-build/docs/access-private-github-repos
 - id: 'Get github access'
   name: gcr.io/cloud-builders/gcloud
   entrypoint: 'bash'
@@ -349,7 +359,8 @@ steps:
   dir: './frontend'
   args: ['npm', 'run', 'e2e:production']
 
-substitutions: # default values - can be overwritten
+substitutions:
+  # These are default values.  These can be be overwritten from the runbuild.sh utility or when a build is triggered by Git.
   # PROJECT_ID: Cloud Build defaults to the ID of your Cloud project
   # BUILD_ID: Cloud Build defaults to the ID of your build
   # COMMIT_SHA: Cloud Build sets this to the git commit hash that triggered this cloud build run, or to '' if cloud build is run manually

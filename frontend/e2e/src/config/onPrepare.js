@@ -65,7 +65,7 @@ const testDatabaseInUse = async () => {
     'GET',
   );
 
-  console.log(process.env.BASE_URL);
+  console.log(`BASE_URL is: + ${process.env.BASE_URL}`);
 
   /* body will contain { isTestDatabase: <boolean> } */
   if (!testDatabaseResponseBody.isTestDatabase) {
@@ -192,12 +192,13 @@ const login = async (btn = 'button') => {
   await browser.waitForAngularEnabled(false);
 
   /* log-in on the non-angular auth0 page using the selenium webdriver */
+  /* note that the element finders depend on the css on the external auth0 page which may change without warning */
   const nameInput = await browser.driver.findElement(by.name('username'));
   await nameInput.sendKeys(process.env.TEST_EMAIL);
   const passwordInput = await browser.driver.findElement(by.name('password'));
   await passwordInput.sendKeys(process.env.TEST_PASSWORD);
   const continueButton = await browser.driver.findElement(
-    by.css('.ulp-button'),
+    by.name('action'),
   );
   await continueButton.click();
 

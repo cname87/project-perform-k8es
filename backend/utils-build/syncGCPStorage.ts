@@ -35,3 +35,6 @@ const secrets = {
 };
 
 export const loadJobs = [envBackend, dbCerts, gcpStorageKey, secrets];
+
+/* The root directory to store the files on the gsutil bucket */
+export const rootDir = 'backend/';

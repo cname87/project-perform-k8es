@@ -6,7 +6,7 @@
 echo 'A directory named "cloud-builders-community" will be created but should be deleted before this script exits'
 
 # Set HELM_VERSION to the latest helm release
-HELM_VERSION=3.2.4
+HELM_VERSION=3.3.1
 
 # Download all community cloud-builers to ./cloud-builders-community
 git clone https://github.com/GoogleCloudPlatform/cloud-builders-community.git
