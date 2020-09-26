@@ -376,6 +376,7 @@ substitutions:
   _FRONTEND_VERSION: '${SHORT_SHA}'
   # The name of the repo
   _REPO: 'project-perform-k8es'
+  # Set to 'ppk8es_triggered' in the git trigger
   _BUILD_TAG: 'ppk8es'
 
 options:
