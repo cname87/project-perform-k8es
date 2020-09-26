@@ -22,5 +22,3 @@ spec:
     tier: backend
   type: {{ .Values.backend.service.type }}
   sessionAffinity: None
-  # Route to a pod on the node
-  externalTrafficPolicy: Local
