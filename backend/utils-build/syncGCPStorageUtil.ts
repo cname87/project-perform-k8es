@@ -9,8 +9,7 @@
  *
  * Usage:
  *
- * The utility is run from an npm script:
- * "npm run ts-node syncGCPStorageUtil.js.
+ * The utility is run from an npm script: 'npm run loadSecretsFiles'
  *
  * This utility imports a module that passes in an object that contains paths to the secrets files.
  */
@@ -73,7 +72,7 @@ const downloadFile = async (srcFilename: string, destFilename: string) => {
     try {
       fs.unlinkSync(destFilename);
     } catch (err) {
-      /* No file was craeated => ignore this error */
+      /* No file was created => ignore this error */
     }
     console.error(
       `Error downloading ${srcFilename} from gs://${bucketName}/${destFilename}.`,

@@ -24,13 +24,13 @@ As the second stage of my web application, I refactored from the original monoli
 
 Refer to the configuration guide [here.](./docs/config-guide.md)
 
-## Development
+## Development Guide
 
 Refer to the development guide [here.](./docs/development-guide.md)
 
-## Deployment
+## CI/CD Deployment Guide
 
-Refer to the deployment guide [here.](./docs/deploy-guide.md)
+Refer to the CI/CD deployment guide [here.](./docs/development-guide.md#"ongoing-deployment---ci-/-cd")
 
 ## Technologies
 

@@ -9,8 +9,7 @@
  *
  * Usage:
  *
- * The utility is run from an npm script:
- * "npm run ts-node syncGCPStorageUtil.js.
+ * The utility is run from an npm script: 'npm run loadSecretsFiles'
  *
  * This utility imports a module that passes in an object that contains paths to the secrets files.
  */

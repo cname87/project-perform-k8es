@@ -1,11 +1,12 @@
 #!/usr/bin/env bash
 
 # This script installs or upgrades a cluster with the application Helm chart.
-# A -p flag upgrades the cluster names ${PROD_CLUSTER_NAME}
+# A -p flag upgrades the cluster named ${PROD_CLUSTER_NAME}
 
 # Read in variables
-# Get the directory containing this script and source the set-variables script - enure the set-variables script is on the configured path
+# Get the directory containing this script and source the set-variables script - ensure the set-variables script is on the configured path
 SCRIPT_DIR="${0%/*}"
+# The following avoids an eror when using shellcheck to lint this script
 # shellcheck source=/dev/null
 source "$SCRIPT_DIR"/set-variables.sh
 
@@ -40,12 +41,10 @@ function confirm(){
 echo -e "\nThe cluster to be upgraded is ${CLUSTER_NAME}\n"
 confirm
 
-echo -e "\nSet the current kubeconfig context to ${CONTEXT}\n"
+echo -e "\nSetting the current kubeconfig context to ${CONTEXT}\n"
 kubectl config use-context "${CONTEXT}"
 
-echo -e "\nInstall or upgrade the cluster to the release ${CONTEXT}\n"
-echo "${HELM_RELEASE}"
-echo "${HELM_CHART_PATH}"
+echo -e "\nInstalling or upgrade the cluster to the release ${HELM_RELEASE} from ${HELM_CHART_PATH}\n"
 helm upgrade --install --wait "${HELM_RELEASE}" "${HELM_CHART_PATH}"
 
 echo -e "\nRunning kubectl get all...\n"

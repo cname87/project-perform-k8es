@@ -18,7 +18,7 @@ const { align, colorize, combine, timestamp, label, printf, splat } = format;
  * import { Logger } from '<path to><this file>';
  * logger = new Logger as winston.Logger;
  *
- * Note: This service proides a singleton logger i.e. all imports get the same
+ * Note: This service provides a singleton logger i.e. all imports get the same
  * Logger class object.
  *
  * Then...

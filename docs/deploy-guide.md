@@ -1,5 +1,15 @@
 # Deployment
 
+
+
+## Manual deployment to a cluster
+
+Install the application to a cluster using the Helm install utility 'helm-install.sh' to install the Helm chart.
+
+Run with the parameter -p to install to the production cluster (e.g. named ppk8es-prod) and with -t to install to the test cluster  (e.g. named ppk8es-test).  Note that the clusters are named in the utility 'set-variables.sh.
+
+Note that it can take up to 30 minutes or longer for the ssl certificate to be provisioned i.e. before project-perform.com becomes operational.  To check if it's operational go to the GCP home project -> Network Services -> Load balancing -> advanced -> certificates page i.e. [click here](https://console.cloud.google.com/net-services/loadbalancing/advanced/sslCertificates/list?project=project-perform&sslCertificateTablesize=50) and click on the certificate, and check it's 'Status' is 'ACTIVE'.
+
 ## Ongoing CI / CD
 
 Steps:

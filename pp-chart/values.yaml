@@ -21,20 +21,17 @@ ingress:
   annotations:
     # Use a static external IP address that you previously created.
     kubernetes.io/ingress.global-static-ip-name: pp-ip
+    # Using Google Managed Certificates for tsl
     networking.gke.io/managed-certificates: *ssl-name
     # Block http traffic
     kubernetes.io/ingress.allow-http: "false"
-  # tls not enabled - using GCP Managed Certificates
-  tls: {}
-  hosts:
-    - host: *host
-      paths: [/*]
 # Frontend configuration
 frontend:
   nameTag: -frontend-service
   annotations:
   # Load balancing directly to pod endpoints
-    cloud.google.com/neg: '{"ingress": true}'
+  # (This will be default from K8es 1.19 with annotation no longer needed)
+  cloud.google.com/neg: '{"ingress": true}'
   service:
     # NodePort is the required type for a Ingress Controller backend
     type: NodePort
@@ -55,8 +52,10 @@ backend:
     portValue: 8080
   # This is replaced during cloud build
   image: gcr.io/project-perform/pp-backend/development:testA
-# Miscellaneous name tags
 configmap:
+  # Uncomment 'debug: PP*' to send debug logs to console and GKE logger
+  # debug:  PP*
+  debug: ""
   nameTag: -backend-configmap
 secret:
   nameTag: -backend-secret

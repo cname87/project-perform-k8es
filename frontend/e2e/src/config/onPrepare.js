@@ -197,9 +197,7 @@ const login = async (btn = 'button') => {
   await nameInput.sendKeys(process.env.TEST_EMAIL);
   const passwordInput = await browser.driver.findElement(by.name('password'));
   await passwordInput.sendKeys(process.env.TEST_PASSWORD);
-  const continueButton = await browser.driver.findElement(
-    by.name('action'),
-  );
+  const continueButton = await browser.driver.findElement(by.name('action'));
   await continueButton.click();
 
   /* Note: Because waitForAngular is disabled you need to wait until page is shown and all asynchronous operations have been closed, or otherwise you will see intermittent errors such as caching not working. So check for the slowest elements and manually check for stability. */

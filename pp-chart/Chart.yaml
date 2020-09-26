@@ -2,11 +2,11 @@ apiVersion: v2
 name: pp-chart
 # This is the chart version. This version number should be incremented each time you make changes to the chart and its templates, including the app version.
 # Versions are expected to follow Semantic Versioning (https://semver.org/)
-version: 0.1.0
+version: 1.0.0
 description: A Helm chart for the project-perform project
 # type can be application or library
 type: application
-home: proejct-perform.com
+home: project-perform.com
 maintainers:
   - name: Seán A. Young
     email: cname87@yahoo.com

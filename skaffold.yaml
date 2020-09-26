@@ -1,3 +1,4 @@
+# To run skaffold use the 'Run on Kubernetes' configuration as detailed in .vscode/launch.json
 
 apiVersion: skaffold/v2beta5
 kind: Config
@@ -35,9 +36,9 @@ deploy:
   helm:
     releases:
       - name: project-perform
-        chartPath: ../project-perform-k8es-cd/pp-chart
+        chartPath: ./pp-chart
         valuesFiles:
-          - ../project-perform-k8es-cd/pp-chart/values.yaml
+          - ./pp-chart/values.yaml
         # Override keys in the values.yaml file
         artifactOverrides:
         # This replaces the equivalent .Values reference in 'image' in the deployment yaml files
