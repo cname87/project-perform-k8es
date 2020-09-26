@@ -21,8 +21,6 @@ before('Before all tests', async () => {
   process.env.TEST_PATHS = 'true';
 });
 
-/* Creating a Winston logger appears to leave a process 'uncaughtException' listeners.  When this exceeds 10 a warning is output to console.error which can cause tests to fail. See https://github.com/winstonjs/winston/issues/1334. So the following removes any such listeners created within and left after a test. It does remove the listeners created when logger.js is called outside of a test but that results in only 2 listeners. */
-
 let beforeCount = 0;
 beforeEach('Before each test', () => {
   /* count listeners */

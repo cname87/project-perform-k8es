@@ -68,4 +68,5 @@ kubectl cluster-info
 # If already created, an error will be returned but the ip address will be listed
 echo -e "\nReserving and listing a global static ip address\n"
 gcloud compute addresses create "${STATIC_IP_NAME}" --global
+echo -e "\nThe reserved ip address must match the address reserved in the 'project-perform.com' domain name - see https://domains.google.com/registrar/project-perform.com/dns?_ga=2.176823525.1515712813.1590427960-866385153.1590427960\n"
 gcloud compute addresses describe "${STATIC_IP_NAME}" --global

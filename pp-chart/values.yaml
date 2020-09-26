@@ -54,8 +54,8 @@ backend:
   image: gcr.io/project-perform/pp-backend/development:testA
 configmap:
   # Uncomment 'debug: PP*' to send debug logs to console and GKE logger
+  # Normally leave commented out but can be uncommented to upgrade a production cluster to print out backend debug
   # debug:  PP*
-  debug: ""
   nameTag: -backend-configmap
 secret:
   nameTag: -backend-secret

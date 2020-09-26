@@ -1,6 +1,6 @@
 /**
  * This module provides a error logging service.
- * It uses the winston logger utility.
+ * A custom logger such as Winston is not required as GKE captures console logs, so it uses console.error.
  */
 
 /**
@@ -8,15 +8,10 @@
  *
  * Add...
  * const { DumpError } = <path to file>.dumpError;
- * const dumpError = new DumpError(logger) as (err: any) => void;
- *
- * where 'logger' is optional.
- * - Use a winston logger with a logger.error function.
- * - If blank then console will be passed to use console.error.
+ * const dumpError = new DumpError() as (err: any) => void;
  *
  * Also once this module is imported then all subsequent imports get the same
- * object, irrespective of the logger parameter passed in.  Thus you can
- * set up DumpError in the main module and add...
+ * object.  Thus you can set up DumpError in the main module and add...
  * dumpError = new DumpError(); in other modules,
  *
  * Note: The property 'dumped' is set to true on an object
@@ -24,8 +19,6 @@
  * being dumped from being dumped again.
  */
 
-/* external dependencies */
-import winston from 'winston';
 import util from 'util';
 import { setupDebug } from './debugOutput';
 
@@ -35,15 +28,13 @@ class DumpError {
   /* holds the singleton instance */
   public static instance: Perform.DumpErrorFunction;
 
-  /* the function that dumps the error - logger.error or console.error */
+  /* the function that dumps the error */
   public static dump: Perform.DumpErrorFunction;
 
-  /* instantiates if necessary and sets dump to logger.error or console.error */
-  public constructor(initialLogger?: winston.Logger) {
+  /* instantiates if necessary and sets dump to console.error */
+  public constructor() {
     if (!DumpError.instance) {
-      DumpError.dump = initialLogger
-        ? initialLogger.error.bind(initialLogger)
-        : console.error;
+      DumpError.dump = console.error;
       // eslint-disable-next-line @typescript-eslint/no-use-before-define
       DumpError.instance = dumpError;
     }

@@ -31,7 +31,11 @@
               "src/styles/styles.scss",
               "src/styles/themes.scss"
             ],
-            "scripts": []
+            "scripts": [],
+            /* Avoids a compiler error */
+            "allowedCommonJsDependencies": [
+              "zone.js/dist/zone-error"
+           ]
           },
           "configurations": {
             "production": {

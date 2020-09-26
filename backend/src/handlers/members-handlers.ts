@@ -18,7 +18,7 @@ const databaseUnavailable = (
   locals: Perform.IAppLocals,
   reject: (reason: any) => void,
 ) => {
-  locals.logger.error(`${modulename}: ${caller} database error reported`);
+  console.error(`${modulename}: ${caller} database error reported`);
   locals.dumpError(err);
   const errDb: Perform.IErr = {
     name: 'DATABASE_ACCESS',
@@ -83,7 +83,6 @@ const getMember = (req: Request, idParam: number): Promise<Perform.IMember> => {
   debug(`${modulename}: running getMember`);
 
   const modelMembers = req.app.appLocals.models.members;
-  const { logger } = req.app.appLocals;
 
   return new Promise((resolve, reject) => {
     modelMembers
@@ -92,7 +91,7 @@ const getMember = (req: Request, idParam: number): Promise<Perform.IMember> => {
       .then((doc) => {
         /* return error if no member found */
         if (!doc) {
-          logger.error(`${modulename}: getMember found no matching member`);
+          console.error(`${modulename}: getMember found no matching member`);
           const errNotFound: Perform.IErr = {
             name: 'DATABASE_NOT_FOUND',
             message: 'The supplied member ID does not match a stored member',
@@ -168,7 +167,6 @@ const updateMember = (
   member: Perform.IMember,
 ): Promise<Perform.IMember> => {
   const modelMembers = req.app.appLocals.models.members;
-  const { logger } = req.app.appLocals;
 
   const updatedMember = new modelMembers(member);
 
@@ -182,7 +180,7 @@ const updateMember = (
       .then((doc) => {
         /* return error if no member found */
         if (!doc) {
-          logger.error(`${modulename}: updateMember found no matching member`);
+          console.error(`${modulename}: updateMember found no matching member`);
           const errNotFound: Perform.IErr = {
             name: 'DATABASE_NOT_FOUND',
             message: 'The supplied member ID does not match a stored member',
@@ -214,7 +212,6 @@ const deleteMember = (req: Request, idParam: number): Promise<number> => {
   debug(`${modulename}: running deleteMember`);
 
   const modelMembers = req.app.appLocals.models.members;
-  const { logger } = req.app.appLocals;
 
   return new Promise((resolve, reject) => {
     modelMembers
@@ -223,7 +220,9 @@ const deleteMember = (req: Request, idParam: number): Promise<number> => {
       .then((doc) => {
         /* return error if no member deleted */
         if (doc.n === 0) {
-          logger.error(`${modulename}: delete Member found no matching member`);
+          console.error(
+            `${modulename}: delete Member found no matching member`,
+          );
           const errNotFound: Perform.IErr = {
             name: 'DATABASE_NOT_FOUND',
             message: 'The supplied member ID does not match a stored member',

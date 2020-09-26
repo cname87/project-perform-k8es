@@ -113,9 +113,7 @@ declare namespace Perform {
     database: Perform.Database;
     /* database connection */
     dbConnection: import('mongoose').Connection;
-    /* logger service */
-    logger: import('winston').Logger;
-    /* error logger */
+    /* error dump utility */
     dumpError: DumpErrorFunction;
     /* event emitter used for test */
     event: import('events').EventEmitter;

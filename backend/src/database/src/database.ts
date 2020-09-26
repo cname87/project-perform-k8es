@@ -22,7 +22,6 @@ import mongoose, {
   Schema,
   SchemaDefinition,
 } from 'mongoose';
-import winston from 'winston';
 import { setupDebug } from '../../utils/src/debugOutput';
 
 /* output a header and set up debug function*/
@@ -43,7 +42,6 @@ const { modulename, debug } = setupDebug(__filename);
 async function connectToDb(
   uri: string,
   options: ConnectionOptions,
-  logger: winston.Logger | Console = console,
   dumpError: Perform.DumpErrorFunction = console.error,
 ): Promise<Connection> {
   debug(`${modulename}: running connectToDb`);
@@ -68,7 +66,7 @@ async function connectToDb(
 
     return dbConnection;
   } catch (err) {
-    logger.error(`${modulename}: database error during connection attempt`);
+    console.error(`${modulename}: database error during connection attempt`);
     dumpError(err);
     throw err;
   }
@@ -104,7 +102,7 @@ async function closeConnection(
     return connection;
   } catch (err) {
     const message = ': database connection error during closeConnection';
-    this.logger.error(modulename + message);
+    console.error(modulename + message);
     this.dumpError(err);
     throw err;
   }
@@ -144,7 +142,7 @@ function createModel(
     debug(`${modulename}: mongoose model \'${DbModel.modelName}\' returned`);
     return DbModel;
   } catch (err) {
-    this.logger.error(`${modulename}: database model creation error`);
+    console.error(`${modulename}: database model creation error`);
     this.dumpError(err);
     throw err;
   }
@@ -183,18 +181,16 @@ class Database {
   /**
    * @param
    * - The Mongoose createConnection uri and options parameters must be provided.
-   * - logger and dumperror functions may be provided */
+   * - a dumperror function may be provided */
   constructor(
     protected connectionUrl: string,
     protected connectionOptions: ConnectionOptions,
-    protected logger: winston.Logger | Console = console,
     protected dumpError: Perform.DumpErrorFunction = console.error,
   ) {
     /* Get a promise to the database */
     this.dbConnectionPromise = connectToDb(
       connectionUrl,
       connectionOptions,
-      logger,
       dumpError,
     );
     this.closeConnection = closeConnection;

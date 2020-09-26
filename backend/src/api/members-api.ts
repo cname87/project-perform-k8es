@@ -31,7 +31,6 @@ export const addMember = (
   const memberNoId = context.request.body as Perform.IMemberNoId;
   const { membersHandlers } = req.app.appLocals.handlers;
   const handles = req.app.appLocals.handlers.miscHandlers;
-  const { logger } = req.app.appLocals;
   const { dumpError } = req.app.appLocals;
 
   membersHandlers
@@ -40,7 +39,7 @@ export const addMember = (
       handles.writeJson(context, req, res, next, 201, payload);
     })
     .catch((err) => {
-      logger.error(`${modulename}: handler addMember returned error`);
+     console.error(`${modulename}: handler addMember returned error`);
       dumpError(err);
       next(err);
     });
@@ -70,7 +69,6 @@ export const getMember = (
 
   const { membersHandlers } = req.app.appLocals.handlers;
   const handles = req.app.appLocals.handlers.miscHandlers;
-  const { logger } = req.app.appLocals;
   const { dumpError } = req.app.appLocals;
 
   membersHandlers
@@ -79,7 +77,7 @@ export const getMember = (
       handles.writeJson(context, req, res, next, 200, payload);
     })
     .catch((err) => {
-      logger.error(`${modulename}: handler getMember returned error`);
+     console.error(`${modulename}: handler getMember returned error`);
       dumpError(err);
       next(err);
     });
@@ -99,7 +97,6 @@ export const getMembers = (
   }
   const { membersHandlers } = req.app.appLocals.handlers;
   const handles = req.app.appLocals.handlers.miscHandlers;
-  const { logger } = req.app.appLocals;
   const { dumpError } = req.app.appLocals;
 
   membersHandlers
@@ -108,7 +105,7 @@ export const getMembers = (
       handles.writeJson(context, req, res, next, 200, payload);
     })
     .catch((err) => {
-      logger.error(`${modulename}: handler getMembers returned error`);
+     console.error(`${modulename}: handler getMembers returned error`);
       dumpError(err);
       next(err);
     });
@@ -135,7 +132,6 @@ export const updateMember = (
   const member = context.request.body as Perform.IMember;
   const { membersHandlers } = req.app.appLocals.handlers;
   const handles = req.app.appLocals.handlers.miscHandlers;
-  const { logger } = req.app.appLocals;
   const { dumpError } = req.app.appLocals;
 
   membersHandlers
@@ -144,7 +140,7 @@ export const updateMember = (
       handles.writeJson(context, req, res, next, 200, payload);
     })
     .catch((err) => {
-      logger.error(`${modulename}: handler updateMember returned error`);
+     console.error(`${modulename}: handler updateMember returned error`);
       dumpError(err);
       next(err);
     });
@@ -174,7 +170,6 @@ export const deleteMember = (
 
   const { membersHandlers } = req.app.appLocals.handlers;
   const handles = req.app.appLocals.handlers.miscHandlers;
-  const { logger } = req.app.appLocals;
   const { dumpError } = req.app.appLocals;
 
   membersHandlers
@@ -185,7 +180,7 @@ export const deleteMember = (
       handles.writeJson(context, req, res, next, 200, payload);
     })
     .catch((err) => {
-      logger.error(`${modulename}: handler deleteMember returned error`);
+     console.error(`${modulename}: handler deleteMember returned error`);
       dumpError(err);
       next(err);
     });
@@ -201,7 +196,6 @@ export const deleteMembers = (
 
   const { membersHandlers } = req.app.appLocals.handlers;
   const handles = req.app.appLocals.handlers.miscHandlers;
-  const { logger } = req.app.appLocals;
   const { dumpError } = req.app.appLocals;
 
   membersHandlers
@@ -211,7 +205,7 @@ export const deleteMembers = (
       handles.writeJson(context, req, res, next, 200, payload);
     })
     .catch((err) => {
-      logger.error(`${modulename}: handler deleteMembers returned error`);
+     console.error(`${modulename}: handler deleteMembers returned error`);
       dumpError(err);
       next(err);
     });

@@ -6,7 +6,7 @@ This describes the interface from the database component to the backend server f
 
 - The database component exports a function that starts an external database server and returns a promise to a Database object that allows the server access the database.
 - The backend server accesses the 'startDatabase' function by importing the startDatabase.ts module.
-- The backend server calls the startDatabase function with parameters that set whether a local or external database server is used and what database to access on the server.  A logger and dump error utility can also be passed in.
+- The backend server calls the startDatabase function with parameters that set whether a local or external database server is used and what database to access on the server.  A dump error utility can also be passed in.
 
 The returned Datbase object has the following properties and methods:
 

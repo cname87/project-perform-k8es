@@ -38,7 +38,7 @@ async function runServer(app: Application): Promise<void> {
 
     debug(`Liveness: Instance started (UTC): ${instanceStarted}`);
 
-    const { database, logger } = app.appLocals;
+    const { database } = app.appLocals;
 
     debug(`${modulename}: calling database ping`);
 
@@ -52,7 +52,7 @@ async function runServer(app: Application): Promise<void> {
         });
       })
       .catch((err) => {
-        logger.error(`${modulename}: database ping returned an error`);
+        console.error(`${modulename}: database ping returned an error`);
         res.status(500).json({
           error: err,
         });

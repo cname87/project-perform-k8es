@@ -28,7 +28,6 @@ import sinonChai from 'sinon-chai';
 import proxyquire from 'proxyquire';
 import { EventEmitter } from 'events';
 import puppeteer from 'puppeteer';
-import winston from 'winston';
 import { Request } from 'express';
 
 const { modulename, debug } = setupDebug(__filename);
@@ -59,7 +58,6 @@ describe('server API', () => {
   let app: Perform.IServerIndex;
   let eventEmitter: EventEmitter;
   let spyConsoleError: sinon.SinonSpy<[any?, ...any[]], void>;
-  let spyLoggerError: sinon.SinonSpy<any, winston.Logger>;
   let spyDumpError: sinon.SinonSpy<any>;
 
   /* awaits that server app.ts has run and fired the completion event */
@@ -99,7 +97,6 @@ describe('server API', () => {
       throw new Error('Test database not loaded + aborting tests');
     }
     /* Now define all objects that are dependent on app being started */
-    spyLoggerError = sinon.spy(app.appLocals.logger, 'error');
     spyDumpError = sinon.spy(app.appLocals, 'dumpError');
     eventEmitter = app.appLocals.event;
     /* stub the authenticate handler and set req.auth,sub to the name of the test database collection */
@@ -152,7 +149,6 @@ describe('server API', () => {
     debug('Shutting app.js');
     await serverIndexShutdown(app);
     expect(spyConsoleError.notCalled).to.be.true;
-    expect(spyLoggerError.notCalled).to.be.true;
     expect(spyDumpError.notCalled).to.be.true;
     sinon.restore();
   });
@@ -313,27 +309,23 @@ describe('server API', () => {
             case 'Root page test end':
             case 'File retrieval test end':
               expect(spyConsoleError.notCalled).to.be.true;
-              expect(spyLoggerError.notCalled).to.be.true;
               expect(spyDumpError.notCalled).to.be.true;
               sinon.resetHistory();
               break;
             case 'Failed API tests end':
             case 'Invalid API requests tests end':
-              expect(spyConsoleError.called).to.be.false;
-              expect(spyLoggerError.called).to.be.true;
+              expect(spyConsoleError.called).to.be.true;
               expect(spyDumpError.called).to.be.true;
               sinon.resetHistory();
               break;
             case 'Bad database tests end':
-              expect(spyConsoleError.called).to.be.false;
-              expect(spyLoggerError.called).to.be.true;
+              expect(spyConsoleError.called).to.be.true;
               expect(spyDumpError.called).to.be.true;
               sinon.resetHistory();
               // restore
               break;
             case 'End tests':
               expect(spyConsoleError.notCalled).to.be.true;
-              expect(spyLoggerError.notCalled).to.be.true;
               expect(spyDumpError.notCalled).to.be.true;
               sinon.resetHistory();
               endTestCalled = true;

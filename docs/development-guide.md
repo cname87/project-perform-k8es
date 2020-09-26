@@ -127,6 +127,8 @@ NOTE: cloud-build-local does not run under Windows.  The local build option (whi
 
 It downloads secrets that are not stored on the git repo, installs and builds the frontend and backend applications, units tests them, and then builds the frontend and backend images and pushes them to the cloud registry.  It e2e tests the built images. It then edits the Helm Chart to point to the new images. It clones the repo, copies the Helm chart to be deployed to the cloned repo, commits and then pushes back to the candidate branch of the remote repo.  It then deploys the Helm chart to the configured Kubernetes cluster and runs an e2e test on the configured cluster.  Finally it copies the updated Helm chart to the production branch of the cloned repo and pushes to the production branch of the remote repo.
 
+Note:  To update your local repo to match the changes in the remote repo checkout the 'production' branch and type 'git pull origin' and do the same with the 'candidate' branch.
+
 Note:  To push to the remote Git repo you need to set up a secret key on GCP secrets and load the same as a deploy key on the Git repo - see [here.](https://cloud.google.com/cloud-build/docs/access-private-github-repos)
 
 ### Deletion of the test cluster
@@ -144,4 +146,4 @@ Steps:
 - The production cluster should be up and running on GKE with the previously deployed version.
 - Develop the application locally on a test GKE cluster using Skaffold and running unit and e2e tests manually.
 - When tests pass check in to the master branch on the Github repository.
-- This triggers a cloud build that builds the frontend and backend, runs the frontend and backend unit tests and e2e application tests, copies the Helm chart to a 'Candidate' branch in the git repo, installs the Helm chart on the production cluster and copies the Helm chart to the 'Deployed' branch in the git repo, and runs an e2e test against the newly deployed production cluster.
+- This triggers a cloud build that builds the frontend and backend, runs the frontend and backend unit tests and e2e application tests, copies the Helm chart to a 'candidate' branch in the git repo, installs the Helm chart on the production cluster and copies the Helm chart to the 'production' branch in the git repo, and runs an e2e test against the newly deployed production cluster.

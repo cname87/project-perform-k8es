@@ -10,12 +10,10 @@ import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 
 import path from 'path';
-import winston from 'winston';
 import proxyquire from 'proxyquire';
 import util from 'util';
 import httpRequest from 'request-promise-native';
 import { DumpError } from '../utils/src/dumpError';
-import { Logger } from '../utils/src/logger';
 
 const { modulename, debug } = setupDebug(__filename);
 chai.use(sinonChai);
@@ -30,15 +28,13 @@ describe('the application', () => {
 
   const appPath = '../app';
 
-  /* internal dumpError and logger utilities */
-  const logger = new Logger() as winston.Logger;
-  const dumpError = new DumpError(logger) as Perform.DumpErrorFunction;
+  /* internal dumpError utility */
+  const dumpError = new DumpError() as Perform.DumpErrorFunction;
 
   let app: any = {};
   let runIndex: (extraOptions?: Record<string, unknown>) => void;
   let spyDebug: any;
-  let spyLoggerError: any;
-  let spyLoggerInfo: any;
+  let spyConsoleInfo: any;
   let spyConsoleError: any;
   let spyDumpError: any;
 
@@ -100,11 +96,10 @@ describe('the application', () => {
     debug(`Running ${modulename} before - set up server and spies`);
 
     spyDebug = sinon.spy();
-    spyLoggerInfo = sinon.spy();
-    spyLoggerError = sinon.spy();
     spyDumpError = sinon.spy();
 
-    /* spy on console.error (as node may send warnings there) */
+    /* spy on console.info and console.error */
+    spyConsoleInfo = sinon.spy(console, 'info');
     spyConsoleError = sinon.spy(console, 'error');
 
     runIndex = (extraOptions = {}) => {
@@ -127,22 +122,6 @@ describe('the application', () => {
               return (err: any) => {
                 dumpError(err);
                 spyDumpError(err);
-              };
-            }
-          },
-        },
-        './utils/src/logger': {
-          Logger: class LoggerStub {
-            constructor() {
-              return {
-                info: (message: any) => {
-                  logger.info(message);
-                  spyLoggerInfo(message);
-                },
-                error: (message: any) => {
-                  logger.error(message);
-                  spyLoggerError(message);
-                },
               };
             }
           },
@@ -191,11 +170,9 @@ describe('the application', () => {
 
     expect(spyConsoleError).to.have.not.been.called;
 
-    expect(spyLoggerError).to.have.not.been.called;
-
     expect(spyDumpError).to.have.not.been.called;
 
-    expect(spyLoggerInfo).to.have.been.calledWith(
+    expect(spyConsoleInfo).to.have.been.calledWith(
       sinon.match('CLOSING THE SERVER ON REQUEST'),
     );
   });
@@ -221,9 +198,7 @@ describe('the application', () => {
     );
     expect(response).not.to.be.instanceof(Error);
 
-    expect(spyConsoleError).to.have.not.been.called;
-
-    expect(spyLoggerError.lastCall.lastArg).to.eql(
+    expect(spyConsoleError.lastCall.lastArg).to.eql(
       `${path.sep}app.js: Unexpected server error - exiting`,
     );
 
@@ -257,9 +232,7 @@ describe('the application', () => {
 
     processStub.restore();
 
-    expect(spyConsoleError).to.have.not.been.called;
-
-    expect(spyLoggerError.lastCall.lastArg).to.eql(
+    expect(spyConsoleError.lastCall.lastArg).to.eql(
       `${path.sep}app.js: closeAll error - exiting`,
     );
 
@@ -300,12 +273,10 @@ describe('the application', () => {
     );
     expect(response).not.to.be.instanceof(Error);
 
-    expect(spyConsoleError).to.have.not.been.called;
-
     expect(spyDumpError).to.have.been.called;
 
     /* confirm that the start database routine did exit abnormally */
-    expect(spyLoggerError.lastCall.lastArg).to.eql(
+    expect(spyConsoleError.lastCall.lastArg).to.eql(
       `${path.sep}app.js: database startup error - continuing`,
     );
   });
@@ -331,12 +302,10 @@ describe('the application', () => {
     );
     expect(response).not.to.be.instanceof(Error);
 
-    expect(spyConsoleError).to.have.not.been.called;
-
     expect(spyDumpError).to.have.been.called;
 
     /* confirm that the start database routine did exit abnormally */
-    expect(spyLoggerError.lastCall.lastArg).to.eql(
+    expect(spyConsoleError.lastCall.lastArg).to.eql(
       `${path.sep}app.js: server startup error - exiting`,
     );
   });
@@ -364,11 +333,9 @@ describe('the application', () => {
     expect(stubProcess).to.have.been.calledWith(-11);
     stubProcess.restore();
 
-    expect(spyLoggerError.lastCall).to.have.been.calledWith(
+    expect(spyConsoleError.lastCall).to.have.been.calledWith(
       sinon.match('uncaught exception'),
     );
-
-    expect(spyConsoleError).to.have.not.been.called;
 
     expect(spyDumpError).to.have.been.called;
   });
@@ -396,11 +363,9 @@ describe('the application', () => {
     expect(stubProcess).to.have.been.calledWith(-12);
     stubProcess.restore();
 
-    expect(spyLoggerError.lastCall).to.have.been.calledWith(
+    expect(spyConsoleError.lastCall).to.have.been.calledWith(
       sinon.match('unhandled promise rejection'),
     );
-
-    expect(spyConsoleError).to.have.not.been.called;
 
     expect(spyDumpError).to.have.been.called;
   });

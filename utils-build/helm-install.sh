@@ -60,3 +60,5 @@ then
   kubectl port-forward \
   service/project-perform-pp-chart-backend-service 8081:80 &
 fi
+
+echo -e "\n To test changes to the install, edit the necessary chart yaml files and then run 'helm upgrade project-perform <path>/pp-chart --wait'"

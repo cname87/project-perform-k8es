@@ -18,7 +18,6 @@ import './utils/src/loadEnvFile';
 /* import all internal modules used in the application */
 import { EventEmitter } from 'events';
 import express from 'express';
-import winston from 'winston';
 import { Connection } from 'mongoose';
 import util from 'util';
 import { setupDebug } from './utils/src/debugOutput';
@@ -43,9 +42,7 @@ import { membersApi } from './api/members-api';
 import { membersHandlers } from './handlers/members-handlers';
 /* shared handler functions */
 import { miscHandlers } from './handlers/misc-handlers';
-/* a configured winston logger */
-import { Logger } from './utils/src/logger';
-/* a utility to dump errors to the logger */
+/* a utility to dump errors */
 import { DumpError } from './utils/src/dumpError';
 /* user class */
 import { User } from './users/user';
@@ -58,9 +55,8 @@ import { startDatabase } from './database/src/startDatabase';
 const { modulename, debug } = setupDebug(__filename);
 const sleep = util.promisify(setTimeout);
 
-/* Create the single instances of the general logger & dumpError utilities, and the server logger middleware.  These are used in the module and also passed via the appLocals object. (Other modules can create new instances later without any parameters and they will receive the same instance). */
-const logger = new Logger() as winston.Logger;
-const dumpError = new DumpError(logger) as Perform.DumpErrorFunction;
+/* Create the single instances of the dumpError utility.  This is used in this module and also passed via the appLocals object. (Other modules can create a new instance later and they will receive the same instance). */
+const dumpError = new DumpError() as Perform.DumpErrorFunction;
 
 /**
  * An object is created to be added to the express app object containing objects and variables needed across requests.
@@ -73,8 +69,7 @@ const createStore: () => Perform.IAppLocals = () => {
       /* test fail paths */
       fail: failController,
     },
-    /* dump error & logger utility */
-    logger,
+    /* dump error utility */
     dumpError,
     /* generate the handlers object */
     handlers: {
@@ -123,7 +118,7 @@ const uncaughtException: Perform.TUncaught = async (err: Perform.IErr) => {
   debug(`${modulename}: running uncaughtException`);
 
   /* note: process.uncaughtException also logs the trace to console.error */
-  logger.error(`${modulename}: uncaught exception`);
+  console.error(`${modulename}: uncaught exception`);
   dumpError(err);
   await closeAll();
   process.exit(-11);
@@ -138,7 +133,7 @@ process.on('uncaughtException', uncaughtException);
 const unhandledRejection: Perform.TUncaught = async (reason: Perform.IErr) => {
   debug(`${modulename}: running unhandledRejection`);
 
-  logger.error(`${modulename}: unhandled promise rejection`);
+  console.error(`${modulename}: unhandled promise rejection`);
   dumpError(reason);
   await closeAll();
   process.exit(-12);
@@ -160,7 +155,6 @@ const storeDatabase = async (store: {
   database: Perform.Database;
   dbConnection: Connection;
   models: Perform.IModels;
-  logger: winston.Logger;
   dumpError: Perform.DumpErrorFunction;
 }) => {
   debug(`${modulename}: calling storeDatabase`);
@@ -210,7 +204,6 @@ const storeDatabase = async (store: {
       process.env.DB_MODE,
       process.env.DB_DATABASE,
       process.env.DB_DATABASE_TEST,
-      store.logger,
       store.dumpError,
     );
 
@@ -219,7 +212,7 @@ const storeDatabase = async (store: {
 
     /* Handle any errors issued after the connection is established */
     store.dbConnection.on('error', (err) => {
-      logger.error(
+      console.error(
         `${modulename}: unexpected database \'${store.dbConnection.db.databaseName}\' error event received`,
       );
       dumpError(err);
@@ -233,7 +226,7 @@ const storeDatabase = async (store: {
         `${modulename}: ` +
         `unexpected database \'${store.dbConnection.db.databaseName}\'` +
         `disconnected event received`;
-      logger.error(errMessage);
+      console.error(errMessage);
       const err = {
         name: 'Database disconnection ',
         message: errMessage,
@@ -245,7 +238,7 @@ const storeDatabase = async (store: {
     return;
   } catch (err) {
     /* Log error but proceed i.e. allow connection retries */
-    logger.error(`${modulename}: database startup error - continuing`);
+    console.error(`${modulename}: database startup error - continuing`);
     dumpError(err);
   }
 };
@@ -269,7 +262,6 @@ const storeServer = async (store: {
   await startServer(
     app,
     servers, // filled with connected server on return
-    logger,
     dumpError,
   );
   store.servers = servers;
@@ -277,7 +269,7 @@ const storeServer = async (store: {
   /* set up an error handlers for the servers */
   for (const server of servers) {
     server.expressServer.on('error', async (err: Error) => {
-      logger.error(`${modulename}: Unexpected server error - exiting`);
+      console.error(`${modulename}: Unexpected server error - exiting`);
       dumpError(err);
       await closeAll();
       debug(`${modulename}: will exit with code -3`);
@@ -304,7 +296,7 @@ async function runApp(store: Perform.IAppLocals) {
   debug(`${modulename}: running runApp`);
 
   /* try connect to database until successful */
-  logger.info('\n*** STARTING THE DATABASE ***\n');
+  console.info('\n*** STARTING THE DATABASE ***\n');
   let isDbReady = Perform.DbReadyState.Disconnected;
   while (isDbReady !== Perform.DbReadyState.Connected) {
     /* starts database and stores database and connection in store */
@@ -320,9 +312,9 @@ async function runApp(store: Perform.IAppLocals) {
 
   try {
     /*  start the http server */
-    logger.info('\n*** STARTING THE HTTP SERVER ***\n');
+    console.info('\n*** STARTING THE HTTP SERVER ***\n');
     await storeServer(store);
-    logger.info('\n*** SERVER UP AND LISTENING ***');
+    console.info('\n*** SERVER UP AND LISTENING ***');
     /* output key environment variables */
     debug(`${modulename}: Environment (NODE_ENV): ${process.env.NODE_ENV}`);
     debug(
@@ -347,7 +339,7 @@ async function runApp(store: Perform.IAppLocals) {
       }`,
     );
   } catch (err) {
-    logger.error(`${modulename}: server startup error - exiting`);
+    console.error(`${modulename}: server startup error - exiting`);
     dumpError(err);
     await closeAll(store.servers, store.database);
     debug(`${modulename}: will exit with code -1`);
@@ -366,7 +358,7 @@ const sigint: Perform.TSigint = async (signal = 'Internal Shutdown') => {
 
   debug(`${modulename}: ${signal} signal - will exit normally with code 0`);
 
-  logger.info('\n*** CLOSING THE SERVER ON REQUEST ***\n');
+  console.info('\n*** CLOSING THE SERVER ON REQUEST ***\n');
 
   /* raise an event that mocha can read */
   const arg = {
@@ -417,7 +409,7 @@ async function closeAll(
     return;
   } catch (err) {
     /* unexpected error - don't call uncaught/rejected */
-    logger.error(`${modulename}: closeAll error - exiting`);
+    console.error(`${modulename}: closeAll error - exiting`);
     dumpError(err);
     debug(`${modulename}: will exit with code -4`);
     process.exitCode = -4;

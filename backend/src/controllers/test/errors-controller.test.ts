@@ -27,7 +27,6 @@ import path from 'path';
 import proxyquire from 'proxyquire';
 import { EventEmitter } from 'events';
 import puppeteer from 'puppeteer';
-import winston from 'winston';
 
 /* internal dependencies */
 import * as errorHandlerModule from '../../handlers/error-handlers';
@@ -58,7 +57,6 @@ describe('Server Errors', () => {
   let app: Perform.IServerIndex;
   let eventEmitter: EventEmitter;
   let spyConsoleError: sinon.SinonSpy<[any?, ...any[]], void>;
-  let spyLoggerError: sinon.SinonSpy<any, winston.Logger>;
   let spyDumpError: sinon.SinonSpy<any>;
   let spyErrorHandlerDebug: sinon.SinonSpy<any>;
   let stubProcessEmit: sinon.SinonStub<
@@ -100,7 +98,6 @@ describe('Server Errors', () => {
     /* run server app.js */
     app = await serverIndexStart();
     /* Now define all objects that are dependent on app being started */
-    spyLoggerError = sinon.spy(app.appLocals.logger, 'error');
     spyDumpError = sinon.spy(app.appLocals, 'dumpError');
     eventEmitter = app.appLocals.event;
     /* stub process.emit - will stub emit uncaught exception handler */
@@ -147,7 +144,6 @@ describe('Server Errors', () => {
     debug('Shutting app.js');
     await serverIndexShutdown(app);
     expect(spyConsoleError.notCalled).to.be.true;
-    expect(spyLoggerError.notCalled).to.be.true;
     expect(spyDumpError.notCalled).to.be.true;
     sinon.restore();
   });
@@ -183,7 +179,7 @@ describe('Server Errors', () => {
             case 'Coffee test end':
             case 'Return 404 test end':
             case 'Trap-503 test end':
-              expect(spyLoggerError.callCount).to.be.greaterThan(1);
+              expect(spyConsoleError.callCount).to.be.greaterThan(1);
               expect(spyDumpError.callCount).to.be.greaterThan(0);
               sinon.resetHistory();
               break;
@@ -198,7 +194,7 @@ describe('Server Errors', () => {
               sinon.resetHistory();
               break;
             case 'Async-handled test end':
-              expect(spyLoggerError.callCount).to.eql(4);
+              expect(spyConsoleError.callCount).to.eql(4);
               expect(spyDumpError.callCount).to.be.greaterThan(0);
               sinon.resetHistory();
               break;
@@ -222,7 +218,6 @@ describe('Server Errors', () => {
               break;
             case 'End tests':
               expect(spyConsoleError.notCalled).to.be.true;
-              expect(spyLoggerError.notCalled).to.be.true;
               expect(spyDumpError.notCalled).to.be.true;
               endTestCalled = true;
               sinon.resetHistory();

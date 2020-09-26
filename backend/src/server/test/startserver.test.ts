@@ -3,9 +3,7 @@ import express from 'express';
 import 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import winston from 'winston';
 
-import { Logger } from '../../utils/src/logger';
 import { DumpError } from '../../utils/src/dumpError';
 import { startServer } from '../startserver';
 import { setupDebug } from '../../utils/src/debugOutput';
@@ -18,9 +16,8 @@ sinon.assert.expose(chai.assert, {
 });
 
 describe('Start server tests', () => {
-  /* internal dumpError and logger utilities */
-  const logger = new Logger() as winston.Logger;
-  const dumpError = new DumpError(logger);
+  /* internal dumpError utility */
+  const dumpError = new DumpError();
 
   let app: any;
   let objects: any = {};
@@ -32,7 +29,6 @@ describe('Start server tests', () => {
     app = express();
     objects = app.locals = {
       servers: [], // holds created http servers
-      logger,
       dumpError,
     };
   });
@@ -49,12 +45,7 @@ describe('Start server tests', () => {
 
   it('Start http server only', async () => {
     try {
-      await startServer(
-        app,
-        objects.servers,
-        objects.logger,
-        objects.dumpError,
-      );
+      await startServer(app, objects.servers, objects.dumpError);
     } catch (err) {
       expect.fail('Should not throw an error');
     }
@@ -70,18 +61,8 @@ describe('Start server tests', () => {
   it('Throws an error on failed listening request', async () => {
     try {
       /* start server twice and second listen attempt will fail */
-      await startServer(
-        app,
-        objects.servers,
-        objects.logger,
-        objects.dumpError,
-      );
-      await startServer(
-        app,
-        objects.servers,
-        objects.logger,
-        objects.dumpError,
-      );
+      await startServer(app, objects.servers, objects.dumpError);
+      await startServer(app, objects.servers, objects.dumpError);
       expect.fail('Should not have reached here');
     } catch (err) {
       expect(err.code, 'Should throw a port busy error').to.eql('EADDRINUSE');

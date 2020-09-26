@@ -108,7 +108,7 @@ async function listenServer(
         this.expressServer.removeListener('listening', listenHandler);
         this.listenErrors++;
         if (this.listenErrors < listenTries) {
-          this.logger.error(
+          console.error(
             `${modulename}: Port ` +
               `${serverPort} is in use following attempt ` +
               `${this.listenErrors} of ` +
@@ -122,7 +122,7 @@ async function listenServer(
           );
         } else {
           /* we have retried the configured number of times */
-          this.logger.error(
+          console.error(
             `${modulename}: Port ` +
               `${serverPort} is still in use following ` +
               `${listenTries} attempts` +
@@ -132,7 +132,7 @@ async function listenServer(
         }
       } else {
         /* all other reported errors are immediately fatal */
-        this.logger.error(
+        console.error(
           `${modulename}: Server listen error other than EADDRINUSE`,
         );
         reject(err);
@@ -158,7 +158,7 @@ async function listenServer(
     }
     return;
   } catch (err) {
-    this.logger.error(`${modulename}: Unrecoverable server listen error`);
+    console.error(`${modulename}: Unrecoverable server listen error`);
     this.dumpError(err);
     throw err;
   }
@@ -197,7 +197,7 @@ async function stopServer(this: any) {
     return await new Promise(shutServer.bind(this));
   } catch (err) {
     const message = ': error running stopServer';
-    this.logger.error(modulename + message);
+    console.error(modulename + message);
     this.dumpError(err);
     return err;
   }
@@ -205,24 +205,15 @@ async function stopServer(this: any) {
 
 /**
  * Called to pass in configuration data.
- * Also optionally passes in a logger and an error logging function.
+ * Also optionally passes in an error logging function.
  * @param name
  * can be used to identify the server, e.g. 'http' or 'https'
- * @param logger
- * A winston logger supporting logger.error('text').
- * Defaults to Console, i.e. console.error replaces logger.error.
  * @param dumpError
  * A utility that takes an Error object as argument and logs it.
  * Defaults to console.error.
  */
-function configureServer(
-  this: any,
-  name = '',
-  logger = { error: console.error },
-  dumpError = console.error,
-) {
+function configureServer(this: any, name = '', dumpError = console.error) {
   this.name = name;
-  this.logger = logger;
   this.dumpError = dumpError;
 }
 
@@ -231,8 +222,6 @@ function configureServer(
  */
 export class Server {
   public name: string;
-
-  public logger: { error: () => void };
 
   public dumpError: Perform.DumpErrorFunction;
 
@@ -251,7 +240,6 @@ export class Server {
   constructor() {
     /* properties */
     this.name = 'not_named';
-    this.logger = { error: console.error };
     this.dumpError = console.error;
     /* a count of the number server listen errors allowed */
     this.listenErrors = 3;

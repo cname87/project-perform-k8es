@@ -129,7 +129,7 @@ export const initOpenApi = (appLocals: Perform.IAppLocals): void => {
       ) => {
         debug(`${modulename}: running validationFail`);
 
-        appLocals.logger.error(`${modulename}: API validation fail`);
+        console.error(`${modulename}: API validation fail`);
         const err: Perform.IErr = {
           name: 'REQUEST_VALIDATION_FAIL',
           message: 'API validation fail',
@@ -192,7 +192,7 @@ const createDbCollectionConnection = (
     !dbConnection ||
     dbConnection.readyState !== Perform.DbReadyState.Connected
   ) {
-    req.app.appLocals.logger.error(`${modulename}: Database not connected`);
+    console.error(`${modulename}: Database not connected`);
     const errDb: Perform.IErr = {
       name: 'DATABASE_ACCESS',
       message: 'The database service is unavailable',
@@ -286,11 +286,11 @@ const callApiHandler = (req: Request, res: Response, next: NextFunction) => {
 
 export const checkError = (
   error: Record<string, unknown>,
-  req: Request,
+  _req: Request,
   _res: Response,
   next: NextFunction,
 ): void => {
-  req.app.appLocals.logger.error(`${modulename}: Authorization fail`);
+  console.error(`${modulename}: Authorization fail`);
   /* apply code 401 meaning there was a problem with credentials */
   error.statusCode = 401;
   error.dumped = false;

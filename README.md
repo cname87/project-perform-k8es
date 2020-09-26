@@ -28,10 +28,6 @@ Refer to the configuration guide [here.](./docs/config-guide.md)
 
 Refer to the development guide [here.](./docs/development-guide.md)
 
-## CI/CD Deployment Guide
-
-Refer to the CI/CD deployment guide [here.](./docs/development-guide.md#"ongoing-deployment---ci-/-cd")
-
 ## Technologies
 
 ### Core World Wide Web technologies

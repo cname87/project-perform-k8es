@@ -219,7 +219,6 @@ describe('Database connection', () => {
     try {
       const connectionUrl = 'dummyUrl';
       const connectOptions = getConnectionOptions();
-      /* note no logger => error to console.log */
       database = new Database(connectionUrl, connectOptions);
       database.dbConnection = await database.dbConnectionPromise;
       /* will throw an error */
@@ -367,10 +366,10 @@ describe('Database connection', () => {
     }
   });
 
-  it('tests sending no logger or dumpError', async () => {
-    debug(`Running ${modulename} it - tests sending no logger or dumpError`);
+  it('tests sending no dumpError', async () => {
+    debug(`Running ${modulename} it - tests sending no dumpError`);
 
-    debug('connect to database without configuring logger or dumpError');
+    debug('connect to database without configuring dumpError');
     const connectionUrl = getMongoUri(
       process.env.DB_IS_LOCAL,
       process.env.DB_LOCAL_USER,

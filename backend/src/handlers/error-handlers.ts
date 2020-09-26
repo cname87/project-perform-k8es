@@ -76,14 +76,13 @@ function logError(
 ): void {
   debug(`${modulename}: logError started`);
 
-  const { logger } = req.app.appLocals;
   const { dumpError } = req.app.appLocals;
 
-  logger.error(
+  console.error(
     `${modulename}: Logging detail on the request that caused the error`,
   );
 
-  logger.error(
+  console.error(
     `${modulename}: http request detail:` +
       `\nreq.url: ${req.url}\nreq.ip: ${req.ip}\nreq.method: ${
         req.method

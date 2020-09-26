@@ -7,7 +7,6 @@
 /* external dependencies */
 import express from 'express';
 import http from 'http';
-import winston from 'winston';
 import { Server } from './server';
 import { setupDebug } from '../utils/src/debugOutput';
 
@@ -16,7 +15,6 @@ const { modulename, debug } = setupDebug(__filename);
 type TStartServer = (
   app: express.Application,
   servers: Server[],
-  logger: winston.Logger,
   dumpError: Perform.DumpErrorFunction,
 ) => Promise<void>;
 
@@ -25,7 +23,6 @@ type TStartServer = (
  * @param
  * - app: The express app object.
  * - servers: Used to return the started server object.
- * - logger: Logging service.
  * - dumpError: Error logging service.
  * @returns
  * Void
@@ -36,7 +33,6 @@ type TStartServer = (
 const startServer: TStartServer = async (
   app: express.Application,
   servers: Server[],
-  logger: winston.Logger,
   dumpError: Perform.DumpErrorFunction,
 ) => {
   debug(`${modulename}: running startServer`);
@@ -54,12 +50,12 @@ const startServer: TStartServer = async (
     listenTimeout: number,
   ) {
     const server = new Server();
-    server.configureServer(svrName, logger, dumpError);
+    server.configureServer(svrName, dumpError);
     server.setupServer(svrType, svrOptions, expressApp);
     try {
       await server.listenServer(svrPort, listenRetries, listenTimeout);
     } catch (err) {
-      logger.error(`${modulename}: server listen error reported`);
+      console.error(`${modulename}: server listen error reported`);
       dumpError(err);
       throw err;
     }

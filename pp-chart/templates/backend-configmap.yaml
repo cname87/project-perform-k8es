@@ -4,7 +4,9 @@ data:
   DATABASE_ERROR_DELAY: "5000"
   DB_DATABASE: perform
   DB_MODE: production
+  {{- if .Values.configmap.debug  -}}
   DEBUG: {{ .Values.configmap.debug }}
+  {{- end }}
   FAVICON: src/server/public/favicon.ico
   GOOGLE_APPLICATION_CREDENTIALS: ./certs/gcpStorage/gcpStorageKey.json
   HOST: http://localhost
