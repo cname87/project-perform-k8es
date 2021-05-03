@@ -39,8 +39,8 @@ frontend:
   deployment:
     portName: nginx-port
     portValue: 80
-  # This is replaced during cloud build
-  image: gcr.io/project-perform/pp-frontend/production:66dd2ee
+  # This is replaced during a production cloud build
+  image: gcr.io/project-perform/pp-frontend/development:testA
 # Backend configuration
 backend:
   nameTag: -backend-service
@@ -50,8 +50,8 @@ backend:
   deployment:
     portName: app-port
     portValue: 8080
-  # This is replaced during cloud build
-  image: gcr.io/project-perform/pp-backend/production:66dd2ee
+  # This is replaced during a production cloud build
+  image: gcr.io/project-perform/pp-backend/development:testA
 configmap:
   # Uncomment 'debug: PP*' to send debug logs to console and GKE logger
   # Normally leave commented out but can be uncommented to upgrade a production cluster to print out backend debug
