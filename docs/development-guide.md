@@ -239,7 +239,7 @@ Cloudbuild requires the following images to exist in the GCP Container Registry:
 - 'gcr.io/project-perform/helm'.  See '/utils-build/build-helm-cloudbuilder.sh'.
 - 'gcr.io/project-perform/yq'.  See '/utils-build/build-yq-cloudbuilder.sh'.
 
-You need to build these using the utilities in ./utils-build.  You must tag the version used in a release manually with a vX.X.X tag so the exact build used in a release can be identified.
+You need to build these using the utilities in ./utils-build.  After a successful Cloud Build production run (from Git) you must tag the version used in a release manually with the SHORT_SHA tag so the exact build used in a release can be identified.
 
 Note: You may need to recreate an image if you get an 'unknown blob' error.
 
@@ -272,7 +272,7 @@ The utility ./utils-build/runbuild.sh is used to locally manually trigger builds
 
 The steps in the cloudbuild.yaml file:
 
-- Downloads secrets that are not stored on the git repo
+- Downloads secrets that are not stored on the git repo.
 - Installs and builds the frontend and backend applications, units tests them, and then builds the frontend and backend images and pushes them to the cloud registry.
 - E2e tests the built images.
 - Edits the Helm Chart to point to the new images.
@@ -284,3 +284,5 @@ The steps in the cloudbuild.yaml file:
 Note: To update your local repo 'candidate' and 'production' branches to match the changes in the remote repo checkout the 'production' branch and type 'git pull origin' and do the same with the 'candidate' branch.
 
 Note: To push to the remote Git repo you need to set up a secret key on GCP secrets and load the same as a deploy key on the Git repo - see [here.](https://cloud.google.com/cloud-build/docs/access-private-github-repos)
+
+Note: Update a log Git tag 'v1x.y.z' and push to the remote after a successful Cloud Build production build (via Git).

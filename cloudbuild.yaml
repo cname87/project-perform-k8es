@@ -388,7 +388,7 @@ substitutions:
   # SHORT_SHA: Cloud Build sets this to the first 7 characters of the git commit hash that triggered this cloud build run, or to '' if cloud build is run manually.
   _SHORT_SHA: ${SHORT_SHA}
   # Set the default cluster for the git triggered case - normally set to the production cluster but can be set to the test cluster if I am only working with one cluster.
-  _GKE_CLUSTER: ppk8es-cluster-test
+  _GKE_CLUSTER: ppk8es-cluster-prod
   _GKE_REGION: europe-west2
   _GKE_ZONE: europe-west2-c
   # Use production directory for the images
