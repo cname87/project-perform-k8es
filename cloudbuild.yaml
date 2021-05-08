@@ -30,7 +30,7 @@ steps:
     echo 'BUILD_ID: $BUILD_ID'
     echo 'COMMIT_SHA: $COMMIT_SHA'
     echo 'SHORT_SHA: $SHORT_SHA'
-    echo 'COMMIT_SHA: $_COMMIT_SHA'
+    echo 'COMMIT_SHA: $COMMIT_SHA'
     echo 'GKE_CLUSTER: $_GKE_CLUSTER'
     echo 'GKE_ZONE: $_GKE_ZONE'
     echo 'Images may be from the test or production registries'
@@ -68,7 +68,7 @@ steps:
   args:
   - '-c'
   - |
-    gsutil mb 'gs://project-perform-release-${_COMMIT_SHA}' || echo "Secrets release folder already exists"
+    gsutil mb 'gs://project-perform-release-${_SHORT_SHA}' || echo "Secrets release folder already exists"
 
 # Copy the secret files to the release storage bucket
 - id: 'copy secrets to release folder'
@@ -80,7 +80,7 @@ steps:
     # Copy recursively
     'cp', '-r',
     'gs://project-perform-gcp-environment-files/*',
-    'gs://project-perform-release-${_COMMIT_SHA}',
+    'gs://project-perform-release-${_SHORT_SHA}',
   ]
 
 # # Install the backend node_modules directory in the persisted workspace
@@ -384,9 +384,9 @@ substitutions:
   # These are default values which are set to match a production build run from GCP. These are overwritten from the runbuild.sh utility to run a test build.  They can also be overwritten when a build is triggered by Git but there is less need as the default values are set up for a production build.
   # PROJECT_ID: Cloud Build defaults to the ID of your Cloud project.
   # BUILD_ID: Cloud Build defaults to the ID of your build.
-  # SHORT_SHA: Cloud Build sets this to the first 7 characters of the git commit hash that triggered this cloud build run, or to '' if cloud build is run manually.
   # COMMIT_SHA: Cloud Build sets this to the git commit hash that triggered this cloud build run, or to '' if cloud build is run manually.
-  _COMMIT_SHA: ${COMMIT_SHA}
+  # SHORT_SHA: Cloud Build sets this to the first 7 characters of the git commit hash that triggered this cloud build run, or to '' if cloud build is run manually.
+  _SHORT_SHA: ${SHORT_SHA}
   # Set the default cluster for the git triggered case - normally set to the production cluster but can be set to the test cluster if I only working with one cluster.
   _GKE_CLUSTER: ppk8es-cluster-production
   _GKE_REGION: europe-west2
