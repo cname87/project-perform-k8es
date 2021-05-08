@@ -31,7 +31,7 @@ FRONTEND_VERSION=${FRONTEND_VERSION}
 
 # A GCP Storage bucket with this tag is created to store secrets
 # For a production build this will be a Github branch version tag
-TEST_TAG_NAME='temp'
+TEST_COMMIT_SHA='temp'
 
 # Set the default commit message used when committing to the 'candidate' and 'production' branches
 GIT_MESSAGE=${GIT_MESSAGE}
@@ -116,7 +116,7 @@ _FRONTEND_IMAGE=${FRONTEND_IMAGE},\
 _BACKEND_VERSION=${BACKEND_VERSION},\
 _FRONTEND_VERSION=${FRONTEND_VERSION},\
 _REPO=${REPO},\
-_TAG_NAME=${TEST_TAG_NAME},\
+_COMMIT_SHA=${TEST_COMMIT_SHA},\
 _BUILD_TAG=${APPLICATION}_${SUFFIX} \
 ."
 ${COMMAND}
