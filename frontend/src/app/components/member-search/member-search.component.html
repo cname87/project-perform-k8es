@@ -48,7 +48,7 @@
 
     <!-- show if members found -->
     <mat-hint
-      *ngIf="searchBox.value && (members$ | async)?.length > 0"
+      *ngIf="searchBox.value && (members$ | async)?.length! > 0"
     >
       Click on a name below to see the member detail
     </mat-hint>

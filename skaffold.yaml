@@ -1,6 +1,6 @@
 # To run skaffold use the 'Run on Kubernetes' configuration as detailed in .vscode/launch.json
 
-apiVersion: skaffold/v2beta5
+apiVersion: skaffold/v2beta15
 kind: Config
 metadata:
   name: project-perform
@@ -57,10 +57,3 @@ portForward:
     port: 80
     address: 127.0.0.1
     localPort: 8080
-  # Forward backend port 80 to localhost:8081
-  - resourceType: service
-    resourceName: project-perform-pp-chart-backend-service
-    namespace: default
-    port: 80
-    address: 127.0.0.1
-    localPort: 8081

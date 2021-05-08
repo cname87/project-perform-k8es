@@ -9,7 +9,7 @@ import { MembersListComponent } from '../components/members-list/members-list.co
 import { CallbackComponent } from '../components/callback/callback.component';
 import { ProfileComponent } from '../components/user-profile/user-profile.component';
 import { MemberDetailResolverService } from '../shared/resolvers/member-detail-resolver.service';
-import { MembersListResolverService } from '../shared/resolvers/members-list-resolver.service ';
+import { MembersListResolverService } from '../shared/resolvers/members-list-resolver.service';
 
 const appRoutes: Routes = [
   {

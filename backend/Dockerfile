@@ -1,7 +1,8 @@
 # Build the backend application
 
 # Use a base node image from Docker hub
-FROM node:14-alpine3.12
+# The node version should match that used in VSCode development & test and should be the LTS version
+FROM node:14.16.1
 
 # Set the image working directory
 WORKDIR /backend
@@ -15,6 +16,6 @@ RUN npm install --only=production
 # Copy rest of the application source code
 COPY . ./
 
-# Run with '--inspect=9229' if running 'DeBug Backend on Kubernetes'
+# Run with '--inspect=9229' if running 'Debug Backend on Kubernetes' launch configuration
 # ENTRYPOINT ["node", "--inspect=9229", "dist/src/app.js"]
 ENTRYPOINT ["node", "dist/src/app.js"]

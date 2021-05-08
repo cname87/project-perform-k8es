@@ -19,14 +19,6 @@
     "cloudcode.debug-kubernetes": {
       "suppressNodeJSWarning": true
     },
-    "cloudcode.default-app-directory": {
-      "location": "/home/cname87/Dropbox/Software/Projects/cloudcode-projects"
-    },
-    "cloudcode.gke": {
-      "projectIds": [
-        "project-perform"
-      ]
-    },
 
     "cSpell.language": "en-GB",
     "cSpell.allowCompoundWords": true,
@@ -255,6 +247,7 @@
       "workdir",
       "wscript",
       "wtfnode",
+      "xargs",
       "xdescribe",
       "xframe",
       "xmlresults"
@@ -281,11 +274,9 @@
     "editor.tabSize": 2,
     "editor.wordWrap": "wordWrapColumn",
 
-    "eslint.enable": true,
     "eslint.workingDirectories": [ "./", "./frontend", "./backend"],
     "eslint.alwaysShowStatus": true,
 
-    "extensions.showRecommendationsOnlyOnDemand": true,
 
     "files.autoSave": "afterDelay",
     "files.autoSaveDelay": 60000,
@@ -306,7 +297,6 @@
     "javascript.updateImportsOnFileMove.enabled": "always",
     "javascript.preferences.importModuleSpecifier": "relative",
     "javascript.format.insertSpaceAfterConstructor": true,
-    "javascript.implicitProjectConfig.checkJs": true,
     "[javascript]": {
         "editor.fontLigatures": "'ss02', 'ss19'",
     },
@@ -321,10 +311,31 @@
     "npm-intellisense.packageSubfoldersIntellisense": true,
     "npm-intellisense.scanDevDependencies": true,
     "npm-intellisense.showBuildInLibs": true,
-    "npm.enableScriptExplorer": true,
 
     "search.showLineNumbers": true,
     "search.smartCase": true,
+
+    "shellcheck.enable": true,
+    "shellcheck.enableQuickFix": true,
+    "shellcheck.run": "onType",
+    "shellcheck.executablePath": "",  // Priority: user defined > bundled shellcheck binary > "shellcheck"
+    "shellcheck.exclude": [],
+    "shellcheck.customArgs": [],
+    "shellcheck.ignorePatterns": {
+        "**/*.zsh": true,
+        "**/*.zshrc": true,
+        "**/zshrc": true,
+        "**/*.zprofile": true,
+        "**/zprofile": true,
+        "**/*.zlogin": true,
+        "**/zlogin": true,
+        "**/*.zlogout": true,
+        "**/zlogout": true,
+        "**/*.zshenv": true,
+        "**/zshenv": true,
+        "**/*.zsh-theme": true
+    },
+    "shellcheck.ignoreFileSchemes": ["git"],
 
     // tasks auto-detect off
     "typescript.tsc.autoDetect": "off",

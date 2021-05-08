@@ -11,8 +11,7 @@ import 'https://unpkg.com/chai/chai.js';
 import 'https://unpkg.com/sinon/pkg/sinon.js';
 
 mocha.setup({
-  ui: 'bdd',
-  timeout: 0,
-  ignoreLeaks: true,
   globals: ['*'],
+  timeout: '0',
+  ui: 'bdd',
 });

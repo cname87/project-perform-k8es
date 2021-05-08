@@ -83,9 +83,9 @@ describe('messagesComponent', () => {
     const fixture = TestBed.createComponent(MessagesComponent);
 
     /* get the injected instances */
-    const messageServiceInjected = fixture.debugElement.injector.get<
-      IMessageServiceStub
-    >(MessageService as any);
+    const messageServiceInjected = fixture.debugElement.injector.get<IMessageServiceStub>(
+      MessageService as any,
+    );
 
     /* create the component instance */
     const component = fixture.componentInstance;

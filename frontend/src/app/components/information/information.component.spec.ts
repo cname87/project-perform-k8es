@@ -119,9 +119,9 @@ describe('InformationComponent', () => {
     const locationSpy = fixture.debugElement.injector.get<ILocationSpy>(
       Location as any,
     );
-    const activatedRouteStub = fixture.debugElement.injector.get<
-      ActivatedRouteStub
-    >(ActivatedRoute as any);
+    const activatedRouteStub = fixture.debugElement.injector.get<ActivatedRouteStub>(
+      ActivatedRoute as any,
+    );
     const authServiceSpy = fixture.debugElement.injector.get<IAuthServiceSpy>(
       AuthService as any,
     );

@@ -31,7 +31,7 @@ frontend:
   annotations:
   # Load balancing directly to pod endpoints
   # (This will be default from K8es 1.19 with annotation no longer needed)
-  cloud.google.com/neg: '{"ingress": true}'
+  # cloud.google.com/neg: '{"ingress": true}'
   service:
     # NodePort is the required type for a Ingress Controller backend
     type: NodePort
@@ -39,19 +39,19 @@ frontend:
   deployment:
     portName: nginx-port
     portValue: 80
-  # This is replaced during cloud build
-  image: gcr.io/project-perform/pp-frontend/development:testA
+  # This is replaced during a production cloud build
+  image: gcr.io/project-perform/pp-frontend/development:latest
 # Backend configuration
 backend:
   nameTag: -backend-service
   service:
-    type: LoadBalancer
+    type: ClusterIP
     port: 80
   deployment:
     portName: app-port
     portValue: 8080
-  # This is replaced during cloud build
-  image: gcr.io/project-perform/pp-backend/development:testA
+  # This is replaced during a production cloud build
+  image: gcr.io/project-perform/pp-backend/development:latest
 configmap:
   # Uncomment 'debug: PP*' to send debug logs to console and GKE logger
   # Normally leave commented out but can be uncommented to upgrade a production cluster to print out backend debug

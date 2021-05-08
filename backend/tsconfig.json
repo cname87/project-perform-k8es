@@ -46,6 +46,7 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "showConfig": true,
+    "skipLibCheck": true,
     "sourceMap": true,
     "strict": true,
     "strictBindCallApply": true,

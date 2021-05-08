@@ -58,9 +58,9 @@ describe('DashboardComponent', () => {
     const fixture = TestBed.createComponent(DashboardComponent);
 
     /* get the injected instances */
-    const activatedRouteStub = fixture.debugElement.injector.get<
-      ActivatedRouteStub
-    >(ActivatedRoute as any);
+    const activatedRouteStub = fixture.debugElement.injector.get<ActivatedRouteStub>(
+      ActivatedRoute as any,
+    );
 
     /* create the component instance */
     const component = fixture.componentInstance;

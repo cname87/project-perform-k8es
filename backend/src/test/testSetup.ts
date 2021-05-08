@@ -10,7 +10,6 @@ import 'mocha';
 /* set DB_MODE to 'test' (or anything but 'production') to ensure the test database is loaded */
 process.env.DB_MODE = 'test';
 setupDebug(__filename);
-// import { afterEach, beforeEach } from 'mocha';
 
 /* Note: All test modules that need a server use app.js to start the server (parhaps on each 'it' function) and then close it before they exit. */
 

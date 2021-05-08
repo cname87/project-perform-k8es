@@ -32,12 +32,14 @@ export const getHelpers = () => {
 
     /**
      * TODO remove any when protractor-browser-logs is updated
-     * protractor-browser-logs uses protractor 5.4.3 and the protractor version is 5.4.4 and there is a type incompatibility.
+     * protractor-browser-logs v1.0.456 uses protractor 5.4.3 and the protractor version imported into this file is newer and there is a type incompatibility.
      */
     // const browserVar: ProtractorBrowser = browser;
     const browserVar: any = browser;
 
     const logs = browserLogs(browserVar);
+    logs.reset();
+
     /* ignore debug and info log messages */
     if (ignoreLogs) {
       logs.ignore(logs.DEBUG);

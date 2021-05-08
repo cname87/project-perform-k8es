@@ -88,7 +88,7 @@ declare namespace Perform {
     appLocals: IAppLocals;
     sigint: TSigint;
     uncaughtException: TUncaught;
-    unhandledRejection: TUncaught;
+    unhandledRejection: NodeJS.UnhandledRejectionListener;
   }
 
   /* handlers object */

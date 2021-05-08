@@ -1,29 +1,18 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
 // Karma configuration file, see link for more information
-// https://karma-runner.github.io/1.0/config/configuration-file.html
-
-import karmaJasmine from 'karma-jasmine';
-import karmaChromeLauncher from 'karma-chrome-launcher';
-import karmaJasmineHtmlReporter from 'karma-jasmine-html-reporter';
-import karmaCoverageIstanbulReporter from 'karma-coverage-istanbul-reporter';
-import angularDevkitPluginKarma from '@angular-devkit/build-angular/plugins/karma';
+// https://karma-runner.github.io/6.3/config/configuration-file.html
 
 /* Set path to the Chrome executable - using Chromium from Puppeteer for GCP */
-// eslint-disable-next-line @typescript-eslint/no-var-requires
 process.env.CHROME_BIN = require('puppeteer').executablePath();
 
-export default function main(config) {
+module.exports = function main(config) {
   config.set({
-    basePath: '',
-    frameworks: ['jasmine', '@angular-devkit/build-angular'],
-    plugins: [
-      karmaJasmine,
-      karmaChromeLauncher,
-      karmaJasmineHtmlReporter,
-      karmaCoverageIstanbulReporter,
-      angularDevkitPluginKarma,
-    ],
+    autowatch: false,
+    /* added to prevent slow build losing the browser */
+    captureTimeout: 300000,
     client: {
-      clearContext: false, // leave Jasmine Spec Runner output visible in browser
+      /* don't leave Jasmine Spec Runner output visible in browser */
+      clearContext: true,
       jasmine: {
         random: false,
         seed: '4321',
@@ -32,15 +21,8 @@ export default function main(config) {
         timeoutInterval: 30000,
       },
     },
-
-    reporters: ['progress', 'kjhtml'],
-    port: 9876,
     colors: false,
-    logLevel: config.LOG_INFO,
-    autoWatch: false,
-
     /* Note: Choose browser in angular.json configuration */
-
     customLaunchers: {
       ChromeHeadlessNoSandbox: {
         base: 'ChromeHeadless',
@@ -48,6 +30,15 @@ export default function main(config) {
         displayName: 'ChromeHeadlessNoSandbox',
       },
     },
+    frameworks: ['jasmine', '@angular-devkit/build-angular'],
+    logLevel: config.LOG_INFO,
+    plugins: [
+      'karma-jasmine',
+      'karma-chrome-launcher',
+      '@angular-devkit/build-angular/plugins/karma',
+    ],
+    reporters: ['progress'],
+    restartOnFileChange: false,
     singleRun: true,
   });
-}
+};

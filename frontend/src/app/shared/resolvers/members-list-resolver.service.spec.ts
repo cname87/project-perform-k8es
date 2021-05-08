@@ -3,7 +3,7 @@ import { APP_BASE_HREF } from '@angular/common';
 import { ErrorHandler } from '@angular/core';
 import { NGXLogger } from 'ngx-logger';
 
-import { MembersListResolverService } from './members-list-resolver.service ';
+import { MembersListResolverService } from './members-list-resolver.service';
 import { AppModule } from '../../app.module';
 import { asyncError, asyncData } from '../test-helpers';
 import { members } from '../mocks/mock-members';

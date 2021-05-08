@@ -351,7 +351,7 @@ describe('the application', () => {
     let response = await serverIsUp();
     expect(response).not.to.be.instanceof(Error);
 
-    await app.unhandledRejection('Test Rejection', 'promise rejected');
+    await app.unhandledRejection('Test Reason', 'Test Promise');
 
     response = await appIsExited(
       spyDebug,
@@ -364,7 +364,7 @@ describe('the application', () => {
     stubProcess.restore();
 
     expect(spyConsoleError.lastCall).to.have.been.calledWith(
-      sinon.match('unhandled promise rejection'),
+      sinon.match('Unhandled Rejection'),
     );
 
     expect(spyDumpError).to.have.been.called;

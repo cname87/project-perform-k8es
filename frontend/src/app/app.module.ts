@@ -38,7 +38,7 @@ import { NavComponent } from './components/nav/nav.component';
 import { AuthService } from './shared/auth.service/auth.service';
 import { AppLoadService } from './shared/app-load.service/app-load.service';
 import { MemberDetailResolverService } from './shared/resolvers/member-detail-resolver.service';
-import { MembersListResolverService } from './shared/resolvers/members-list-resolver.service ';
+import { MembersListResolverService } from './shared/resolvers/members-list-resolver.service';
 
 export function initApp(appLoadService: AppLoadService) {
   return () => appLoadService.initApp();

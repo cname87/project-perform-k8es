@@ -1,5 +1,8 @@
 import { Injectable, InjectionToken, Inject } from '@angular/core';
-import originalCreateAuth0Client from '@auth0/auth0-spa-js';
+import originalCreateAuth0Client, {
+  User,
+  GetUserOptions,
+} from '@auth0/auth0-spa-js';
 import Auth0Client from '@auth0/auth0-spa-js/dist/typings/Auth0Client';
 
 import {
@@ -14,13 +17,7 @@ import { tap, catchError, concatMap, shareReplay } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { NGXLogger } from 'ngx-logger';
 
-import {
-  auth0Config,
-  errorTypes,
-  IErrReport,
-  IUserProfile,
-  routes,
-} from '../../config';
+import { auth0Config, errorTypes, IErrReport, routes } from '../../config';
 
 /**
  * Auth0 Operation:
@@ -32,13 +29,14 @@ import {
  * 2. The app.component ngOnInit calls authService.localAuthSetup().
  * - This results in a call to getAuth0Client() creating a singleton Auth0Client instance, and checks with the server if the user is authenticated and sets the public variable, isLogged, to either false or to the logged-in user profile.
  * 3. If the login prompt is clicked then the Auth0 client instance loginWithRedirect() function is called which calls the Auth0 server which, on first call, presents a login page to the user, and following receipt of valid credentials, redirects to the CallbackComponent with a query parameter holding state data.  The CallbackComponent opens a configured page (dashboard).
- * - The Auth0 server response includes a cookie to the client which sets up a session in the client - the client can determine that the user is logged in without having to contact the server. Thus if a browser if closed and reopened a login page does not have to be presented to the user.  A client-side timer will eventually timeout following which the login page will again be presented to the user.
- * - The Auth0 client also sends a token which can be used to authorize access to a backend API.
+ * - The Auth0 server response includes a cookie to the client which stores encrypted information allowing silent authentication - the client can determine that the user is logged in without requiring user input. Thus if a browser is closed and reopened, or if a page is reloaded, a login page does not have to be presented to the user.  An authentication client timer will eventually timeout following which the login page will again be presented to the user.
+ * - I confirmed Roating Token Refresh on the oauth0 server which means that the token can be refreshed silently ???
+ * - The Auth0 server also sends a token which is passed by the client to the backend server to get authorized access the backend API.
  * - The backend server confirms the token with the Auth0 server which sends back the relevant user information, including the configured scopes, to the server. (The token is unique to each user).
- * - See https://auth0.com/docs/flows/concepts/implicit for the authorization flow.  Note that server can also authenticate via the Auth0 server using a client-credentials flow, which requires no user input.
+ * - See https://auth0.com/docs/flows/authorization-code-flow-with-proof-key-for-code-exchange-pkce for the authorization flow.
  * 4. The isLogged status sets the views E.g. the logout button shows when isLogged is true.
  * 5. Sensitive pages are guarded with a call to the authentication observable - see 1. above.
- * 6. On clicking logout the authentication service is informed (and acts accordingly) and the application is reloaded.
+ * 6. On clicking logout the authentication service is informed and the application is reloaded.
  */
 
 /* inject auth0-spa-js create auth0 client instance function via DI for ease of testing */
@@ -123,17 +121,19 @@ export class AuthService {
 
   /**
    * Broadcasts the user profile to all subscribers.
-   * Note: getUser$ must be called during set up to make the user profile available in userProfileSubject$.
+   * Note: getUser$ must be called during set up to make the user profile is available in userProfileSubject$.
    */
-  /* behaviour subject sends last emitted value to new subscribers and also send new emitted values to all subscribers */
-  private userProfileSubject$ = new BehaviorSubject<IUserProfile | null>(null);
+  /* a behaviour subject sends last emitted value to new subscribers and also sends new emitted values to all subscribers */
+  private userProfileSubject$ = new BehaviorSubject<User | undefined>(
+    undefined,
+  );
 
   public userProfile$ = this.userProfileSubject$.asObservable();
 
   /**
    * Causes the client instance getUser function to be called returning an observable emitting the user profile.
    */
-  private getUser$ = (options?: any): Observable<IUserProfile> =>
+  private getUser$ = (options?: GetUserOptions): Observable<User | undefined> =>
     this.auth0Client$.pipe(
       concatMap((client: Auth0Client) => from(client.getUser(options))),
       tap((user) => this.userProfileSubject$.next(user)),
@@ -166,7 +166,7 @@ export class AuthService {
         return throwError(err);
       }),
     );
-    checkAuth$.subscribe((response: { [key: string]: any } | boolean) => {
+    checkAuth$.subscribe((response: User | boolean | undefined) => {
       this.isLoggedIn = !!response;
     });
   };

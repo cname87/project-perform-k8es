@@ -16,7 +16,7 @@ As the second stage of my web application, I refactored from the original monoli
 
 - The web application is a sports team management application.  It authenticates users, displays team information and allows team information to be added or updated.  It calls out via an OpenAPI to a backend service to access and update the team member information.
 
-- The backend service implements a network loadbalancer forwarding the frontend requests evenly across the backend pods in the cluster.
+- The backend service implements a clusterIP service forwarding the frontend requests evenly across the backend pods in the cluster.
 
 - The backend microservice implemented in the backend pods provides REST API access to the team member information.  It calls out to a MongoDB datbase server hosted by Atlas to persist the team member information.
 

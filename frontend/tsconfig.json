@@ -1,13 +1,4 @@
 {
-
-
-  // "files": [
-  //   "src/main.ts",
-  //   "src/polyfills.ts"
-  // ],
-  // "include": [
-  //   "src/**/*.d.ts"
-  // ],
   "exclude": [
     "coverage",
     "dist",
@@ -21,7 +12,7 @@
     "outDir": "./dist/out-tsc",
     "rootDir": ".",
 
-    "target": "es2016",
+    "target": "es2015",
 
     /* for browser-side scripts - extra types which you know browser will support */
     "lib": [
@@ -61,6 +52,7 @@
     "noUnusedParameters": true,
     "showConfig": true,
     "sourceMap": true,
+    "skipLibCheck": true,
     "strict": true,
     "strictBindCallApply": true,
     "strictFunctionTypes": true,
@@ -75,6 +67,7 @@
     ]
   },
   "angularCompilerOptions": {
+    "strictTemplates": true,
     "enableIvy": true,
     "allowEmptyCodegenFiles": true
   }

@@ -8,24 +8,22 @@
 SCRIPT_DIR="${0%/*}"
 # The following avoids an eror when using shellcheck to lint this script
 # shellcheck source=/dev/null
-source "$SCRIPT_DIR"/set-variables.sh
+source "${SCRIPT_DIR}"/set-variables.sh
 
 # Set relative path to the Helm chart file
 HELM_CHART_PATH="${SCRIPT_DIR}"/../pp-chart
 
 # If there is no option in the command line then upgrade a test cluster
 CONTEXT="${TEST_CONTEXT}" ; CLUSTER_NAME="${TEST_CLUSTER_NAME}"
-while getopts pt option
-do
-case "${option}"
-in
-# If there is a '-p' option in the command line then upgrade the production cluster
-p) CONTEXT="${PROD_CONTEXT}" ; CLUSTER_NAME="${PROD_CLUSTER_NAME}";;
-# If there is a '-t' option in the command line then upgrade the test cluster
-t) CONTEXT="${TEST_CONTEXT}" ; CLUSTER_NAME="${TEST_CLUSTER_NAME}";;
-# If there is an invalid option in the command line then upgrade a test cluster
-*) CONTEXT="${TEST_CONTEXT}" ; CLUSTER_NAME="${TEST_CLUSTER_NAME}";;
-esac
+while getopts pt option; do
+  case "${option}" in
+    # If there is a '-p' option in the command line then upgrade the production cluster
+    p) CONTEXT="${PROD_CONTEXT}" ; CLUSTER_NAME="${PROD_CLUSTER_NAME}";;
+    # If there is a '-t' option in the command line then upgrade the test cluster
+    t) CONTEXT="${TEST_CONTEXT}" ; CLUSTER_NAME="${TEST_CLUSTER_NAME}";;
+    # If there is an invalid option in the command line then upgrade a test cluster
+    *) CONTEXT="${TEST_CONTEXT}" ; CLUSTER_NAME="${TEST_CLUSTER_NAME}";;
+  esac
 done
 
 # Utility confirm function
@@ -45,20 +43,17 @@ echo -e "\nSetting the current kubeconfig context to ${CONTEXT}\n"
 kubectl config use-context "${CONTEXT}"
 
 echo -e "\nInstalling or upgrade the cluster to the release ${HELM_RELEASE} from ${HELM_CHART_PATH}\n"
-helm upgrade --install --wait "${HELM_RELEASE}" "${HELM_CHART_PATH}"
+helm upgrade "${HELM_RELEASE}" "${HELM_CHART_PATH}"  --atomic --cleanup-on-fail --install --wait
 
 echo -e "\nRunning kubectl get all...\n"
 kubectl get all
 
 if [ "${CONTEXT}" = "${TEST_CONTEXT}" ]
 then
-  # The port forwards will be run in the background. Run 'ps -aux | grep kubectl' to find the process numbers and then run 'kill xxx' to kill the process.
+  # The port forward will be run in the background. Run 'ps -aux | grep kubectl' to find the process number and then run 'kill xxx' to kill the process.
   echo -e "\n Forwarding port on frontend service to localhost:8080\n"
   kubectl port-forward \
-  service/project-perform-pp-chart-frontend-service 8080:80 &
-  echo -e "\n Forwarding port on backend service to localhost:8081"
-  kubectl port-forward \
-  service/project-perform-pp-chart-backend-service 8081:80 &
+  service/project-perform-pp-chart-frontend-service 8080:80
 fi
 
 echo -e "\n To test changes to the install, edit the necessary chart yaml files and then run 'helm upgrade project-perform <path>/pp-chart --wait'"

@@ -137,9 +137,9 @@ describe('memberSearchComponent', () => {
 
     /* get the injected instances */
     /* angular.io guide suggests you need to get these from injector.get.  It seemed to work when I just used the 'useValues' in configureTestingModule but now implementing as per guide */
-    const membersServiceSpy = fixture.debugElement.injector.get<
-      IMembersServiceSpy
-    >(MembersService as any);
+    const membersServiceSpy = fixture.debugElement.injector.get<IMembersServiceSpy>(
+      MembersService as any,
+    );
     const errorHandlerSpy = fixture.debugElement.injector.get<IErrorHandlerSpy>(
       ErrorHandler as any,
     );

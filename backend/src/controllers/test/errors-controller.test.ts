@@ -4,11 +4,23 @@
  *
  * The tests test all error handler functionality.
  *
+ * Operation:
+ *  - This module calls a url which loads a browser script which sends events that trigger the tests below and tests the response - see errors-client-test.js.
+ * - Note: To control which tests are run edit the errors-client-test.js file.
+ * - The tests below result in the fail controller being called, i.e. the fail controller actually executes the error actions, including sending responses to the browser and triggering errors.
+ * - Note that the error handler will operate in a test mode and will trap errors thrown in the fail contoller and not shut the server.
+ * - This module tests the server response.
+ * - Refer to the fail controller module for detail on the individual tests.
+ * - Note that many of the error tests are not very useful i.e. they simply test mocked handlers e.g. an unhandled rejection is simply trapped in the test module.
+ *
  * To run:
  *
- * Run the server, run this and then run the client-side scripts via the browser (which trigger events that cause the tests below to be run).
+ * - Run this as a Mocha test file.
  *
- * Note that the client-side scripts are called automatically via a chrome call below if an environment variable is so configured.  Disable this if you want to run the browser via a VSCode launch configuration (e.g. if you want debug breakpoints to be set).
+ * - This calls a url which runs client-side scripts in the browser.  These trigger events that cause the tests below to be run.
+ *
+ * - Note that the client-side scripts are called automatically via a chrome call below only an environment variable is so configured.  Disable this if you want to run the browser via a VSCode launch configuration (e.g. if you want debug breakpoints to be set).
+
  */
 
 /* import configuration parameters into process.env first */
@@ -51,7 +63,7 @@ const appSigint = 'appSigint';
 const handlersRaiseEvent = 'handlersRaiseEvent';
 
 describe('Server Errors', () => {
-  debug(`Running ${modulename} describe - server Errors`);
+  debug(`Running ${modulename} describe - Server Errors`);
 
   /* shared variables */
   let app: Perform.IServerIndex;
@@ -59,10 +71,6 @@ describe('Server Errors', () => {
   let spyConsoleError: sinon.SinonSpy<[any?, ...any[]], void>;
   let spyDumpError: sinon.SinonSpy<any>;
   let spyErrorHandlerDebug: sinon.SinonSpy<any>;
-  let stubProcessEmit: sinon.SinonStub<
-    ['multipleResolves', NodeJS.MultipleResolveListener],
-    NodeJS.Process
-  >;
   let stubProcessExit: sinon.SinonStub<[number?], never>;
 
   /* awaits that server app.ts has run and fired the completion event */
@@ -94,27 +102,34 @@ describe('Server Errors', () => {
   /* run app.js and set up all spies */
   const runServerAndSetupSpies = async () => {
     /* spy on console.error */
+    /* NOTE: If a dumpError instance is created before this by another module then the dumpError console.error calls will not be spied => do not count exact calls but use greaterThan */
     spyConsoleError = sinon.spy(console, 'error');
     /* run server app.js */
     app = await serverIndexStart();
     /* Now define all objects that are dependent on app being started */
     spyDumpError = sinon.spy(app.appLocals, 'dumpError');
+    /* remove all 'unhandledRejection' listeners, including the one created in in the main server app.js module, as it would cause the process to exit */
+    process.removeAllListeners('unhandledRejection');
+    /* handle the unhandledRejection so it does not crash the server */
+    process.on('unhandledRejection', (reason, _promise) => {
+      console.error(`Unhandled Rejection with reason: ${reason}`);
+    });
     eventEmitter = app.appLocals.event;
-    /* stub process.emit - will stub emit uncaught exception handler */
-    stubProcessEmit = sinon.stub(process, 'emit');
-    /* stub process.exit */
+
+    /* process.exit will not be called in a specific test below */
     stubProcessExit = sinon.stub(process, 'exit');
+    /* stub error handling debug function so you can capture error messages */
     spyErrorHandlerDebug = sinon.spy(errorHandlerModule, 'debug');
   };
 
   /* awaits that app.ts has shut and fired the completion event */
   const serverIndexShutdown = (serverIndex: Perform.IServerIndex) => {
     debug(`${modulename}: awaiting server shutdown`);
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve, reject): void => {
       serverIndex.appLocals.event.once(appSigint, (arg) => {
         if (arg.message === 'Server exit 0') {
           debug(`${modulename}: server close message caught: ${arg.message}`);
-          resolve();
+          resolve('pass');
         } else {
           debug(`${modulename}: server close error caught: ${arg.message}`);
           reject(new Error(`Server close rejected message: ${arg.message}`));
@@ -194,7 +209,8 @@ describe('Server Errors', () => {
               sinon.resetHistory();
               break;
             case 'Async-handled test end':
-              expect(spyConsoleError.callCount).to.eql(4);
+              /* 2 tests ran */
+              expect(spyConsoleError.callCount).to.be.greaterThan(2);
               expect(spyDumpError.callCount).to.be.greaterThan(0);
               sinon.resetHistory();
               break;
@@ -208,8 +224,8 @@ describe('Server Errors', () => {
               sinon.resetHistory();
               break;
             case 'Async test end':
-              /* unhandled rejection will trigger process to emit an 'unhandled exception' and also 'warning' as the unhandled exception handling is deprecated */
-              expect(stubProcessEmit.called).to.eql(true);
+              /* the unhandled rejection will cause an error to be thrown which would shut the server but it is caught by a process 'unhandledRejection' handler above which calls console.error */
+              expect(spyConsoleError.callCount).to.eql(1);
               sinon.resetHistory();
               break;
             case 'Crash test end':
@@ -241,10 +257,10 @@ describe('Server Errors', () => {
             setTimeout(() => {
               browserInstance.close();
               /* only resolve when chrome closed */
-              resolve();
+              resolve('pass');
             }, browserDelay);
           } else {
-            resolve();
+            resolve('pass');
           }
         }
       };

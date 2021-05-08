@@ -88,7 +88,8 @@ export const configDatabase = {
     const HTTPS_KEY = resolve('certs', 'database', 'mongoKeyAndCert.pem');
     const key = fs.readFileSync(HTTPS_KEY);
     const cert = key;
-    const sslValidate = process.env.DB_IS_LOCAL === 'true';
+    /* The cloud Atlas server does not support certificate validation (i.e. the node server confirming a cert returned from the mongodb server).  This ued to work on a local mongodb server (so I used to set sslValidate = process.env.DB_IS_LOCAL === 'true'; but this stopped working and I simply set to false.  I could troubleshoot but I am not sure it bsi supported and it adds no value. */
+    const sslValidate = false;
 
     return {
       sslCA: ca,

@@ -8,21 +8,20 @@
 SCRIPT_DIR="${0%/*}"
 # The following avoids an eror when using shellcheck to lint this script
 # shellcheck source=/dev/null
-source "$SCRIPT_DIR"/set-variables.sh
+source "${SCRIPT_DIR}"/set-variables.sh
 
 # If there is no option in the command line then upgrade a test cluster
 CONTEXT="${TEST_CONTEXT}" ; CLUSTER_NAME="${TEST_CLUSTER_NAME}"
-while getopts pt option
-do
-case "${option}"
-in
-# If there is a '-p' option in the command line then upgrade the production cluster
-p) CONTEXT="${PROD_CONTEXT}" ; CLUSTER_NAME="${PROD_CLUSTER_NAME}";;
-# If there is a '-t' option in the command line then upgrade the test cluster
-t) CONTEXT="${TEST_CONTEXT}" ; CLUSTER_NAME="${TEST_CLUSTER_NAME}";;
-# If there is an invalid option in the command line then upgrade a test cluster
-*) CONTEXT="${TEST_CONTEXT}" ; CLUSTER_NAME="${TEST_CLUSTER_NAME}";;
-esac
+
+while getopts pt option; do
+  case "${option}" in
+    # If there is a '-p' option in the command line then upgrade the production cluster
+    p) CONTEXT="${PROD_CONTEXT}" ; CLUSTER_NAME="${PROD_CLUSTER_NAME}";;
+    # If there is a '-t' option in the command line then upgrade the test cluster
+    t) CONTEXT="${TEST_CONTEXT}" ; CLUSTER_NAME="${TEST_CLUSTER_NAME}";;
+    # If there is an invalid option in the command line then upgrade a test cluster
+    *) CONTEXT="${TEST_CONTEXT}" ; CLUSTER_NAME="${TEST_CLUSTER_NAME}";;
+  esac
 done
 
 # Utility confirm function
@@ -37,17 +36,16 @@ function confirm(){
 echo -e "\nThe cluster from which the application will be uninstalled is ${CLUSTER_NAME}\n"
 confirm
 
-echo -e "\nUninstalling ${HELM_RELEASE}\n"
+echo -e "\nUninstalling ${HELM_RELEASE}"
 helm uninstall "${HELM_RELEASE}"
 
-echo -e "\nDeleting all services\n"
+echo -e "\nDeleting all servicesku  "
 kubectl delete service --all
 
-if [ "${CONTEXT}" = "${TEST_CONTEXT}" ]
-then
+if [ "${CONTEXT}" = "${TEST_CONTEXT}" ]; then
   # Kill all port forwards that may be running in the background.
-  echo -e "\nKilling all port forwards on the test cluster\n"
-  kill $(ps aux | grep '[p]ort-forward' | awk '{print $2}')
+  echo -e "\nKilling all port forwards"
+  pgrep -f '[p]ort-forward' | xargs kill 2> /dev/null
 fi
 
 echo -e "\nIt takes a few minutes to uninstall - run 'kubectl get all' to confirm the uninstall is complete.\n"

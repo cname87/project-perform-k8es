@@ -119,7 +119,7 @@ describe('server API', () => {
       serverIndex.appLocals.event.once(appSigint, (arg) => {
         if (arg.message === 'Server exit 0') {
           debug(`${modulename}: server close message caught: ${arg.message}`);
-          resolve();
+          resolve('pass');
         } else {
           debug(`${modulename}: server close error caught: ${arg.message}`);
           reject(new Error(`Server close rejected message: ${arg.message}`));
@@ -349,10 +349,10 @@ describe('server API', () => {
             setTimeout(() => {
               browserInstance.close();
               /* only resolve when chrome closed */
-              resolve();
+              resolve('pass');
             }, browserDelay);
           } else {
-            resolve();
+            resolve('pass');
           }
         }
       };

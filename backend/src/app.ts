@@ -130,10 +130,15 @@ process.on('uncaughtException', uncaughtException);
  * Handles unhandledRejection events.
  * @param reason Reason passed in by error handler.
  */
-const unhandledRejection: Perform.TUncaught = async (reason: Perform.IErr) => {
+const unhandledRejection: NodeJS.UnhandledRejectionListener = async (
+  reason,
+  promise,
+) => {
   debug(`${modulename}: running unhandledRejection`);
 
-  console.error(`${modulename}: unhandled promise rejection`);
+  console.error(
+    `${modulename}: Unhandled Rejection at promise: ${promise} with reason: ${reason}`,
+  );
   dumpError(reason);
   await closeAll();
   process.exit(-12);

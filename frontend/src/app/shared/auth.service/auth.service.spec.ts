@@ -180,7 +180,7 @@ describe('AuthService', () => {
     const userProfile = await authService.userProfile$
       .pipe(take(1))
       .toPromise();
-    expect(userProfile).toBeNull();
+    expect(userProfile).toBeUndefined();
   });
 
   it('authClient$ can catch a Auth client creation error', async () => {

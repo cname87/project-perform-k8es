@@ -1,5 +1,5 @@
 /**
- * This client-side script tests the Express error handling middleware functionality.
+ * This client-side script tests the Express error handling middleware functionality.  Refer to the documentation in the error controller test file for detail on operation.
  */
 
 let testWindow;
@@ -130,9 +130,10 @@ describe('page not found', () => {
 
 describe('coffee not found - return 418', () => {
   before('Open /tests/fail with ?fail=coffee', async () => {
+    /* causes a 418 error code to be sent from the server */
     console.log('Starting fail=coffee test');
 
-    /* signal server that test starting */
+    /* signal server to start the test */
     const url = `${HOST}raiseEvent`;
     const data = {
       number: 1,
@@ -171,9 +172,10 @@ describe('coffee not found - return 418', () => {
 
 describe('response sent twice', () => {
   before('Open /tests/fail with ?fail=sent', async () => {
+    /* A messsage is received.  (Then an error is triggered on the server-side but with no impact on the browser) */
     console.log('Starting fail=sent test');
 
-    /* signal server that test starting */
+    /* signal server to start the test */
     const url = `${HOST}raiseEvent`;
     const data = {
       number: 1,
@@ -202,9 +204,10 @@ describe('response sent twice', () => {
 
 describe('throw a specific error', () => {
   before('Open /tests/fail with ?fail=trap-503', async () => {
+    /* causes a message from the server with error code 503 */
     console.log('Starting fail=trap-503 test');
 
-    /* signal server that test starting */
+    /* signal server to start the test */
     const url = `${HOST}raiseEvent`;
     const data = {
       number: 1,
@@ -243,9 +246,10 @@ describe('throw a specific error', () => {
 
 describe('trap a promise rejection and throw a specific error', () => {
   before('Open /tests/fail with ?fail=async-handled', async () => {
+    /* causes a message from the server with error code 501 */
     console.log('Starting fail=async-handled test');
 
-    /* signal server that test starting */
+    /* signal server to start the test */
     const url = `${HOST}raiseEvent`;
     const data = {
       number: 1,
@@ -284,9 +288,10 @@ describe('trap a promise rejection and throw a specific error', () => {
 
 describe('throw an error', () => {
   before('Open /tests/fail with ?fail=error', async () => {
+    /* causes a message to be received with error code 500 */
     console.log('Starting fail=error test');
 
-    /* signal server that test starting */
+    /* signal server to start the test */
     const url = `${HOST}raiseEvent`;
     const data = {
       number: 1,
@@ -327,9 +332,10 @@ describe('throw an error', () => {
 
 describe('unhandled promise rejection', () => {
   before('Open /tests/fail with ?fail=async', async () => {
+    /* A message is received.  (Then an error is triggered on the server-side but with no impact on the browser) */
     console.log('Starting fail=async test');
 
-    /* signal server that test starting */
+    /* signal server to start the test */
     const url = `${HOST}raiseEvent`;
     const data = {
       number: 1,
@@ -387,9 +393,10 @@ describe('unhandled promise rejection', () => {
 
 describe('server crash', () => {
   before('Open /tests/fail with ?fail=crash', async () => {
+    /* A message is received.  (Then an error is triggered on the server-side but with no impact on the browser) */
     console.log('Starting fail=crash test');
 
-    /* signal server that test starting */
+    /* signal server to start the test */
     const url = `${HOST}raiseEvent`;
     const data = {
       number: 1,
@@ -447,6 +454,7 @@ describe('server crash', () => {
 
 describe('fail query not recognised', () => {
   before('Open with ?fail=dummy', async () => {
+    /* causes an error to be received with error code 404 */
     console.log('Starting fail=dummy test');
 
     const url = `${HOST}raiseEvent`;

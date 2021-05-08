@@ -165,9 +165,9 @@ describe('MembersListComponent', () => {
     const errorHandlerSpy = fixture.debugElement.injector.get<IErrorHandlerSpy>(
       ErrorHandler as any,
     );
-    const activatedRouteStub = fixture.debugElement.injector.get<
-      ActivatedRouteStub
-    >(ActivatedRoute as any);
+    const activatedRouteStub = fixture.debugElement.injector.get<ActivatedRouteStub>(
+      ActivatedRoute as any,
+    );
 
     const expected = createExpected();
 

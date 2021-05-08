@@ -1,12 +1,6 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
 // Karma configuration file, see link for more information
-// https://karma-runner.github.io/1.0/config/configuration-file.html
-
-import karmaJasmine from 'karma-jasmine';
-import karmaChromeLauncher from 'karma-chrome-launcher';
-import karmaJasmineHtmlReporter from 'karma-jasmine-html-reporter';
-import karmaCoverageIstanbulReporter from 'karma-coverage-istanbul-reporter';
-import angularDevkitPluginKarma from '@angular-devkit/build-angular/plugins/karma';
-import { join } from 'path';
+// https://karma-runner.github.io/6.3/config/configuration-file.html
 
 /* Set path to the Chrome executable */
 switch (process.platform) {
@@ -22,21 +16,20 @@ switch (process.platform) {
     break;
 }
 
-export default function main(config) {
+module.exports = function main(config) {
   config.set({
+    /* enable / disable watching file and executing tests whenever any file changes */
+    autoWatch: true,
+    /* base path that will be used to resolve all patterns (eg. files, exclude) */
     basePath: '',
-    frameworks: ['jasmine', '@angular-devkit/build-angular'],
+    /* start these browsers
+    available browser launchers: https://npmjs.org/browse/keyword/karma-launcher */
+    browsers: ['Chrome'],
     /* Added to prevent slow build losing the browser */
     captureTimeout: 300000,
-    plugins: [
-      karmaJasmine,
-      karmaChromeLauncher,
-      karmaJasmineHtmlReporter,
-      karmaCoverageIstanbulReporter,
-      angularDevkitPluginKarma,
-    ],
     client: {
-      clearContext: false, // leave Jasmine Spec Runner output visible in browser
+      /* leave Jasmine Spec Runner output visible in browser */
+      clearContext: false,
       jasmine: {
         random: false,
         seed: '4321',
@@ -45,16 +38,51 @@ export default function main(config) {
         timeoutInterval: 30000,
       },
     },
-    coverageIstanbulReporter: {
-      dir: join(__dirname, '../coverage'),
-      reports: ['html', 'lcovonly'],
+    /* enable / disable colors in the output (reporters and logs) */
+    colors: true,
+    /* Concurrency level
+    how many browser should be started simultaneous */
+    concurrency: Infinity,
+    coverageReporter: {
+      type: 'html',
+      dir: require('path').join(__dirname, '../coverage'),
+      reporters: ['html'],
       fixWebpackSourcePaths: true,
     },
-    reporters: ['progress', 'kjhtml'],
-    port: 9876,
-    colors: true,
+    /* list of files / patterns to exclude */
+    exclude: [],
+    /* list of files / patterns to load in the browser */
+    files: ['src/**/*.js'],
+    /* frameworks to use
+    available frameworks: https://npmjs.org/browse/keyword/karma-adapter */
+    frameworks: ['jasmine', '@angular-devkit/build-angular'],
+    /* level of logging
+    possible values: config.LOG_DISABLE || config.LOG_ERROR || config.LOG_WARN || config.LOG_INFO || config.LOG_DEBUG */
     logLevel: config.LOG_INFO,
-    autoWatch: true,
+    /* web server port */
+    port: 9876,
+    plugins: [
+      'karma-jasmine',
+      'karma-chrome-launcher',
+      'karma-jasmine-html-reporter',
+      'karma-coverage',
+      '@angular-devkit/build-angular/plugins/karma',
+    ],
+    /* preprocess matching files before serving them to the browser
+    available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor */
+    preprocessors: {
+      /* source files, that you wanna generate coverage for
+      do not include tests or libraries
+      (these files will be instrumented by Istanbul) */
+      'src/**/*.js': ['coverage'],
+    },
+    /* test results reporter to use
+    possible values: 'dots', 'progress'
+    available reporters: https://npmjs.org/browse/keyword/karma-reporter */
+    reporters: ['progress', 'kjhtml', 'coverage'],
+    restartOnFileChange: true,
+    /* Continuous Integration mode
+    if true, Karma captures browsers, runs the tests and exits */
     singleRun: false,
   });
-}
+};

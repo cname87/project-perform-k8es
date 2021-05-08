@@ -17,9 +17,12 @@ export TEST_CONTEXT=gke_${PROJECT}_${ZONE}_${TEST_CLUSTER_NAME}
 export HELM_RELEASE=project-perform
 export HELM_CHART=pp-chart
 export REPO=${PROJECT}-k8es
+export GIT_MESSAGE="Development test commit"
 # Use development images by default
 export BACKEND_APPLICATION=pp-backend/development
 export FRONTEND_APPLICATION=pp-frontend/development
+export BACKEND_VERSION=latest
+export FRONTEND_VERSION=latest
 export STATIC_IP_NAME=pp-ip
 # The name of the ingress from Helm chart
 export INGRESS=project-perform-pp-chart-app-ingress

@@ -31,8 +31,8 @@ export class AuthGuard implements CanActivate {
   /**
    * Checks if the user is authenticated by calling the relevant property of the AuthService and allows (returns Observable(true) if authenticated or routes to the login page and returns Observable(false) otherwise.
    * Note: If the authentication status times out then this will be captured here and the routing blocked.
-   * @param _next ActivatedRouteSnapshot contains the future route that will be activated  should you pass through the guard check
-   * @param _state RouterStateSnapshot contains the future RouterState of the application should you pass through the guard check
+   * @param _next ActivatedRouteSnapshot contains the future route that will be activated should you pass through the guard check.
+   * @param _state RouterStateSnapshot contains the future RouterState of the application should you pass through the guard check.
    */
   canActivate(
     _next: ActivatedRouteSnapshot,

@@ -16,7 +16,7 @@ export const setupDebug = (filename: string): ISetup => {
   const modulename = filename.slice(filename.lastIndexOf(sep));
   const debug = debugFunction(`PP_${modulename}`);
   debug.log = console.log.bind(console);
-  debug(`Starting${modulename}`);
+  debug(`Starting ${modulename}`);
   return { modulename, debug };
 };
 

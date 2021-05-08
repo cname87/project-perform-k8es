@@ -6,6 +6,8 @@ import { getDashboardPage } from '../pages/dashboard.page';
 import { getRootElements } from '../pages/elements/root.elements';
 import { getInformationElements } from '../pages/elements/information.elements';
 
+const temp1 = getRootElements;
+
 const path = require('path');
 
 const { browser, by, ExpectedConditions } = require('protractor');
@@ -22,7 +24,7 @@ const { NgxLoggerLevel } = require('ngx-logger');
  * - resets the database by clearing and loading mock members
  * - loads the root page
  * - checks that the app has been built with e2e environment so e2eTesting is true as required by the errors spec file
- * - logins the app vai OAuth0
+ * - logins the app via OAuth0
  * - sets the jasmine default timeout
  * - exports various helper functions including an await element visible helper
  */
@@ -144,16 +146,14 @@ const resetDatabase = async () => {
  */
 const loadRootPage = async (isLoggedIn = true, numberExpected = 4) => {
   console.log('Loading root page');
-
+  /* to allow browser reload without presenting the login page, auth0 must be configured to use local storage as Chrome incognito mode disables 3rd party cookies by default (which prevents silent authentication) */
   await browser.get('/');
+  console.log(`Logged In: ${isLoggedIn}`);
   if (!isLoggedIn) {
     /* if not logged in or testing a staged version */
     /* just wait for the login button to show */
     await awaitElementVisible(getRootElements().loginBtn);
   } else {
-    /* await the appearance of the progress bar as should be loading from the database server */
-    await awaitElementVisible(getRootElements().progressBar);
-
     /* the dashboard page is now displayed */
     const dashboardPage = getDashboardPage();
 

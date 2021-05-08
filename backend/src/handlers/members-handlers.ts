@@ -61,7 +61,7 @@ const addMember = (
       .save()
       .then((savedMember: Document) => {
         /* return the added member as a JSON object */
-        return resolve(savedMember.toObject());
+        return resolve(savedMember.toObject() as Perform.IMember);
       })
       .catch((err) => {
         /* report a general database unavailable error */
@@ -101,7 +101,7 @@ const getMember = (req: Request, idParam: number): Promise<Perform.IMember> => {
           return reject(errNotFound);
         }
         /* strip down to member object and return */
-        return resolve(doc.toObject());
+        return resolve(doc.toObject() as Perform.IMember);
       })
       .catch((err) => {
         /* report a general database unavailable error */
@@ -190,7 +190,7 @@ const updateMember = (
           return reject(errNotFound);
         }
         /* return new member object */
-        resolve(doc.toObject());
+        resolve(doc.toObject() as Perform.IMember);
       })
       .catch((err) => {
         /* report a general database unavailable error */
@@ -232,7 +232,7 @@ const deleteMember = (req: Request, idParam: number): Promise<number> => {
           return reject(errNotFound);
         }
         /* return count (= 1) to match api */
-        return resolve(doc.n);
+        return resolve(doc.n!);
       })
       .catch((err) => {
         /* report a general database unavailable error */
@@ -263,7 +263,7 @@ const deleteMembers = (req: Request): Promise<number> => {
         /* reset id autoincrement count to 1 */
         modelMembers.resetCount();
         /* return number of members deleted */
-        return resolve(docs.n);
+        return resolve(docs.n!);
       })
       .catch((err) => {
         /* report a general database unavailable error */

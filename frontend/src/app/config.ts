@@ -9,6 +9,13 @@ export const auth0Config = {
   client_id: 'GNnNi0E0Bg5F3jAuFkDhKULWVgv3S21I',
   redirect_uri: `${window.location.origin}/callback`,
   audience: `${environment.apiUrl}`,
+  /* avoids issues with browsers that block 3rd party cookies */
+  useRefreshTokens: true,
+  /* provides persistence across page refreshes and browser tabs */
+  /**
+   * * Security risk - consider deleting. The user would have to click the log in button after browser refreshes.  Note that e2e tests would fail.
+   */
+  cacheLocation: 'localstorage',
 };
 
 /* application routing elements */

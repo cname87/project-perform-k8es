@@ -23,8 +23,8 @@
       "args": "terminateAll"
     }
   ],
-  /* Serve frontend with backend */
   "tasks": [
+    /* Serve frontend with backend */
     {
       "label": "Serve Frontend with Backend",
       "type": "shell",
@@ -60,38 +60,7 @@
         }
       }
     },
-    {
-      "label": "Test Frontend",
-      "type": "shell",
-      "command": "npm",
-      "args": [
-        "run",
-        "--prefix",
-        "${workspaceFolder}/frontend",
-        "test:dev"
-      ],
-      "group": "build",
-      "isBackground": true,
-      "problemMatcher": {
-        "owner": "typescript",
-        "source": "ts",
-        "applyTo": "closedDocuments",
-        "fileLocation": [
-          "relative",
-          "${cwd}"
-        ],
-        "pattern": "$tsc",
-        "background": {
-          "activeOnStart": true,
-          "beginsPattern": {
-            "regexp": "(.*?)"
-          },
-          "endsPattern": {
-            "regexp": "TOTAL:"
-          }
-        }
-      }
-    },
+    /* Start backend */
     {
       "label": "npm start backend app.js",
       "type": "npm",
@@ -102,6 +71,7 @@
       "group": "build",
       "problemMatcher": []
     },
+    /* Run backend server-side watch - keyboard shortcut 'CTRL+w' */
     {
       "label": "npm backend server-side watch",
       "type": "npm",
@@ -112,112 +82,7 @@
       "group": "build",
       "problemMatcher": []
     },
-    {
-      "label": "npm build backend",
-      "type": "npm",
-      "script": "build",
-      "options": {
-        "cwd": "${workspaceFolder}/backend"
-      },
-      "group": "build",
-      "problemMatcher": []
-    },
-    {
-      "label": "npm build:dev frontend",
-      "type": "shell",
-      "command": "npm",
-      "args": [
-        "run",
-        "--prefix",
-        "${workspaceFolder}/frontend",
-        "build:dev"
-      ],
-      "group": "build",
-      "isBackground": true,
-      "problemMatcher": {
-        "owner": "typescript",
-        "source": "ts",
-        "applyTo": "closedDocuments",
-        "fileLocation": [
-          "relative",
-          "${cwd}"
-        ],
-        "pattern": "$tsc",
-        "background": {
-          "activeOnStart": true,
-          "beginsPattern": {
-            "regexp": "(.*?)"
-          },
-          "endsPattern": {
-            "regexp": "Compiled | Failed to compile."
-          }
-        }
-      }
-    },
-    {
-      "label": "npm build:e2e frontend",
-      "type": "shell",
-      "command": "npm",
-      "args": [
-        "run",
-        "--prefix",
-        "${workspaceFolder}/frontend",
-        "build:e2e"
-      ],
-      "group": "build",
-      "isBackground": true,
-      "problemMatcher": {
-        "owner": "typescript",
-        "source": "ts",
-        "applyTo": "closedDocuments",
-        "fileLocation": [
-          "relative",
-          "${cwd}"
-        ],
-        "pattern": "$tsc",
-        "background": {
-          "activeOnStart": true,
-          "beginsPattern": {
-            "regexp": "(.*?)"
-          },
-          "endsPattern": {
-            "regexp": "Compiled | Failed to compile."
-          }
-        }
-      }
-    },
-    {
-      "label": "npm build:prod frontend",
-      "type": "shell",
-      "command": "npm",
-      "args": [
-        "run",
-        "--prefix",
-        "${workspaceFolder}/frontend",
-        "build:prod"
-      ],
-      "group": "build",
-      "isBackground": true,
-      "problemMatcher": {
-        "owner": "typescript",
-        "source": "ts",
-        "applyTo": "closedDocuments",
-        "fileLocation": [
-          "relative",
-          "${cwd}"
-        ],
-        "pattern": "$tsc",
-        "background": {
-          "activeOnStart": true,
-          "beginsPattern": {
-            "regexp": "(.*?)"
-          },
-          "endsPattern": {
-            "regexp": "Compiled | Failed to compile."
-          }
-        }
-      }
-    },
+    /* Tests if the backend server is up */
     {
       "label": "Is Server Up?",
       "type": "shell",
@@ -243,8 +108,8 @@
         }
       }
     },
+    /* Starts the server and leaves it running in the background */
     {
-      /* Starts the server and leaves it running in the background */
       "label": "Check Server",
       "type": "shell",
       "command": "npm",
@@ -270,6 +135,7 @@
         }
       }
     },
+    /* Starts the local mongoDB server */
     {
       "label": "Start local mongoDB database server",
       "type": "shell",
@@ -277,7 +143,7 @@
         "focus": true
       },
       "linux": {
-        "command": "sudo systemctl start mongod"
+        "command": "sudo systemctl start mongod && sudo systemctl status mongod"
       },
       "windows": {
         "command": "C:\\Program Files\\MongoDB\\Server\\4.2\\bin\\mongod.exe",
@@ -289,6 +155,7 @@
       "group": "test",
       "problemMatcher": []
     },
+    /* Stops the local mongoDB server */
     {
       "label": "Stop local mongoDB database server",
       "type": "shell",
@@ -296,7 +163,7 @@
         "focus": true
       },
       "linux": {
-        "command": "sudo systemctl stop mongod"
+        "command": "sudo systemctl stop mongod && sudo systemctl status mongod"
       },
       "windows": {
         "command": "C:\\Program Files\\MongoDB\\Server\\4.2\\bin\\mongo.exe",
@@ -324,7 +191,7 @@
       "group": "test",
       "problemMatcher": []
     },
-    // Kill all node processes
+    // Kill all node processes - will shutdown local server
     {
       /* Kills all running node instances.  E.g. use to kill the node server launched by Checkserver */
       "label": "Taskkill node.exe",
@@ -355,12 +222,12 @@
       "group": "test",
       "problemMatcher": []
     },
-    // Runs skaffold as per the skaffold-run.sh script
+    /* Runs skaffold as per the skaffold-run.sh script */
     {
       "label": "skaffold-run",
       "type": "shell",
       "linux": {
-        "command": "./skaffold-run.sh"
+        "command": "./utils-build/skaffold-run.sh"
       },
       "options": {
         "cwd": "${workspaceFolder}",
@@ -378,7 +245,7 @@
       },
       "problemMatcher": []
     },
-    // Terminate all tasks
+    /* Terminate all tasks */
     {
       "label": "Terminate All Tasks",
       "command": "echo ${input:terminate}",
