@@ -377,7 +377,7 @@ steps:
   args:
   - '-c'
   - |
-    test "${_GKE_CLUSTER}" = "ppk8es-cluster-production" && \
+    test "${_GKE_CLUSTER}" = "ppk8es-cluster-prod" && \
     npm run e2e:production || echo "Skipped final e2e:production step as not a production build"
 
 substitutions:
