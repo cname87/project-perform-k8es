@@ -60,7 +60,7 @@ steps:
   ]
 
 # Create a bucket to hold the released secrets
-# Skip if the bucket creation fails as it already exists
+# Skip if the bucket creation fails because it already exists
 - id: 'create release folder for secrets'
   name: 'gcr.io/cloud-builders/gsutil'
   entrypoint: 'sh'

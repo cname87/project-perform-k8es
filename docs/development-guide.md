@@ -17,15 +17,13 @@ The nvm package allows you load various node versions.
 
 ## Installing on a local environment from GitHub
 
-Once you've cloned the repo you need to download the secrets files that are not stored on Github.
+- Clone the repo from <https://github.com/cname87/project-perform-k8es.git>.
 
-First you need to manually download the GCP Storage key, from './certs/gcpStorage/'Copy of gcpStorageKey.json' on GCP Storage to ./certs/gcpStorage/gcpStoragekey.json' in the local project.  This is needed for the application to access the Cloud Storage account:
+- Download the secrets files that are not stored on Github.  The secrets files from the last 
 
-- Access GCP Cloud Storage from the browser and manually download 'Copy of gcpStorageKey.json' from the certs/gcpStorage directory on GCP Storage to the local 'certs/gcpStorage' directory.
+  - Manually download the GCP Storage key, from './certs/gcpStorage/'Copy of gcpStorageKey.json' on GCP Storage to ./certs/gcpStorage/gcpStoragekey.json' in the local project.  This is needed for the application to access the Cloud Storage account: Access GCP Cloud Storage from the browser and manually download 'Copy of gcpStorageKey.json' from the certs/gcpStorage directory on GCP Storage to the local 'certs/gcpStorage' directory.
 
-Second, download the secrets files from GCP Cloud Storage:
-
-- Run the loadSecretsFiles scripts from both the frontend and backend package.json files - type 'npm run loadSecretsFiles' in /frontend and /backend.
+  - Download the secrets files from GCP Cloud Storage: Run the loadSecretsFiles scripts from both the frontend and backend package.json files - type 'npm run loadSecretsFiles' in /frontend and /backend.
 
 Note: The backend utility downloads the secrets in the project root and these are stored in the backend directory on GCP Storage in '../'.  The gcpStorageKey.json file is also stored in ./certs/gcpStorage/'Copy of gcpStorageKey.json'. If you ever change the service account access key then you just store the new key in this location as well as in the project ./certs/gcpStorage directory.
 
